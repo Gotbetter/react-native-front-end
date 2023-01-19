@@ -14,8 +14,14 @@ import {
     useState,
     useEffect,
 } from "react";
+import {register} from "../module/auth";
+import {useDispatch} from "react-redux";
 
 function RegisterScreen({navigation}) {
+
+    const dispatch = useDispatch();
+
+
     const [inputId, setInputId] = useState('');
     const [inputPassword, setInputPassword] = useState('');
     const [inputPasswordCheck, setInputPasswordCheck] = useState('');
@@ -23,8 +29,10 @@ function RegisterScreen({navigation}) {
     const [inputEmail, setInputEmail] = useState('');
 
     const goToSigninPage = () => {
-        navigation.navigate('signin');
+        navigation.navigate('login');
     }
+
+
 
     return (
         <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>

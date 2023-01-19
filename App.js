@@ -13,8 +13,8 @@ export default function App() {
         <Provider store={store}>
             <NavigationContainer>
                 <Stack.Navigator initialRouteName='signin' screenOptions={{headerShown: false}}>
-                    <Stack.Screen name='signin' component={LoginScreen}/>
-                    <Stack.Screen name='signup' component={RegisterScreen}/>
+                    <Stack.Screen name='login' component={LoginScreen}/>
+                    <Stack.Screen name='register' component={RegisterScreen}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

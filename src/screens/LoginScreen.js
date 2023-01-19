@@ -14,12 +14,13 @@ import {
     useEffect,
 } from "react";
 
+
 function LoginScreen({navigation}) {
     const [inputId, setInputId] = useState('');
     const [inputPassword, setInputPassword] = useState('');
 
     const goToSignupPage = () => {
-        navigation.navigate('signup');
+        navigation.navigate('register');
     }
 
     return (
