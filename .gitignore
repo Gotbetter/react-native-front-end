@@ -1,6 +1,7 @@
 gotbetter/node_modules/
 .expo/
 dist/
+./node_modules
 ./package.json
 ./package-lock.json
 npm-debug.*
