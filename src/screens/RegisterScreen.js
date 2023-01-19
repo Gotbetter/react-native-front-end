@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     Keyboard,
     TouchableWithoutFeedback,
-
     StyleSheet,
 } from "react-native";
 
@@ -14,25 +13,113 @@ import {
     useState,
     useEffect,
 } from "react";
-import {register} from "../module/auth";
-import {useDispatch} from "react-redux";
+import {checkDuplicate, register, resetDuplicate, resetRegister} from "../module/auth";
+import {useDispatch, useSelector} from "react-redux";
+import Toast from "react-native-root-toast";
 
 function RegisterScreen({navigation}) {
 
     const dispatch = useDispatch();
 
+    const {isDuplicate, loading, status} = useSelector(({auth}) => ({
+        isDuplicate: auth.isDuplicate,
+        loading: auth.loading,
+        status: auth.status
+    }));
 
-    const [inputId, setInputId] = useState('');
-    const [inputPassword, setInputPassword] = useState('');
-    const [inputPasswordCheck, setInputPasswordCheck] = useState('');
-    const [inputNickname, setInputNickname] = useState('');
-    const [inputEmail, setInputEmail] = useState('');
+    const [request, setRequest] = useState({
+        "auth_id": '',
+        password: '',
+        username: '',
+        email: '',
+    });
+    const [confirmDuplicate, setConfirmDuplicate] = useState(false);
+    const [passwordConfirm, setPasswordConfirm] = useState('');
+
+    const {auth_id, password, username, email} = request;
+
+    useEffect(() => {
+        if (isDuplicate === true) {
+            Toast.show("중복된 아이디 입니다.",
+                {duration: Toast.durations.LONG});
+            const resetId = {
+                ...request,
+                "auth_id": '',
+            };
+            setRequest(resetId);
+            dispatch(resetDuplicate());
+        } else {
+            Toast.show("사용 가능한 아이디 입니다.",
+                {duration: Toast.durations.LONG});
+            setConfirmDuplicate(true);
+        }
+    }, [dispatch, isDuplicate]);
+
+    useEffect(() => {
+        if (status.REGISTER) {
+            Toast.show("회원가입 성공.",
+                {duration: Toast.durations.LONG});
+            dispatch(resetRegister());
+            navigation.navigate('login');
+        } else {
+            Toast.show("회원가입 실패.",
+                {duration: Toast.durations.LONG});
+        }
+    }, [dispatch, status]);
+
+    const onChange = (targetName, e) => {
+        const {text} = e.nativeEvent;
+        const next = {
+            ...request,
+            [targetName]: text,
+        };
+        setRequest(next);
+    };
+
+    const checkDuplicateId = () => {
+        if (auth_id === "") {
+            let toast = Toast.show("아이디를 입력하세요",
+                {duration: Toast.durations.LONG});
+
+        } else {
+            dispatch(checkDuplicate(auth_id));
+        }
+    };
+
+    const conFirmPassword = () => {
+        if (password !== passwordConfirm) {
+            let toast = Toast.show("비밀번호 불일치",
+                {duration: Toast.durations.LONG});
+            setPasswordConfirm('');
+        }
+    };
+
+    const onPressRegister = () => {
+
+        // 모든 정보 입력했는지 체크
+        let flag = true;
+        for (const requestKey in request) {
+            if (request[requestKey] === '') {
+                flag = false;
+            }
+        }
+
+        if (flag === false) {
+            Toast.show("모든 정보를 입력하세요",
+                {duration: Toast.durations.LONG});
+        } else {
+            // 중복확인 체크
+            if (confirmDuplicate === false) {
+                Toast.show("아이디 중복확인을 하세요",
+                    {duration: Toast.durations.LONG});
+            }
+            dispatch(register(request));
+        }
+    }
 
     const goToSigninPage = () => {
         navigation.navigate('login');
-    }
-
-
+    };
 
     return (
         <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
@@ -53,34 +140,39 @@ function RegisterScreen({navigation}) {
                 <View style={styles.signup_container}>
                     <View style={{flex: 1}}/>
                     <View style={{flex: 2, flexDirection: 'row', width: '90%',}}>
-                        <TextInput style={styles.input_id_text_input} placeholder='아이디' placeholderTextColor='black'
-                                   onChangeText={setInputId}/>
+                        <TextInput value={auth_id} style={styles.input_id_text_input}
+                                   placeholder='아이디' placeholderTextColor='black'
+                                   onChange={e => onChange("auth_id", e)}/>
                         <TouchableOpacity style={styles.duplication_check_button}>
-                            <Text style={{textAlign: 'center', fontSize: 15,}}>중복확인</Text>
+                            <Text style={{textAlign: 'center', fontSize: 15,}}
+                                  onPress={() => checkDuplicateId()}>중복확인</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{flex: 1}}/>
-                    <TextInput style={styles.text_input} placeholder='비밀번호' placeholderTextColor='black'
-                               onChangeText={setInputPassword} secureTextEntry={true}/>
+                    <TextInput value={password} style={styles.text_input}
+                               placeholder='비밀번호' placeholderTextColor='black' secureTextEntry={true}
+                               onChange={e => onChange("password", e)}/>
                     <View style={{flex: 1}}/>
-                    <TextInput style={styles.text_input} placeholder='비밀번호 재확인' placeholderTextColor='black'
-                               onChangeText={setInputPasswordCheck} secureTextEntry={true}/>
+                    <TextInput value={passwordConfirm} style={styles.text_input} placeholder='비밀번호 재확인'
+                               placeholderTextColor='black' secureTextEntry={true}
+                               onChangeText={setPasswordConfirm} onBlur={conFirmPassword}/>
                     <View style={{flex: 1}}/>
-                    <TextInput style={styles.text_input} placeholder='닉네임' placeholderTextColor='black'
-                               onChangeText={setInputNickname}/>
+                    <TextInput value={username} tyle={styles.text_input}
+                               placeholder='닉네임' placeholderTextColor='black'
+                               onChange={e => onChange("username", e)}/>
                     <View style={{flex: 1}}/>
-                    <TextInput style={styles.text_input} placeholder='이메일' placeholderTextColor='black'
-                               onChangeText={setInputEmail}/>
+                    <TextInput value={email} style={styles.text_input}
+                               placeholder='이메일' placeholderTextColor='black'
+                               onChange={e => onChange("email", e)}/>
                     <View style={{flex: 1}}/>
                 </View>
 
                 <View style={{flex: 2, alignItems: 'center'}}>
-                    <TouchableOpacity style={styles.signup_button} onPress={goToSigninPage}>
+                    <TouchableOpacity style={styles.signup_button} onPress={onPressRegister}>
                         <Text style={styles.signup_button_text}>회원가입</Text>
                     </TouchableOpacity>
                     <View style={{flex: 2}}/>
                 </View>
-
             </View>
         </TouchableWithoutFeedback>
     );
