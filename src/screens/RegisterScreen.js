@@ -21,9 +21,8 @@ function RegisterScreen({navigation}) {
 
     const dispatch = useDispatch();
 
-    const {isDuplicate, loading, status} = useSelector(({auth}) => ({
+    const {isDuplicate, status} = useSelector(({auth}) => ({
         isDuplicate: auth.isDuplicate,
-        loading: auth.loading,
         status: auth.status
     }));
 
@@ -116,10 +115,6 @@ function RegisterScreen({navigation}) {
             dispatch(register(request));
         }
     }
-
-    const goToSigninPage = () => {
-        navigation.navigate('login');
-    };
 
     return (
         <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
