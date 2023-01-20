@@ -7,8 +7,11 @@ import {RootSiblingParent} from 'react-native-root-siblings';
 
 import {store} from "./src/module/store";
 import HomeScreen from "./src/screens/HomeScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
+
+
 
 
 export default function App() {
