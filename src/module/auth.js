@@ -3,7 +3,6 @@ import * as api from "../lib/auth/auth";
 
 const initialState = {
     user: null,
-    register_debug: null,
     isDuplicate: null,
     loading: {
         REGISTER: false,
@@ -12,6 +11,7 @@ const initialState = {
     },
     status: {
         REGISTER: false,
+        LOGIN: false,
     },
     error: null,
 };
@@ -31,8 +31,7 @@ export const register = createAsyncThunk(
          * string email;
          */
         try {
-            const response = await api.register(args);
-            console.log(response);
+            await api.register(args);
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -46,12 +45,29 @@ export const checkDuplicate = createAsyncThunk(
          * @param arg(string): auth_id
          */
         try {
-            const response = await api.checkDuplicate(arg);
+            await api.checkDuplicate(arg);
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
     }
 );
+
+export const login = createAsyncThunk(
+    "auth/LOGIN",
+    async (args, thunkApi) => {
+        /**
+         * @param args(object)
+         * string auth_id
+         * string password
+         */
+        try {
+            const response = await api.login(args);
+            return response.data;
+        } catch (error) {
+            return thunkApi.rejectWithValue(error);
+        }
+    }
+)
 
 
 const auth = createSlice(
@@ -59,11 +75,19 @@ const auth = createSlice(
         name: 'auth',
         initialState,
         reducers: {
-            resetDuplicate: (state, action) => {
+            resetDuplicate: (state) => {
                 state.isDuplicate = false;
             },
             resetRegister: (state) => {
                 state.status.REGISTER = false;
+            },
+            logout: (state) => {
+                state.status.LOGIN = false;
+                state.user = null;
+            },
+            setUser: (state, {payload: user}) => {
+                state.user = user;
+                state.status.LOGIN = true;
             },
         },
         extraReducers: (builder) => {
@@ -72,7 +96,7 @@ const auth = createSlice(
                 .addCase(register.pending, (state) => {
                     state.loading.REGISTER = true;
                 })
-                .addCase(register.fulfilled, (state, {payload: register_debug}) => {
+                .addCase(register.fulfilled, (state) => {
                     state.loading.REGISTER = false;
                     state.status.REGISTER = true;
                 })
@@ -95,10 +119,22 @@ const auth = createSlice(
                     state.isDuplicate = true;
                     state.error = action.error;
                 })
+                .addCase(login.pending, (state) => {
+                    state.loading.LOGIN = true;
+                })
+                .addCase(login.fulfilled, (state, {payload: user}) => {
+                    state.loading.LOGIN = false;
+                    state.user = user;
+                    state.status.LOGIN = true;
+                })
+                .addCase(login.rejected, (state, action) => {
+                    state.loading.LOGIN = false;
+                    state.error = action.error;
+                });
         },
     }
 );
 
-export const {resetDuplicate, resetRegister} = auth.actions;
+export const {resetDuplicate, resetRegister, logout, setUser} = auth.actions;
 
 export default auth.reducer;

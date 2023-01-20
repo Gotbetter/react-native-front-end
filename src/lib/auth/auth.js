@@ -3,18 +3,16 @@ import client from "../client";
 
 export const register = (credentials) => {
     const {auth_id, password, username, email} = credentials;
-    console.log(credentials);
     client.post(
         `/users/join`,
         {
-            "auth_id" : auth_id,
+            "auth_id": auth_id,
             password,
             username,
             email,
         },
     );
 };
-
 export const checkDuplicate = (auth_id) =>
     client.post(
         `/users/join/verify`,
@@ -22,3 +20,15 @@ export const checkDuplicate = (auth_id) =>
             "auth_id": auth_id,
         },
     );
+export const login = (credentials) => {
+    const {auth_id, password} = credentials;
+    return client.post(
+        `/users`,
+        {
+            "auth_id": auth_id,
+            password,
+        }
+    );
+};
+
+// todo: refresh
