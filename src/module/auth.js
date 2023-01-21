@@ -3,15 +3,10 @@ import * as api from "../lib/auth/auth";
 
 const initialState = {
     user: null,
-    isDuplicate: null,
-    loading: {
-        REGISTER: false,
-        LOGIN: false,
-        CHECK_DUPLICATE: false,
-    },
     status: {
-        REGISTER: false,
-        LOGIN: false,
+        REGISTER: null,
+        LOGIN: null,
+        DUPLICATE_CHECKED: null,
     },
     error: null,
 };
@@ -45,7 +40,8 @@ export const checkDuplicate = createAsyncThunk(
          * @param arg(string): auth_id
          */
         try {
-            await api.checkDuplicate(arg);
+            const response = await api.checkDuplicate(arg);
+            return response.data;
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -76,10 +72,10 @@ const auth = createSlice(
         initialState,
         reducers: {
             resetDuplicate: (state) => {
-                state.isDuplicate = false;
+                state.status.DUPLICATE_CHECKED = null;
             },
             resetRegister: (state) => {
-                state.status.REGISTER = false;
+                state.status.REGISTER = null;
             },
             logout: (state) => {
                 state.status.LOGIN = false;
@@ -93,42 +89,31 @@ const auth = createSlice(
         extraReducers: (builder) => {
             builder
                 // register
-                .addCase(register.pending, (state) => {
-                    state.loading.REGISTER = true;
-                })
-                .addCase(register.fulfilled, (state) => {
-                    state.loading.REGISTER = false;
-                    state.status.REGISTER = true;
+                .addCase(register.fulfilled, (state, action) => {
+                    state.status.REGISTER = 201;
                 })
                 .addCase(register.rejected, (state, action) => {
-                    state.loading.REGISTER = false;
+                    state.status.REGISTER = action.payload.response.status;
                     state.error = action.error;
                 })
                 // checkDuplicate
-                .addCase(checkDuplicate.pending, (state) => {
-                    state.loading.CHECK_DUPLICATE = true;
-                })
-                .addCase(checkDuplicate.fulfilled, (state) => {
-                    state.isDuplicate = false;
+                .addCase(checkDuplicate.fulfilled, (state,action) => {
+                    state.status.DUPLICATE_CHECKED = 200;
                 })
                 .addCase(checkDuplicate.rejected, (state, action) => {
                     /**
                      *  rejected 되는 경우는 아이디 중복되는 경우 하나
                      *  아이디 입력 안했을시 발생하는 400은 클라이언트에서 차단
                      */
-                    state.isDuplicate = true;
+                    state.status.DUPLICATE_CHECKED = action.payload.response.status;;
                     state.error = action.error;
                 })
-                .addCase(login.pending, (state) => {
-                    state.loading.LOGIN = true;
-                })
                 .addCase(login.fulfilled, (state, {payload: user}) => {
-                    state.loading.LOGIN = false;
                     state.user = user;
-                    state.status.LOGIN = true;
+                    state.status.LOGIN = action.payload.response.status;
                 })
                 .addCase(login.rejected, (state, action) => {
-                    state.loading.LOGIN = false;
+                    state.status.LOGIN = action.payload.response.status;
                     state.error = action.error;
                 });
         },
