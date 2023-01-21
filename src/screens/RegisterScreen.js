@@ -17,28 +17,27 @@ import {checkDuplicate, register, resetDuplicate, resetRegister} from "../module
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";
 
+
 function RegisterScreen({navigation}) {
 
     const dispatch = useDispatch();
 
-    const {isDuplicate, status} = useSelector(({auth}) => ({
-        isDuplicate: auth.isDuplicate,
+    const {status} = useSelector(({auth}) => ({
         status: auth.status
     }));
 
     const [request, setRequest] = useState({
-        "auth_id": '',
+        auth_id: '',
         password: '',
         username: '',
         email: '',
     });
-    const [confirmDuplicate, setConfirmDuplicate] = useState(false);
-    const [passwordConfirm, setPasswordConfirm] = useState('');
 
+    const [passwordConfirm, setPasswordConfirm] = useState('');
     const {auth_id, password, username, email} = request;
 
     useEffect(() => {
-        if (isDuplicate === true) {
+        if (status.DUPLICATE_CHECKED === 409) {
             Toast.show("중복된 아이디 입니다.",
                 {duration: Toast.durations.LONG});
             const resetId = {
@@ -47,24 +46,24 @@ function RegisterScreen({navigation}) {
             };
             setRequest(resetId);
             dispatch(resetDuplicate());
-        } else {
+        } else if (status.DUPLICATE_CHECKED === 200) {
             Toast.show("사용 가능한 아이디 입니다.",
                 {duration: Toast.durations.LONG});
-            setConfirmDuplicate(true);
         }
-    }, [dispatch, isDuplicate]);
+
+    }, [dispatch, status.DUPLICATE_CHECKED]);
 
     useEffect(() => {
-        if (status.REGISTER) {
+        if (status.REGISTER === 201) {
             Toast.show("회원가입 성공.",
                 {duration: Toast.durations.LONG});
             dispatch(resetRegister());
             navigation.navigate('login');
-        } else {
-            Toast.show("회원가입 실패.",
+        } else if (status.REGISTER === 500) {
+            Toast.show("서버 문제로 인한 실패.",
                 {duration: Toast.durations.LONG});
         }
-    }, [dispatch, status]);
+    }, [dispatch, status.REGISTER]);
 
     const onChange = (targetName, e) => {
         const {text} = e.nativeEvent;
@@ -77,17 +76,22 @@ function RegisterScreen({navigation}) {
 
     const checkDuplicateId = () => {
         if (auth_id === "") {
-            let toast = Toast.show("아이디를 입력하세요",
+            Toast.show("아이디를 입력하세요",
                 {duration: Toast.durations.LONG});
 
         } else {
             dispatch(checkDuplicate(auth_id));
+
+            if (status.DUPLICATE_CHECKED) {
+                Toast.show("사용 가능한 아이디 입니다.",
+                    {duration: Toast.durations.LONG});
+            }
         }
     };
 
     const conFirmPassword = () => {
         if (password !== passwordConfirm) {
-            let toast = Toast.show("비밀번호 불일치",
+            Toast.show("비밀번호 불일치",
                 {duration: Toast.durations.LONG});
             setPasswordConfirm('');
         }
@@ -108,11 +112,12 @@ function RegisterScreen({navigation}) {
                 {duration: Toast.durations.LONG});
         } else {
             // 중복확인 체크
-            if (confirmDuplicate === false) {
+            if (status.DUPLICATE_CHECKED === 200) {
+                dispatch(register(request));
+            } else {
                 Toast.show("아이디 중복확인을 하세요",
                     {duration: Toast.durations.LONG});
             }
-            dispatch(register(request));
         }
     }
 
