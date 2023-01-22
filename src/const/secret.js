@@ -1,0 +1,1 @@
+SERVER_END_POINT = `http://14.36.131.85:8080`
