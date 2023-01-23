@@ -1,11 +1,11 @@
 import React from 'react';
 import MainContainer from "../container/MainContainer";
 
-function MainScreen(props) {
+function MainScreen({navigation}) {
     return (
         <>
             {/* header container */}
-            <MainContainer />
+            <MainContainer navigation={navigation}/>
             {/* footer container */}
         </>
     );
