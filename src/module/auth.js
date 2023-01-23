@@ -93,7 +93,7 @@ const auth = createSlice(
                     state.status.REGISTER = 201;
                 })
                 .addCase(register.rejected, (state, action) => {
-                    state.status.REGISTER = action.payload.response.status;
+                    state.status.REGISTER = 400;
                     state.error = action.error;
                 })
                 // checkDuplicate
@@ -105,15 +105,15 @@ const auth = createSlice(
                      *  rejected 되는 경우는 아이디 중복되는 경우 하나
                      *  아이디 입력 안했을시 발생하는 400은 클라이언트에서 차단
                      */
-                    state.status.DUPLICATE_CHECKED = action.payload.response.status;;
+                    state.status.DUPLICATE_CHECKED = 409;
                     state.error = action.error;
                 })
-                .addCase(login.fulfilled, (state, {payload: user}) => {
-                    state.user = user;
-                    state.status.LOGIN = action.payload.response.status;
+                .addCase(login.fulfilled, (state, action) => {
+                    state.user = action.payload;
+                    state.status.LOGIN = 200;
                 })
                 .addCase(login.rejected, (state, action) => {
-                    state.status.LOGIN = action.payload.response.status;
+                    state.status.LOGIN = 404;
                     state.error = action.error;
                 });
         },

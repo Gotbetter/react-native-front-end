@@ -1,4 +1,5 @@
 import axios from "axios";
+import SERVER_END_POINT from "../const/secret";
 
 
 const client = axios.create({
