@@ -16,7 +16,8 @@ import Toast from "react-native-root-toast";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login} from "../module/auth";
+import {login, setUser} from "../module/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 function LoginScreen({navigation}) {
@@ -36,7 +37,20 @@ function LoginScreen({navigation}) {
     const {auth_id, password} = request;
 
     useEffect(() => {
+        AsyncStorage.getItem("user", (error, result) => {
+            if (result === null) {
+                return;
+            } else {
+                dispatch(setUser(result));
+                navigation.navigate('home');
+            }
+        })
+    }, []);
+
+    useEffect(() => {
         if (user && status === true) {
+            // todo : user -> token 으로 변경
+            AsyncStorage.setItem("user", Json.stringify(user));
             Toast.show('로그인 성공', {duration: Toast.durations.LONG});
             navigation.navigate('home');
         }
