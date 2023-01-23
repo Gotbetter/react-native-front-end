@@ -6,8 +6,7 @@ import {Provider} from "react-redux";
 import {RootSiblingParent} from 'react-native-root-siblings';
 
 import {store} from "./src/module/store";
-import HomeScreen from "./src/screens/HomeScreen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import MainScreen from "./src/screens/MainScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,7 +21,7 @@ export default function App() {
                     <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
                         <Stack.Screen name='login' component={LoginScreen}/>
                         <Stack.Screen name='register' component={RegisterScreen}/>
-                        <Stack.Screen name='home' component={HomeScreen}/>
+                        <Stack.Screen name='main' component={MainScreen}/>
                     </Stack.Navigator>
                 </NavigationContainer>
 
