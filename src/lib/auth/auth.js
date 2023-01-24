@@ -13,13 +13,15 @@ export const register = (credentials) => {
         },
     );
 };
-export const checkDuplicate = (auth_id) =>
-    client.post(
+export const checkDuplicate = (auth_id) =>{
+    return client.post(
         `/users/join/verify`,
         {
             "auth_id": auth_id,
         },
     );
+}
+
 export const login = (credentials) => {
     const {auth_id, password} = credentials;
     return client.post(

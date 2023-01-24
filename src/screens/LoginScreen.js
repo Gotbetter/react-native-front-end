@@ -41,18 +41,18 @@ function LoginScreen({navigation}) {
             if (result === null) {
                 return;
             } else {
-                dispatch(setUser(result));
-                navigation.navigate('home');
+                dispatch(setUser(JSON.parse(result)));
+                navigation.navigate('main');
             }
         })
     }, []);
 
     useEffect(() => {
-        if (user && status === true) {
+        if (user && status === 200) {
             // todo : user -> token 으로 변경
-            AsyncStorage.setItem("user", Json.stringify(user));
+            AsyncStorage.setItem("user", JSON.stringify(user));
             Toast.show('로그인 성공', {duration: Toast.durations.LONG});
-            navigation.navigate('home');
+            navigation.navigate('main');
         }
     }, [user, status]);
 

@@ -157,7 +157,7 @@ function RegisterScreen({navigation}) {
                                placeholderTextColor='black' secureTextEntry={true}
                                onChangeText={setPasswordConfirm} onBlur={conFirmPassword}/>
                     <View style={{flex: 1}}/>
-                    <TextInput value={username} tyle={styles.text_input}
+                    <TextInput value={username} style={styles.text_input}
                                placeholder='닉네임' placeholderTextColor='black'
                                onChange={e => onChange("username", e)}/>
                     <View style={{flex: 1}}/>
