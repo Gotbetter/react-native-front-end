@@ -7,6 +7,10 @@ import {RootSiblingParent} from 'react-native-root-siblings';
 
 import {store} from "./src/module/store";
 import MainScreen from "./src/screens/MainScreen";
+import RoomTitleFormScreen from "./src/screens/room/form/RoomTItleFormScreen";
+import RoomScheduleFormScreen from "./src/screens/room/form/RoomScheduleFormScreen";
+import RoomEntryFeeFormScreen from "./src/screens/room/form/RoomEntryFeeFormScreen";
+import RoomRulesFormScreen from "./src/screens/room/form/RoomRulesFormScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +26,10 @@ export default function App() {
                         <Stack.Screen name='login' component={LoginScreen}/>
                         <Stack.Screen name='register' component={RegisterScreen}/>
                         <Stack.Screen name='main' component={MainScreen}/>
+                        <Stack.Screen name='room-create-title-form' component={RoomTitleFormScreen}/>
+                        <Stack.Screen name='room-create-schedule-form' component={RoomScheduleFormScreen}/>
+                        <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>
+                        <Stack.Screen name='room-create-rules-form' component={RoomRulesFormScreen}/>
                     </Stack.Navigator>
                 </NavigationContainer>
 
