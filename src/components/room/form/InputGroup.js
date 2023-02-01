@@ -1,12 +1,12 @@
 import React from 'react';
 import {StyleSheet, Text, TextInput, View} from "react-native";
 
-function InputGroup({title, children}) {
+function InputGroup({title, children, targetName, onChange}) {
 
     return (
         <View style={styles.input_group_container}>
             <Text style={styles.input_title}>{title}</Text>
-            {children || <TextInput style={styles.input}/>}
+            {children || <TextInput style={styles.input} onChange={e => onChange(targetName, e.nativeEvent.text)}/>}
         </View>
     );
 }
