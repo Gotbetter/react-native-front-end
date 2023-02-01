@@ -3,14 +3,14 @@ import {StyleSheet, Text, View} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import {AntDesign} from "@expo/vector-icons";
 
-function SelectGroup(props) {
+function SelectGroup({selected, targetName, items, onChange}) {
+
     return (
         <View style={styles.picker_container}>
-            <Text style={styles.text}></Text>
+            <Text style={styles.text}>{selected}</Text>
             <RNPickerSelect
                 useNativeAndroidPickerStyle={false}
-                onValueChange={() => {
-                }}
+                onValueChange={(value) => onChange(targetName, value)}
                 placeholder={{}}
                 style={{
                     inputIOS: styles.picker,
@@ -20,8 +20,7 @@ function SelectGroup(props) {
                         right: 18,
                     },
                 }}
-                items={[{label: '2년 계약', value: '2', key: '2'},
-                    {label: '3년 계약', value: '3', key: '3'}]}
+                items={items}
                 Icon={() => <AntDesign name="down" size={24} color="white"/>}
             />
         </View>
