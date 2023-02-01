@@ -40,7 +40,7 @@ export default function MainContainer({navigation}) {
         }).catch((error) => {
             console.log(error);
         });
-        
+
     }, [isFocused])
 
     const [rooms, setRooms] = useState([
@@ -126,7 +126,7 @@ export default function MainContainer({navigation}) {
 
             <View style={styles.button_container}>
                 <View style={{flex: 0.5}}/>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('room-create-title-form')}>
                     <Text style={styles.button_text}>방 만들기</Text>
                 </TouchableOpacity>
                 <View style={{flex: 1}}/>
@@ -197,8 +197,8 @@ const styles = StyleSheet.create({
     },
     room: {
         flex: 8,
-        backgroundColor: '#FFFFFF', 
-        width: '90%', 
+        backgroundColor: '#FFFFFF',
+        width: '90%',
         borderRadius: 20,
         borderWidth: 5,
         borderColor: '#BFBFBF',
