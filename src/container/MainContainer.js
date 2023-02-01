@@ -9,31 +9,60 @@ import {
     StyleSheet,
 } from "react-native";
 
+import { store } from "../module/store";
+
+import { useIsFocused } from '@react-navigation/native';
+
+import client from "../lib/client";
+
 import {useState, useEffect} from 'react';
-import {useSelector} from "react-redux";
 
 export default function MainContainer({navigation}) {
+
+    const isFocused = useIsFocused(); // 현재 화면을 focuse 하고 있다면 true return
+
+    /**
+     * GET /rooms
+     */
+    useEffect(() => {
+        const state = store.getState();
+        const token = state.auth.user.access_token;
+
+        client.get(
+            'rooms', {
+                headers: {
+                    authorization: 'Bearer ' + token
+                }
+            }
+        ).then((response) => {
+            console.log(response.data)
+            setRooms(response.data)
+        }).catch((error) => {
+            console.log(error);
+        });
+        
+    }, [isFocused])
 
     const [rooms, setRooms] = useState([
         {
             room_id: 1,
-            room_name: '프론트 스터디',
+            title: '프론트 스터디',
         },
         {
             room_id: 2,
-            room_name: '즐공',
+            title: '즐공',
         },
         {
             room_id: 3,
-            room_name: '같공',
+            title: '같공',
         },
         {
             room_id: 4,
-            room_name: '열공',
+            title: '열공',
         },
         {
             room_id: 5,
-            room_name: '화이팅',
+            title: '화이팅',
         },
     ])
 
@@ -44,7 +73,7 @@ export default function MainContainer({navigation}) {
                 <View key={i} style={{flex: 1, alignItems: 'center'}}>
                     <View style={{flex: 1}}/>
                     <TouchableOpacity style={styles.room}>
-                        <Text style={styles.button_text}>{rooms[i].room_name}</Text>
+                        <Text style={styles.button_text}>{rooms[i].title}</Text>
                     </TouchableOpacity>
                     <View style={{flex: 1}}/>
                 </View>
@@ -65,7 +94,7 @@ export default function MainContainer({navigation}) {
                     <View key={i} style={{flex: 1, alignItems: 'center'}}>
                         <View style={{flex: 1}}/>
                         <TouchableOpacity style={styles.room}>
-                            <Text style={styles.button_text}>{rooms[i].room_name}</Text>
+                            <Text style={styles.button_text}>{rooms[i].title}</Text>
                         </TouchableOpacity>
                         <View style={{flex: 1}}/>
                     </View>
@@ -80,7 +109,7 @@ export default function MainContainer({navigation}) {
     }
 
     const goToJoinRoomScreen = () => {
-        navigation.navigate('login')
+        navigation.navigate('join')
     }
 
     return (
