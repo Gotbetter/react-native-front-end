@@ -40,31 +40,10 @@ export default function MainContainer({navigation}) {
         }).catch((error) => {
             console.log(error);
         });
-
+        
     }, [isFocused])
 
-    const [rooms, setRooms] = useState([
-        {
-            room_id: 1,
-            title: '프론트 스터디',
-        },
-        {
-            room_id: 2,
-            title: '즐공',
-        },
-        {
-            room_id: 3,
-            title: '같공',
-        },
-        {
-            room_id: 4,
-            title: '열공',
-        },
-        {
-            room_id: 5,
-            title: '화이팅',
-        },
-    ])
+    const [rooms, setRooms] = useState([]);
 
     const room_list_top = [];
     for (let i = 0; i < 4; i++) {
@@ -108,8 +87,12 @@ export default function MainContainer({navigation}) {
         }
     }
 
+    const goToRoomFormScreen = () => {
+        navigation.navigate('room-create-title-form');
+    }
+
     const goToJoinRoomScreen = () => {
-        navigation.navigate('join')
+        navigation.navigate('join');
     }
 
     return (
@@ -126,7 +109,7 @@ export default function MainContainer({navigation}) {
 
             <View style={styles.button_container}>
                 <View style={{flex: 0.5}}/>
-                <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('room-create-title-form')}>
+                <TouchableOpacity style={styles.button} onPress={goToRoomFormScreen}>
                     <Text style={styles.button_text}>방 만들기</Text>
                 </TouchableOpacity>
                 <View style={{flex: 1}}/>
@@ -197,8 +180,8 @@ const styles = StyleSheet.create({
     },
     room: {
         flex: 8,
-        backgroundColor: '#FFFFFF',
-        width: '90%',
+        backgroundColor: '#FFFFFF', 
+        width: '90%', 
         borderRadius: 20,
         borderWidth: 5,
         borderColor: '#BFBFBF',
