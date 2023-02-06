@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
     Keyboard,
     TouchableWithoutFeedback,
-    StyleSheet,
+    StyleSheet, Button,
 } from "react-native";
 
 import { store } from "../module/store";
@@ -16,11 +16,15 @@ import { useIsFocused } from '@react-navigation/native';
 import client from "../lib/client";
 
 import {useState, useEffect} from 'react';
+import Logo from "../components/common/Logo";
+import {useDispatch} from "react-redux";
+import {logout} from "../module/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MainContainer({navigation}) {
 
     const isFocused = useIsFocused(); // 현재 화면을 focuse 하고 있다면 true return
-
+    const dispatch = useDispatch();
     /**
      * GET /rooms
      */
@@ -40,7 +44,7 @@ export default function MainContainer({navigation}) {
         }).catch((error) => {
             console.log(error);
         });
-        
+
     }, [isFocused])
 
     const [rooms, setRooms] = useState([]);
@@ -87,6 +91,12 @@ export default function MainContainer({navigation}) {
         }
     }
 
+    const onPressLogout = () => {
+        dispatch(logout());
+        AsyncStorage.clear();
+        navigation.navigate('login');
+    }
+
     const goToRoomFormScreen = () => {
         navigation.navigate('room-create-title-form');
     }
@@ -101,8 +111,10 @@ export default function MainContainer({navigation}) {
             <View style={{flex: 4}}>
                 <View style={{flex: 1}}/>
                 <View style={{flex: 2}}>
-                    <Image source={require('../../assets/images/logo.png')} resizeMode='contain'
-                           style={styles.logo_image}/>
+                    {/*<Image source={require('../../assets/images/logo.png')} resizeMode='contain'*/}
+                    {/*       style={styles.logo_image}/>*/}
+                    <Logo/>
+                    <Button title={'로그아웃'} onPress={onPressLogout}/>
                 </View>
                 <View style={{flex: 1}}/>
             </View>
@@ -180,8 +192,8 @@ const styles = StyleSheet.create({
     },
     room: {
         flex: 8,
-        backgroundColor: '#FFFFFF', 
-        width: '90%', 
+        backgroundColor: '#FFFFFF',
+        width: '90%',
         borderRadius: 20,
         borderWidth: 5,
         borderColor: '#BFBFBF',
