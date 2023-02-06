@@ -78,6 +78,11 @@ function LoginScreen({navigation}) {
             Toast.show('모든 정보를 입력하세요', {duration: Toast.durations.LONG});
         } else {
             dispatch(login(request));
+            const resetRequest = {
+                auth_id: '',
+                password: '',
+            };
+            setRequest(resetRequest);
         }
     }
 
