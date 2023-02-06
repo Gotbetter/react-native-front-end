@@ -58,7 +58,7 @@ export const login = createAsyncThunk(
          */
         try {
             const response = await api.login(args);
-            return response.data;
+            return response;
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -90,31 +90,40 @@ const auth = createSlice(
             builder
                 // register
                 .addCase(register.fulfilled, (state, action) => {
-                    state.status.REGISTER = 201;
+                    const {status} = action.payload;
+                    state.status.REGISTER = status;
                 })
                 .addCase(register.rejected, (state, action) => {
-                    state.status.REGISTER = 400;
-                    state.error = action.error;
+                    const {message} = action.payload;
+                    const {status} = action.payload.response;
+                    state.status.REGISTER = status;
+                    state.error = message;
                 })
                 // checkDuplicate
-                .addCase(checkDuplicate.fulfilled, (state,action) => {
-                    state.status.DUPLICATE_CHECKED = 200;
+                .addCase(checkDuplicate.fulfilled, (state, action) => {
+                    const {status} = action.payload;
+                    state.status.DUPLICATE_CHECKED = status;
                 })
                 .addCase(checkDuplicate.rejected, (state, action) => {
                     /**
                      *  rejected 되는 경우는 아이디 중복되는 경우 하나
                      *  아이디 입력 안했을시 발생하는 400은 클라이언트에서 차단
                      */
-                    state.status.DUPLICATE_CHECKED = 409;
-                    state.error = action.error;
+                    const {message} = action.payload;
+                    const {status} = action.payload.response;
+                    state.status.DUPLICATE_CHECKED = status;
+                    state.error = message;
                 })
                 .addCase(login.fulfilled, (state, action) => {
-                    state.user = action.payload;
-                    state.status.LOGIN = 200;
+                    const {data, status} = action.payload;
+                    state.user = data;
+                    state.status.LOGIN = status;
                 })
                 .addCase(login.rejected, (state, action) => {
-                    state.status.LOGIN = 404;
-                    state.error = action.error;
+                    const {message} = action.payload;
+                    const {status} = action.payload.response;
+                    state.status.LOGIN = status;
+                    state.error = message;
                 });
         },
     }
