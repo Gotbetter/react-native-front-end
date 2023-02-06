@@ -24,14 +24,6 @@ function RoomRulesFormContainer({navigation}) {
     const [selectedRuleContents, setSelectedRuleContents] = useState("");
     const [show, setShow] = useState(false);
 
-    const deviceWidth = Dimensions.get("window").width;
-    const deviceHeight =
-        Platform.OS === "ios"
-            ? Dimensions.get("window").height
-            : require("react-native-extra-dimensions-android").get(
-                "REAL_WINDOW_HEIGHT"
-            );
-
     useEffect(() => {
         dispatch(fetchRules(user.access_token));
     }, [dispatch, user.access_token]);
@@ -111,15 +103,13 @@ function RoomRulesFormContainer({navigation}) {
             </View>
             {show && (
                 <Modal isVisible={true}
-                       deviceWidth={deviceWidth}
-                       deviceHeight={deviceHeight}
                         transparent>
                     <View style={styles.modal_container}>
                         <View style={styles.modal_subinfo}>
                             <Text>스터디방 이름: {request.title}</Text>
                             <Text>스터디방 인원: {request.max_user_num}</Text>
-                            <Text>스터디
-                                일정: {request.start_date.toLocaleDateString()} ~ {request.target_date.toLocaleDateString()}</Text>
+                            <Text>스터디 시작일: {request.start_date.toLocaleDateString()}</Text>
+                            <Text>스터디 기간: {request.week}주</Text>
                             <Text>스터디방 참가비: {request.entry_fee}</Text>
                             <Text>스터디방 규칙: {selectedRuleContents}</Text>
                         </View>
