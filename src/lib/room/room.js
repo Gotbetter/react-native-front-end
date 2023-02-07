@@ -35,18 +35,20 @@ export const fetchRules = (accessToken) =>
 export const createRoom = ({accessToken, request}) => {
 
     console.log('createRoom' + request);
-    const {title, max_user_num, start_date, target_date, entry_fee, rule_id, account} = request;
-    console.log(title, max_user_num, start_date, target_date);
+    const {title, max_user_num, start_date, week,current_week, entry_fee, rule_id, account} = request;
+    console.log(title, max_user_num, start_date);
     return client.post(
         `/rooms`,
         {
             title,
             max_user_num,
             start_date,
-            target_date,
+            "target_date": "2023-02-16T04:10:36.000Z",
+            week,
+            current_week,
             entry_fee,
             rule_id,
-            account: "신한은행 110-203-2132",
+            account
         },
         {
             headers: {
