@@ -12,6 +12,8 @@ import RoomScheduleFormScreen from "./src/screens/room/form/RoomScheduleFormScre
 import RoomEntryFeeFormScreen from "./src/screens/room/form/RoomEntryFeeFormScreen";
 import RoomRulesFormScreen from "./src/screens/room/form/RoomRulesFormScreen";
 import JoinRoomScreen from './src/screens/room/join/JoinRoomScreen';
+import HomeScreen from './src/screens/HomeScreen';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +34,7 @@ export default function App() {
                         <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>
                         <Stack.Screen name='room-create-rules-form' component={RoomRulesFormScreen}/>
                         <Stack.Screen name='join' component={JoinRoomScreen}/>
+                        <Stack.Screen name='home' component={HomeScreen}/>
                     </Stack.Navigator>
                 </NavigationContainer>
 
