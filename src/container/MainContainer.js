@@ -53,9 +53,9 @@ export default function MainContainer({navigation}) {
     for (let i = 0; i < 4; i++) {
         if(rooms[i] !== undefined) {
             room_list_top.push(
-                <View key={i} style={{flex: 1, alignItems: 'center'}}>
+                <View key={rooms[i].room_id} style={{flex: 1, alignItems: 'center'}}>
                     <View style={{flex: 1}}/>
-                    <TouchableOpacity style={styles.room}>
+                    <TouchableOpacity style={styles.room} onPress={() => navigation.navigate('home', {room_id: rooms[i].room_id})}>
                         <Text style={styles.button_text}>{rooms[i].title}</Text>
                     </TouchableOpacity>
                     <View style={{flex: 1}}/>
@@ -76,7 +76,7 @@ export default function MainContainer({navigation}) {
                 room_list_bottom.push(
                     <View key={i} style={{flex: 1, alignItems: 'center'}}>
                         <View style={{flex: 1}}/>
-                        <TouchableOpacity style={styles.room}>
+                        <TouchableOpacity style={styles.room} onPress={navigation.navigate('main')}>
                             <Text style={styles.button_text}>{rooms[i].title}</Text>
                         </TouchableOpacity>
                         <View style={{flex: 1}}/>

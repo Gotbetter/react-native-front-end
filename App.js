@@ -12,6 +12,9 @@ import RoomScheduleFormScreen from "./src/screens/room/form/RoomScheduleFormScre
 import RoomEntryFeeFormScreen from "./src/screens/room/form/RoomEntryFeeFormScreen";
 import RoomRulesFormScreen from "./src/screens/room/form/RoomRulesFormScreen";
 import JoinRoomScreen from './src/screens/room/join/JoinRoomScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import MyPlanScreen from './src/screens/MyPlanScreen';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +26,7 @@ export default function App() {
         <Provider store={store}>
             <RootSiblingParent>
                 <NavigationContainer>
-                    <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
+                    <Stack.Navigator initialRouteName='my-plan' screenOptions={{headerShown: false}}>
                         <Stack.Screen name='login' component={LoginScreen}/>
                         <Stack.Screen name='register' component={RegisterScreen}/>
                         <Stack.Screen name='main' component={MainScreen}/>
@@ -32,6 +35,8 @@ export default function App() {
                         <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>
                         <Stack.Screen name='room-create-rules-form' component={RoomRulesFormScreen}/>
                         <Stack.Screen name='join' component={JoinRoomScreen}/>
+                        <Stack.Screen name='home' component={HomeScreen}/>
+                        <Stack.Screen name='my-plan' component={MyPlanScreen}/>
                     </Stack.Navigator>
                 </NavigationContainer>
 
