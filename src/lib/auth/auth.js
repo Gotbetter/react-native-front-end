@@ -4,7 +4,7 @@ import client from "../client";
 export const register = (credentials) => {
     const {auth_id, password, username, email} = credentials;
     client.post(
-        `/users/join`,
+        `/users`,
         {
             "auth_id": auth_id,
             password,
@@ -15,7 +15,7 @@ export const register = (credentials) => {
 };
 export const checkDuplicate = (auth_id) =>{
     return client.post(
-        `/users/join/verify`,
+        `/users/verify`,
         {
             "auth_id": auth_id,
         },

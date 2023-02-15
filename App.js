@@ -26,7 +26,7 @@ export default function App() {
         <Provider store={store}>
             <RootSiblingParent>
                 <NavigationContainer>
-                    <Stack.Navigator initialRouteName='my-plan' screenOptions={{headerShown: false}}>
+                    <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
                         <Stack.Screen name='login' component={LoginScreen}/>
                         <Stack.Screen name='register' component={RegisterScreen}/>
                         <Stack.Screen name='main' component={MainScreen}/>
