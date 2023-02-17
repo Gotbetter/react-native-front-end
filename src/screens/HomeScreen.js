@@ -1,70 +1,108 @@
 import {
-    Keyboard, 
-    StyleSheet, 
-    Text, 
-    TouchableWithoutFeedback, 
+    Keyboard,
+    StyleSheet,
+    Text,
+    TouchableWithoutFeedback,
     View,
-    TouchableOpacity,
+    TouchableOpacity, Modal, Button,
 } from "react-native";
-import {useEffect} from "react";
-import {useSelector} from "react-redux";
+import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import Logo from "../components/common/Logo";
+import {useRoute} from "@react-navigation/native";
+import {fetchParticipants, fetchRoom} from "../module/room";
+import {fetchUser} from "../module/auth";
+import client from "../lib/client";
+import Toast from "react-native-root-toast";
 
-function HomeScreen({route}) {
+function HomeScreen({navigation}) {
 
-    // const {user, status} = useSelector(({auth}) => ({
-    //     user: auth.user,
-    //     status: auth.status.LOGIN,
-    // }));
+    const {params: {room_id}} = useRoute();
+    const dispatch = useDispatch();
 
-    /**
-     * Props (to GET current room_id)
-     * const room_id = route.params.room_id;
-     */
-    const room_id = 3;
+    const user = useSelector(({auth}) => auth.user);
 
-    /** 
-     * Dummy Data (GET rooms)
-     * 1. 방 조회
-    */
-    const rooms = [
-        {room_id: 1, title: '프론트 스터디'},
-        {room_id: 2, title: '즐공'},
-        {room_id: 3, title: '같공'},
-        {room_id: 4, title: '열공'},
-        {room_id: 5, title: '화이팅'},
-    ];
-    const my_room_list = [];
-    for (let i = 0; i < 5; i++) {
-        if(rooms[i] !== undefined) {
-            if(rooms[i].room_id === room_id) { // current room
-                my_room_list.push(
-                    <View key={rooms[i].room_id} style={{flex: 1, alignItems: 'center'}}>
-                        <View style={{flex: 1}}/>
-                        <TouchableOpacity style={styles.current_room} onPress={() => navigation.navigate('home', {room_id: rooms[i].room_id})}>
-                            <Text style={styles.current_button_text}>{rooms[i].title}</Text>
-                        </TouchableOpacity>
-                        <View style={{flex: 1}}/>
-                    </View>
-                );
-            } else { // current room X
-                my_room_list.push(
-                    <View key={rooms[i].room_id} style={{flex: 1, alignItems: 'center'}}>
-                        <View style={{flex: 1}}/>
-                        <TouchableOpacity style={styles.room} onPress={() => navigation.navigate('home', {room_id: rooms[i].room_id})}>
-                            <Text style={styles.button_text}>{rooms[i].title}</Text>
-                        </TouchableOpacity>
-                        <View style={{flex: 1}}/>
-                    </View>
-                );
-            }
+    const {room, rooms} = useSelector(({room}) => ({
+        room: room.room,
+        rooms: room.rooms,
+    }));
+
+    const {participants, fetchParticipantsStatus} = useSelector(({room}) => ({
+        participants: room.participants,
+        fetchParticipantsStatus: room.status
+    }));
+
+    const [authority, setAuthority] = useState(false);
+    const [waitingParticipants, setWaitingParticipants] = useState([]);
+    const [approvalModal, setApprovalModal] = useState(false);
+
+
+    useEffect(() => {
+
+        /** 로그인한 유저 정보 불러오기 **/
+        dispatch(fetchUser());
+
+        /** 현재 방 정보 불러오기 **/
+        dispatch(fetchRoom({room_id}));
+
+        /** 현재 방 참가자 정보 불러오기 **/
+        dispatch(fetchParticipants({room_id, accepted: true}));
+    }, [dispatch, room_id]);
+
+
+    useEffect(() => {
+        /** 방장인지 체크 **/
+        if (user != null && participants != null) {
+            participants.map((participants) => {
+                if (participants.auth_id === user.auth_id) {
+                    setAuthority(participants.authority);
+                }
+            });
         }
-        else {
-            my_room_list.push(
-                <View key={10000 + i} style={{flex: 1}}/>
-            );
-        }
+    }, [user, participants]);
+
+
+    const onPressApproveParticipate = () => {
+        setApprovalModal(true);
+
+        /** 참여 대기중인 인원 불러오기 **/
+        client.get(`/participants/${room_id}`,
+            {
+                params: {
+                    accepted: false
+                },
+            })
+            .then(({data}) => {
+                setWaitingParticipants(data);
+            })
+            .catch(({config, message, response: {status}}) => {
+                console.log(config);
+                console.log(message, status)
+            });
+    };
+
+    const onPressApproval = (user_id) => {
+
+        /** 참가 승인 **/
+        client.patch(`/participants`,
+            {
+                user_id,
+                room_id,
+            })
+            .then(({data}) => {
+                console.log('승인 성공');
+            })
+            .catch(({message, config, response: {status}}) => {
+                console.log(config);
+                console.log(message, status)
+                if (status === 403) {
+                    Toast.show("forbidden",{duration: Toast.durations.SHORT})
+                } else if (status === 404) {
+                    Toast.show("해당 사용자 못찾음", {duration: Toast.durations.SHORT})
+                }
+            });
     }
+
 
     /**
      * Dummy Data (GET Plan and Detail Plan)
@@ -72,35 +110,28 @@ function HomeScreen({route}) {
      * 2. 상세 계획 조회
      */
     const detail_plans = [
-        {detail_plan_id: 1, content: 'UI/UX 디자인 방법들 연구', complete: false, plan_id: 1}, 
-        {detail_plan_id: 2, content: '스터디 웹 서비스 UI/UX 디자인', complete: false, plan_id: 1}, 
-        {detail_plan_id: 3, content: '새로운 개념의 SNS UI/UX 디자인', complete: false, plan_id: 1}, 
+        {detail_plan_id: 1, content: 'UI/UX 디자인 방법들 연구', complete: false, plan_id: 1},
+        {detail_plan_id: 2, content: '스터디 웹 서비스 UI/UX 디자인', complete: false, plan_id: 1},
+        {detail_plan_id: 3, content: '새로운 개념의 SNS UI/UX 디자인', complete: false, plan_id: 1},
     ];
     const detail_plan_list = [];
-    for(let i = 0; i < detail_plans.length; i++) {
+    for (let i = 0; i < detail_plans.length; i++) {
         detail_plan_list.push(
-            <View style={{flex: 1, key: detail_plans[i].detail_plan_id, justifyContent: 'center', marginLeft: '10%', marginRight: '10%', }}>
+            <View style={{
+                flex: 1,
+                key: detail_plans[i].detail_plan_id,
+                justifyContent: 'center',
+                marginLeft: '10%',
+                marginRight: '10%',
+            }}>
                 <Text style={styles.detail_plan_text}>{detail_plans[i].content}</Text>
             </View>
         );
     }
 
-    /**
-     * Dummy Data (GET Participant)
-     * 1. 방 조회
-     * 2. 방 참여자 조회
-     */
-    const participants = [
-        {participant_id: 1, user_id: 1, auth_id: 1, username: '준호', email: 'junho@gmail.com', profile: 'junho'},
-        {participant_id: 2, user_id: 2, auth_id: 2, username: '진혁', email: 'jinhyeok@gmail.com', profile: 'jinhyeok'},
-        {participant_id: 3, user_id: 3, auth_id: 3, username: '선형', email: 'sunhyeong@gmail.com', profile: 'sunhyeong'},
-        {participant_id: 4, user_id: 4, auth_id: 4, username: '도연', email: 'doyeon@gmail.com', profile: 'doyeon'},
-        {participant_id: 5, user_id: 5, auth_id: 5, username: '가현', email: 'gahyun@gmail.com', profile: 'gahyun'},
-        {participant_id: 6, user_id: 6, auth_id: 6, username: '채리', email: 'chaeri@gmail.com', profile: 'chaeri'},
-    ];
-    const participant_list_top = [];
+    /*const participant_list_top = [];
     for (let i = 0; i < 2; i++) {
-        if(participants[i] !== undefined) {
+        if (participants[i] !== undefined) {
             participant_list_top.push(
                 <View key={participants[i].participant_id} style={{flex: 1, alignItems: 'center'}}>
                     <View style={{flex: 1}}/>
@@ -110,16 +141,15 @@ function HomeScreen({route}) {
                     <View style={{flex: 1}}/>
                 </View>
             )
-        }
-        else {
+        } else {
             participant_list_top.push(
                 <View key={10000 + i} style={{flex: 1}}/>
             );
         }
-    }
-    const participant_list_middle = [];
+    }*/
+    /*const participant_list_middle = [];
     for (let i = 2; i < 4; i++) {
-        if(participants[i] !== undefined) {
+        if (participants[i] !== undefined) {
             participant_list_middle.push(
                 <View key={participants[i].participant_id} style={{flex: 1, alignItems: 'center'}}>
                     <View style={{flex: 1}}/>
@@ -129,8 +159,7 @@ function HomeScreen({route}) {
                     <View style={{flex: 1}}/>
                 </View>
             )
-        }
-        else {
+        } else {
             participant_list_middle.push(
                 <View key={10000 + i} style={{flex: 1}}/>
             );
@@ -138,7 +167,7 @@ function HomeScreen({route}) {
     }
     const participant_list_bottom = [];
     for (let i = 4; i < 6; i++) {
-        if(participants[i] !== undefined) {
+        if (participants[i] !== undefined) {
             participant_list_bottom.push(
                 <View key={participants[i].participant_id} style={{flex: 1, alignItems: 'center'}}>
                     <View style={{flex: 1}}/>
@@ -148,37 +177,73 @@ function HomeScreen({route}) {
                     <View style={{flex: 1}}/>
                 </View>
             )
-        }
-        else {
+        } else {
             participant_list_bottom.push(
                 <View key={10000 + i} style={{flex: 1}}/>
             );
         }
-    }
-    
+    }*/
+
 
     return (
         <View style={styles.container}>
             <View style={{flex: 1}}/>
-            
+
             <View style={{flex: 1}}>
                 <Logo/>
             </View>
 
             <View style={{flex: 0.1}}/>
             <View style={styles.myRoomContainer}>
-                {my_room_list}
+                {rooms &&
+                    rooms.map((room) => (
+                        <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
+                            <View style={{flex: 1}}/>
+                            <TouchableOpacity
+                                style={room.room_id === room_id ? styles.current_room : styles.room}
+                                onPress={() => navigation.navigate('home', {room_id: room.room_id})}>
+                                <Text
+                                    style={room.room_id === room_id ? styles.current_button_text : styles.button_text}>
+                                    {room.title}
+                                </Text>
+                            </TouchableOpacity>
+                            <View style={{flex: 1}}/>
+                        </View>
+                    ))
+                }
             </View>
             <View style={{flex: 0.1}}/>
 
             <View style={{flex: 0.1}}/>
             <View style={styles.topBar}>
-                <View style={{flex: 1.5, backgroundColor: '#EDEDED', borderTopLeftRadius: 20, borderTopRightRadius: 20, flexDirection: 'row'}}>
-                    
-                    <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text style={styles.main_text}>랭킹</Text></View>
-                    <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text style={styles.main_text}>룰</Text></View>
-                    <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text style={styles.main_text}>일정</Text></View>
-                    <View style={{flex: 4, alignItems: 'center', justifyContent: 'center'}}><Text style={styles.main_text}>환급 비용 계산</Text></View>
+                <View style={{
+                    flex: 1.5,
+                    backgroundColor: '#EDEDED',
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    flexDirection: 'row'
+                }}>
+
+                    <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text
+                        style={styles.main_text}>랭킹</Text>
+                    </View>
+                    <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text
+                        style={styles.main_text}>룰</Text>
+                    </View>
+                    <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}>
+                        {
+                            authority &&
+                            (
+                                <Text style={styles.main_text} onPress={() => onPressApproveParticipate()}>
+                                    참가 승인
+                                </Text>
+
+                            )
+                        }
+                    </View>
+                    <View style={{flex: 4, alignItems: 'center', justifyContent: 'center'}}><Text
+                        style={styles.main_text}>환급 비용 계산</Text>
+                    </View>
 
                 </View>
                 <View style={{flex: 1, flexDirection: 'row',}}>
@@ -195,13 +260,27 @@ function HomeScreen({route}) {
 
             <View style={{flex: 0.25}}/>
             <View style={{flex: 4.75, width: '95%', alignSelf: 'center', flexDirection: 'row'}}>
-                
+
                 {/* 나의 이번주 계획 */}
                 <View style={{flex: 1, backgroundColor: 'tomato', borderRadius: 20}}>
-                    <View style={{flex: 1.5, backgroundColor: '#BFBFBF', borderTopLeftRadius: 20, borderTopRightRadius: 20, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{
+                        flex: 1.5,
+                        backgroundColor: '#BFBFBF',
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
                         <Text style={{fontSize: 15}}>나의 이번주 계획</Text>
                     </View>
-                    <View style={{flex: 8.5, backgroundColor: '#EDEDED', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{
+                        flex: 8.5,
+                        backgroundColor: '#EDEDED',
+                        borderBottomLeftRadius: 20,
+                        borderBottomRightRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
                         {detail_plan_list}
                     </View>
                 </View>
@@ -210,29 +289,106 @@ function HomeScreen({route}) {
 
                 {/* 친구들과 나의 계획 */}
                 <View style={{flex: 1, backgroundColor: 'tomato', borderRadius: 20}}>
-                    <View style={{flex: 1.5, backgroundColor: '#BFBFBF', borderTopLeftRadius: 20, borderTopRightRadius: 20, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{
+                        flex: 1.5,
+                        backgroundColor: '#BFBFBF',
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
                         <Text style={{fontSize: 15}}>친구들과 나의 계획</Text>
                     </View>
-                    <View style={{flex: 8.5, backgroundColor: '#EDEDED', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{
+                        flex: 8.5,
+                        backgroundColor: '#EDEDED',
+                        borderBottomLeftRadius: 20,
+                        borderBottomRightRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
                         <View style={{flex: 0.1}}/>
                         <View style={{flex: 1, flexDirection: 'row'}}>
-                            {participant_list_top}
+                            {participants && (
+                                participants.map((participant, i) => (
+                                    <View key={participant.participant_id} style={{flex: 1, alignItems: 'center'}}>
+                                        <View style={{flex: 1}}/>
+                                        <TouchableOpacity style={styles.user}>
+                                            <Text style={styles.button_text}>{participant.username}</Text>
+                                        </TouchableOpacity>
+                                        <View style={{flex: 1}}/>
+                                    </View>
+                                ))
+                            )}
                         </View>
                         <View style={{flex: 0.1}}/>
                         <View style={{flex: 1, flexDirection: 'row'}}>
-                            {participant_list_middle}
+                            {/*{participant_list_middle}*/}
                         </View>
                         <View style={{flex: 0.1}}/>
                         <View style={{flex: 1, flexDirection: 'row'}}>
-                            {participant_list_bottom}
+                            {/*{participant_list_bottom}*/}
                         </View>
                         <View style={{flex: 0.1}}/>
                     </View>
                 </View>
             </View>
             <View style={{flex: 0.5}}/>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={approvalModal}
+                onRequestClose={() => {
+                    setApprovalModal(!approvalModal);
+                }}>
+                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                    <View style={{
+                        backgroundColor: '#EDEDED',
+                        width: '90%',
+                        height: '30%',
+                        borderRadius: 30,
+                        borderWidth: 5,
+                        borderColor: '#DBDBDB'
+                    }}>
+                        <View style={{
+                            flex: 4,
+                            backgroundColor: 'white',
+                            borderTopLeftRadius: 30,
+                            borderTopRightRadius: 30,
+                            justifyContent: 'center',
+                        }}>
+                            <Text style={styles.modal_text}>
+                                대기자
+                            </Text>
+                            {waitingParticipants && (
+                                waitingParticipants.map((participants) => (
+                                    <View style={{flexDirection: "row"}}>
+                                        <Text style={styles.modal_text}>
+                                            {participants.username}
+                                        </Text>
+                                        <Button title={'승인'} onPress={() => onPressApproval(participants.user_id)}/>
+                                    </View>
+
+                                ))
+                            )}
+                        </View>
+                        <TouchableOpacity onPress={() => setApprovalModal(false)}
+                                          style={{flex: 1, alignItems: 'center'}}>
+                            <Text style={styles.modal_text}>
+                                닫기
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
+
+}
+
+
+const Participants = () => {
 
 }
 
@@ -249,7 +405,7 @@ const styles = StyleSheet.create({
         width: '95%',
         flexDirection: 'row',
         alignSelf: 'center',
-    }, 
+    },
     topBar: {
         // flex: 1.5 - 0.1 - 0.1
         flex: 1.3,
@@ -304,6 +460,11 @@ const styles = StyleSheet.create({
         borderWidth: 5,
         borderColor: '#BFBFBF',
         justifyContent: 'center',
+    },
+    modal_text: {
+        color: '#000000',
+        textAlign: 'center',
+        fontSize: 30,
     },
 });
 
