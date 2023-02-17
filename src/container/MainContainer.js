@@ -9,87 +9,38 @@ import {
     StyleSheet, Button,
 } from "react-native";
 
-import { store } from "../module/store";
+import {store} from "../module/store";
 
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 import client from "../lib/client";
 
 import {useState, useEffect} from 'react';
 import Logo from "../components/common/Logo";
-import {useDispatch} from "react-redux";
-import {logout} from "../module/auth";
+import {useDispatch, useSelector} from "react-redux";
+import {logout, refresh} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useFetchRoom} from "../hooks/room/room";
+import {useLocalStorage} from "../hooks/auth";
 
 export default function MainContainer({navigation}) {
 
-    const isFocused = useIsFocused(); // 현재 화면을 focuse 하고 있다면 true return
+    // 현재 화면을 focuse 하고 있다면 true return
     const dispatch = useDispatch();
-    /**
-     * GET /rooms
-     */
+    const [rooms, isFetchRoom] = useFetchRoom();
+
+    const {user, isLogin} = useSelector(({auth}) => ({
+        user: auth.user,
+        isLogin: auth.status.LOGIN,
+    }));
+
+
     useEffect(() => {
-        const state = store.getState();
-        const token = state.auth.user.access_token;
-
-        client.get(
-            'rooms', {
-                headers: {
-                    authorization: 'Bearer ' + token
-                }
-            }
-        ).then((response) => {
-            console.log(response.data)
-            setRooms(response.data)
-        }).catch((error) => {
-            console.log(error);
-        });
-
-    }, [isFocused])
-
-    const [rooms, setRooms] = useState([]);
-
-    const room_list_top = [];
-    for (let i = 0; i < 4; i++) {
-        if(rooms[i] !== undefined) {
-            room_list_top.push(
-                <View key={rooms[i].room_id} style={{flex: 1, alignItems: 'center'}}>
-                    <View style={{flex: 1}}/>
-                    <TouchableOpacity style={styles.room} onPress={() => navigation.navigate('home', {room_id: rooms[i].room_id})}>
-                        <Text style={styles.button_text}>{rooms[i].title}</Text>
-                    </TouchableOpacity>
-                    <View style={{flex: 1}}/>
-                </View>
-            )
+        if (isLogin === 401) {
+            dispatch(logout());
         }
-        else {
-            room_list_top.push(
-                <View key={i} style={{flex: 1}}/>
-            );
-        }
-    }
+    }, [isLogin]);
 
-    const room_list_bottom = [];
-    if (rooms.length > 4) {
-        for (let i = 4; i < 8; i++) {
-            if(rooms[i] !== undefined) {
-                room_list_bottom.push(
-                    <View key={i} style={{flex: 1, alignItems: 'center'}}>
-                        <View style={{flex: 1}}/>
-                        <TouchableOpacity style={styles.room} onPress={navigation.navigate('main')}>
-                            <Text style={styles.button_text}>{rooms[i].title}</Text>
-                        </TouchableOpacity>
-                        <View style={{flex: 1}}/>
-                    </View>
-                )
-            }
-            else {
-                room_list_bottom.push(
-                    <View key={i} style={{flex: 1}}/>
-                );
-            }
-        }
-    }
 
     const onPressLogout = () => {
         dispatch(logout());
@@ -111,8 +62,6 @@ export default function MainContainer({navigation}) {
             <View style={{flex: 4}}>
                 <View style={{flex: 1}}/>
                 <View style={{flex: 2}}>
-                    {/*<Image source={require('../../assets/images/logo.png')} resizeMode='contain'*/}
-                    {/*       style={styles.logo_image}/>*/}
                     <Logo/>
                     <Button title={'로그아웃'} onPress={onPressLogout}/>
                 </View>
@@ -131,15 +80,27 @@ export default function MainContainer({navigation}) {
                 <View style={{flex: 0.5}}/>
             </View>
 
+            {isFetchRoom && (
+                <Text>로딩중...</Text>
+            )}
+
             <View style={{flex: 3, alignItems: 'center'}}>
                 <View style={{flex: 1}}/>
                 <View style={styles.rooms_container}>
                     <View style={{flex: 0.5}}/>
                     <View style={{flex: 4.5, flexDirection: 'row',}}>
-                        {room_list_top}
-                    </View>
-                    <View style={{flex: 4.5, flexDirection: 'row',}}>
-                        {room_list_bottom}
+                        {rooms && (
+                            rooms.map((room, index) => (
+                                <View key={rooms[index].room_id} style={{flex: 1, alignItems: 'center'}}>
+                                    <View style={{flex: 1}}/>
+                                    <TouchableOpacity style={styles.room}
+                                                      onPress={() => navigation.navigate('home', {room_id: rooms[index].room_id})}>
+                                        <Text style={styles.button_text}>{rooms[index].title}</Text>
+                                    </TouchableOpacity>
+                                    <View style={{flex: 1}}/>
+                                </View>
+                            ))
+                        )}
                     </View>
                     <View style={{flex: 0.5}}/>
                 </View>
