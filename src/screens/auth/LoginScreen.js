@@ -16,9 +16,9 @@ import Toast from "react-native-root-toast";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login, refresh, setUser} from "../module/auth";
+import {login, refresh, setUser} from "../../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useLocalStorage} from "../hooks/auth";
+import {useLocalStorage} from "../../hooks/auth";
 
 
 function LoginScreen({navigation}) {
@@ -89,7 +89,7 @@ function LoginScreen({navigation}) {
                 <View style={{flex: 3}}>
                     <View style={{flex: 1}}/>
                     <View style={{flex: 2}}>
-                        <Image source={require('../../assets/images/logo.png')} resizeMode='contain'
+                        <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
                                style={styles.logo_image}/>
                     </View>
                 </View>

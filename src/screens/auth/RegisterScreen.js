@@ -13,7 +13,7 @@ import {
     useState,
     useEffect,
 } from "react";
-import {checkDuplicate, register, resetDuplicate, resetRegister} from "../module/auth";
+import {checkDuplicate, register, resetDuplicate, resetRegister} from "../../module/auth";
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";
 
@@ -128,7 +128,7 @@ function RegisterScreen({navigation}) {
                 <View style={{flex: 3}}>
                     <View style={{flex: 1}}/>
                     <View style={{flex: 1}}>
-                        <Image source={require('../../assets/images/logo.png')} resizeMode='contain'
+                        <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
                                style={styles.logo_image}/>
                     </View>
                     <View style={{flex: 1, justifyContent: 'center'}}>
