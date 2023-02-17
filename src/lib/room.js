@@ -17,7 +17,6 @@ export const fetchRules = () =>
 
 export const createRoom = (request) => {
 
-    console.log('createRoom' + request);
     const {title, max_user_num, start_date, week, current_week, entry_fee, rule_id, account} = request;
     return client.post(
         `/rooms`,
