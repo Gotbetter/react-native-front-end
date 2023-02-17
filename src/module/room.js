@@ -1,6 +1,8 @@
 import * as api from "../lib/room";
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {request} from "axios";
+import {createSlice} from "@reduxjs/toolkit";
+
+import {createThunk} from "./utils";
+
 
 
 const initialState = {
@@ -30,72 +32,12 @@ const initialState = {
 
 };
 
-export const fetchRules = createAsyncThunk(
-    "room/FETCH_RULES",
-    async (accessToken, thunkApi) => {
-        try {
-            const response = await api.fetchRules(accessToken);
-            return response.data;
-        } catch (error) {
-            return thunkApi.rejectWithValue(error);
-        }
-    }
-);
+export const fetchRoom = createThunk("room/FETCH_ROOM", api.fetchRoom);
+export const fetchRooms = createThunk("room/FETCH_ROOMS", api.fetchRooms);
+export const fetchRules = createThunk("room/FETCH_RULES", api.fetchRules);
+export const createRoom = createThunk("room/CREATE_ROOM", api.createRoom);
+export const joinRoom = createThunk("room/JOIN_ROOM", api.joinRoom);
 
-export const fetchRoom = createAsyncThunk(
-    "room/FETCH_ROOM",
-    async (args, thunkApi) => {
-        const {accessToken, room_id, query} = args;
-        try {
-            const response = await api.fetchRoom({accessToken, room_id, query})
-            return response.data;
-        } catch (error) {
-            console.log(error);
-            return thunkApi.rejectWithValue(error);
-        }
-    }
-);
-
-export const fetchRooms = createAsyncThunk(
-    "room/FETCH_ROOMS",
-    async (accessToken, thunkApi) => {
-        try {
-            const response = await api.fetchRooms();
-            console.log(response);
-            return response;
-        } catch (error) {
-            console.log(error);
-            return thunkApi.rejectWithValue(error);
-        }
-    }
-);
-
-export const createRoom = createAsyncThunk(
-    "room/CREATE_ROOM",
-    async (args, thunkApi) => {
-        const {accessToken, request} = args;
-        console.log(accessToken);
-        try {
-            const response = await api.createRoom({accessToken, request});
-            return response;
-        } catch (error) {
-            return thunkApi.rejectWithValue(error);
-        }
-    }
-);
-
-export const joinRoom = createAsyncThunk(
-    "room/JOIN_ROOM",
-    async (args, thunkApi) => {
-        const {accessToken, room_code} = args;
-        try {
-            const response = await api.createRoom({accessToken, room_code});
-            return response.data;
-        } catch (error) {
-            return thunkApi.rejectWithValue(error);
-        }
-    }
-);
 
 const room = createSlice(
     {
@@ -126,59 +68,36 @@ const room = createSlice(
         },
         extraReducers: (builder) => {
             builder
-                // 규칙 조회
                 .addCase(fetchRules.pending, (state, action) => {
                     state.loading.RULES = true
                 })
-                .addCase(fetchRules.fulfilled, (state, action) => {
+                .addCase(fetchRules.fulfilled, (state, {payload: {data}}) => {
                     state.loading.RULES = false;
-                    state.rules = action.payload;
+                    state.rules = data;
                 })
-                .addCase(fetchRules.rejected, (state, action) => {
+                .addCase(fetchRules.rejected, (state, {payload: {message, response:{status}}}) => {
                     state.loading.RULES = false;
-                    state.error = action.error;
+                    state.error = message;
                 })
-                // 방 단일 조회
-                .addCase(fetchRoom.pending, (state, action) => {
-                    state.loading.ROOM = true;
-                })
-                .addCase(fetchRoom.fulfilled, (state, action) => {
-                    state.loading.ROOM = false;
-                    state.room = action.payload;
-                })
-                .addCase(fetchRoom.rejected, (state, action) => {
-                    state.loading.ROOM = false;
-                    state.status.ROOM_FETCH = action.payload.request.status;
-                    state.error = action.error;
-                })
-                // 방 리스트 조회
                 .addCase(fetchRooms.pending, (state, action) => {
                     state.loading.ROOMS = true;
                 })
-                .addCase(fetchRooms.fulfilled, (state, {payload: rooms}) => {
+                .addCase(fetchRooms.fulfilled, (state, {payload: {data}}) => {
                     state.loading.ROOMS = false;
-                    state.rooms = rooms.data;
+                    state.rooms = data;
                 })
-                .addCase(fetchRooms.rejected, (state, action) => {
+                .addCase(fetchRooms.rejected, (state, {payload:{message}}) => {
                     state.loading.ROOMS = false;
-                    state.error = action.error;
+                    state.error = message
                 })
-                // 방 생성
-                .addCase(createRoom.fulfilled, (state, action) => {
-                    state.status.ROOM_CREATE = 201;
-                    state.room = action.payload;
+                .addCase(createRoom.fulfilled, (state, {payload:{status}}) => {
+                    state.status.ROOM_CREATE = status;
                 })
-                .addCase(createRoom.rejected, (state, action) => {
-                    state.status.ROOM_CREATE = action.payload.request.status;
-                    state.error = action.error;
+                .addCase(createRoom.rejected, (state, {payload:message, response:{status}}) => {
+                    state.status.ROOM_CREATE = status
+                    state.error = message;
                 })
-                // 방 참여
-                .addCase(joinRoom.fulfilled, (state, action) => {
 
-                })
-                .addCase(joinRoom.rejected, (state, action) => {
-
-                });
         }
     }
 )
