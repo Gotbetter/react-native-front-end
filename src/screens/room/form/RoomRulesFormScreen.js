@@ -11,8 +11,7 @@ function RoomRulesFormScreen({navigation}) {
     const SCREEN_TITLE = "룰을 선택하세요";
 
     const dispatch = useDispatch();
-    const {user, rules, loading, status, request} = useSelector(({auth, room}) => ({
-        user: auth.user,
+    const {rules, loading, status, request} = useSelector(({room}) => ({
         rules: room.rules,
         loading: room.loading.RULES,
         status: room.status.ROOM_CREATE,
@@ -24,8 +23,8 @@ function RoomRulesFormScreen({navigation}) {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchRules(user.access_token));
-    }, [dispatch, user.access_token]);
+        dispatch(fetchRules());
+    }, [dispatch]);
 
 
     useEffect(() => {
@@ -75,7 +74,7 @@ function RoomRulesFormScreen({navigation}) {
             Toast.show('계좌번호를 입력하세요', {duration: Toast.durations.LONG});
         } else {
             // 방 생성
-            dispatch(createRoom({accessToken: user.access_token, request}))
+            dispatch(createRoom(request))
         }
     }, [dispatch,request]);
 

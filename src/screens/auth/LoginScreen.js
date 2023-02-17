@@ -16,7 +16,7 @@ import Toast from "react-native-root-toast";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login, refresh, setUser} from "../../module/auth";
+import {login, resetLoginStatus, setLogin} from "../../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useLocalStorage} from "../../hooks/auth";
 
@@ -24,12 +24,33 @@ import {useLocalStorage} from "../../hooks/auth";
 function LoginScreen({navigation}) {
 
     const dispatch = useDispatch();
-    const storage = useLocalStorage();
-
-    const {user, status} = useSelector(({auth}) => ({
-        user: auth.user,
+    const {status} = useSelector(({auth}) => ({
         status: auth.status.LOGIN
     }));
+
+    const storage = useLocalStorage();
+
+
+    useEffect(() => {
+
+        /** status === 200일 경우 로그인 상태*/
+        if (status === 200) {
+            navigation.navigate('main');
+        }
+
+        /** 기존에 로그인 했을 경우 로그인 상태로 변경 */
+        if (storage != null) {
+            dispatch(setLogin());
+        }
+
+        /** 아이디 또는 비밀번호 틀렸을시 오류 메세지 출력 */
+        if (status === 404) {
+            Toast.show('아이디 비밀번호를 확인하세요', {duration: Toast.durations.LONG});
+            dispatch(resetLoginStatus());
+        }
+
+
+    }, [storage, status]);
 
     const [request, setRequest] = useState({
         auth_id: '',
@@ -38,15 +59,6 @@ function LoginScreen({navigation}) {
 
     const {auth_id, password} = request;
 
-    useEffect(() => {
-        if (user && status === 200) {
-            const {access_token, refresh_token} = user;
-            AsyncStorage.setItem("access_token", access_token);
-            AsyncStorage.setItem("refresh_token", refresh_token);
-            Toast.show('로그인 성공', {duration: Toast.durations.LONG});
-            navigation.navigate('main');
-        }
-    }, [user, status]);
 
     const onChange = (targetName, e) => {
         const {text} = e.nativeEvent;
@@ -76,10 +88,6 @@ function LoginScreen({navigation}) {
             };
             setRequest(resetRequest);
         }
-    }
-
-    if (storage != null) {
-        navigation.navigate('main');
     }
 
     return (

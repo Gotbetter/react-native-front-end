@@ -29,7 +29,10 @@ export default function App() {
                     <Stack.Navigator initialRouteName='login' screenOptions={{headerShown: false}}>
                         <Stack.Screen name='login' component={LoginScreen}/>
                         <Stack.Screen name='register' component={RegisterScreen}/>
-                        <Stack.Screen name='main' component={MainScreen}/>
+                        <Stack.Screen name='main'
+                                      component={MainScreen}
+                                      options={{gestureEnabled: false}
+                        }/>
                         <Stack.Screen name='room-create-title-form' component={RoomTitleFormScreen}/>
                         <Stack.Screen name='room-create-schedule-form' component={RoomScheduleFormScreen}/>
                         <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>

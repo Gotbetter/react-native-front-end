@@ -1,42 +1,51 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {useFetchRoom} from "../hooks/room";
 import {logout} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {BackHandler, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../components/common/Logo";
+import {useFocusEffect, useRoute} from "@react-navigation/native";
 
 function MainScreen({navigation}) {
-    // 현재 화면을 focuse 하고 있다면 true return
-    const dispatch = useDispatch();
-    const [rooms, isFetchRoom] = useFetchRoom();
 
-    const {user, isLogin} = useSelector(({auth}) => ({
-        user: auth.user,
+    const dispatch = useDispatch();
+
+
+    const curScreen = useRoute();
+
+
+
+    const {isLogin} = useSelector(({auth}) => ({
         isLogin: auth.status.LOGIN,
     }));
 
+    const [rooms, isFetchRoom] = useFetchRoom();
+
+    /** Android 로그인 화면으로 뒤로가기 금지하기 **/
+    useFocusEffect(useCallback(() => {
+        const onBackPress = () => {
+            if (curScreen.name === 'main' && isLogin === true) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [curScreen]));
 
     useEffect(() => {
-        if (isLogin === 401) {
-            dispatch(logout());
+        if (isLogin === null) {
+            navigation.navigate('login');
         }
     }, [isLogin]);
 
-
-    const onPressLogout = () => {
+    const onPressLogout = async () => {
+        await AsyncStorage.clear();
         dispatch(logout());
-        AsyncStorage.clear();
-        navigation.navigate('login');
-    }
+    };
 
-    const goToRoomFormScreen = () => {
-        navigation.navigate('room-create-title-form');
-    }
-
-    const goToJoinRoomScreen = () => {
-        navigation.navigate('join');
-    }
 
     return (
         <View style={styles.container}>
@@ -52,11 +61,11 @@ function MainScreen({navigation}) {
 
             <View style={styles.button_container}>
                 <View style={{flex: 0.5}}/>
-                <TouchableOpacity style={styles.button} onPress={goToRoomFormScreen}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('room-create-title-form')}>
                     <Text style={styles.button_text}>방 만들기</Text>
                 </TouchableOpacity>
                 <View style={{flex: 1}}/>
-                <TouchableOpacity style={styles.button} onPress={goToJoinRoomScreen}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('join')}>
                     <Text style={styles.button_text}>참여하기</Text>
                 </TouchableOpacity>
                 <View style={{flex: 0.5}}/>

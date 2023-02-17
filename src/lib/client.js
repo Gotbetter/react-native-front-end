@@ -43,7 +43,8 @@ client.interceptors.response.use((res) => res,
 
         /** 2 */
         config.sent = true;
-        const refresh_token = AsyncStorage.getItem('refresh_token');
+        const refresh_token = await AsyncStorage.getItem('refresh_token');
+
         const accessToken = await refreshToken(refresh_token);
 
         if (accessToken) {
@@ -54,8 +55,6 @@ client.interceptors.response.use((res) => res,
     });
 const refreshToken = async (refreshToken) => {
 
-    console.log('refresh_token');
-
     const {data: {access_token, refresh_token}} = await client.post(
         `/users/reissue`,
         {},
@@ -64,7 +63,9 @@ const refreshToken = async (refreshToken) => {
                 authorization: `Bearer ${refreshToken}`,
             },
         }
-    );
+    ).catch(err => console.log(err));
+
+    await AsyncStorage.clear();
     await AsyncStorage.setItem('access_token', access_token);
     await AsyncStorage.setItem('refresh_token', refresh_token);
 
