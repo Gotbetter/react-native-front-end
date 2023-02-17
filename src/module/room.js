@@ -1,4 +1,4 @@
-import * as api from "../lib/room/room";
+import * as api from "../lib/room";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {request} from "axios";
 
