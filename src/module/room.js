@@ -9,14 +9,18 @@ const initialState = {
 
     rules: null,
     room: null,
+    participants: null,
     rooms: null,
     loading: {
         RULES: false,
         ROOM: false,
         ROOMS: false,
+        PARTICIPANTS: false,
     },
     status: {
         ROOM_CREATE: null,
+        ROOM_SEARCH: null,
+        REQUEST_PARTICIPATE: null,
     },
     request: {
         title: '',
@@ -36,8 +40,7 @@ export const fetchRoom = createThunk("room/FETCH_ROOM", api.fetchRoom);
 export const fetchRooms = createThunk("room/FETCH_ROOMS", api.fetchRooms);
 export const fetchRules = createThunk("room/FETCH_RULES", api.fetchRules);
 export const createRoom = createThunk("room/CREATE_ROOM", api.createRoom);
-export const joinRoom = createThunk("room/JOIN_ROOM", api.joinRoom);
-
+export const fetchParticipants = createThunk("room/FETCH_PARTICIPANTS", api.fetchParticipants);
 
 const room = createSlice(
     {
@@ -75,9 +78,21 @@ const room = createSlice(
                     state.loading.RULES = false;
                     state.rules = data;
                 })
-                .addCase(fetchRules.rejected, (state, {payload: {message, response:{status}}}) => {
+                .addCase(fetchRules.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.loading.RULES = false;
                     state.error = message;
+                })
+                .addCase(fetchRoom.pending, (state) => {
+                    state.loading.Room = true;
+                })
+                .addCase(fetchRoom.fulfilled, (state, {payload: {data}}) => {
+                    state.loading.Room = false;
+                    state.room = data;
+                })
+                .addCase(fetchRoom.rejected, (state, {payload: message, response: {status}}) => {
+                    state.loading.Room = false;
+                    state.error = message;
+                    state.status.ROOM_SEARCH = status;
                 })
                 .addCase(fetchRooms.pending, (state, action) => {
                     state.loading.ROOMS = true;
@@ -86,18 +101,28 @@ const room = createSlice(
                     state.loading.ROOMS = false;
                     state.rooms = data;
                 })
-                .addCase(fetchRooms.rejected, (state, {payload:{message}}) => {
+                .addCase(fetchRooms.rejected, (state, {payload: {message}}) => {
                     state.loading.ROOMS = false;
                     state.error = message
                 })
-                .addCase(createRoom.fulfilled, (state, {payload:{status}}) => {
+                .addCase(createRoom.fulfilled, (state, {payload: {status}}) => {
                     state.status.ROOM_CREATE = status;
                 })
-                .addCase(createRoom.rejected, (state, {payload:message, response:{status}}) => {
+                .addCase(createRoom.rejected, (state, {payload: message, response: {status}}) => {
                     state.status.ROOM_CREATE = status
                     state.error = message;
                 })
-
+                .addCase(fetchParticipants.pending, (state) => {
+                    state.loading.PARTICIPANTS = true;
+                })
+                .addCase(fetchParticipants.fulfilled, (state, {payload: {data}}) => {
+                    state.loading.PARTICIPANTS = false;
+                    state.participants = data;
+                })
+                .addCase(fetchParticipants.rejected, (state, {payload: message, response: {status}}) => {
+                    state.loading.PARTICIPANTS = false;
+                    state.error = message;
+                });
         }
     }
 )

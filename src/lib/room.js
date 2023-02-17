@@ -33,10 +33,12 @@ export const createRoom = (request) => {
     );
 };
 
-export const joinRoom = (room_code) =>
-    client.post(
-        `/rooms/join`,
+export const fetchParticipants = ({room_id, accepted}) =>
+    client.get(
+        `/participants/${room_id}`,
         {
-            room_code
-        },
+            params: {
+                accepted
+            },
+        }
     );
