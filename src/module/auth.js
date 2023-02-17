@@ -1,8 +1,12 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import * as api from "../lib/auth/auth";
 
+
 const initialState = {
-    user: null,
+    user: {
+        access_token: null,
+        refresh_token: null,
+    },
     status: {
         REGISTER: null,
         LOGIN: null,
@@ -10,9 +14,6 @@ const initialState = {
     },
     error: null,
 };
-
-
-// thunk
 
 
 export const register = createAsyncThunk(
@@ -26,7 +27,7 @@ export const register = createAsyncThunk(
          * string email;
          */
         try {
-            await api.register(args);
+            return await api.register(args);
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -41,7 +42,7 @@ export const checkDuplicate = createAsyncThunk(
          */
         try {
             const response = await api.checkDuplicate(arg);
-            return response.data;
+            return response;
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -81,16 +82,16 @@ const auth = createSlice(
                 state.status.LOGIN = false;
                 state.user = null;
             },
-            setUser: (state, {payload: user}) => {
-                state.user = user;
-                state.status.LOGIN = true;
+            setUser: (state, {payload: token}) => {
+                state.user.refresh_token = token;
+                state.status.LOGIN = 200;
             },
         },
         extraReducers: (builder) => {
             builder
                 // register
                 .addCase(register.fulfilled, (state, action) => {
-                    const {status} = action.payload;
+                    const {status} = action.payload.response;
                     state.status.REGISTER = status;
                 })
                 .addCase(register.rejected, (state, action) => {
