@@ -15,8 +15,6 @@ const initialState = {
     },
     status: {
         ROOM_CREATE: null,
-        ROOM_FETCH: null,
-        ROOMS_FETCH: null,
     },
     request: {
         title: '',
@@ -62,9 +60,11 @@ export const fetchRooms = createAsyncThunk(
     "room/FETCH_ROOMS",
     async (accessToken, thunkApi) => {
         try {
-            const response = await api.fetchRooms(accessToken);
-            return response.data;
+            const response = await api.fetchRooms();
+            console.log(response);
+            return response;
         } catch (error) {
+            console.log(error);
             return thunkApi.rejectWithValue(error);
         }
     }
@@ -74,9 +74,10 @@ export const createRoom = createAsyncThunk(
     "room/CREATE_ROOM",
     async (args, thunkApi) => {
         const {accessToken, request} = args;
+        console.log(accessToken);
         try {
             const response = await api.createRoom({accessToken, request});
-            return response.data;
+            return response;
         } catch (error) {
             return thunkApi.rejectWithValue(error);
         }
@@ -143,7 +144,6 @@ const room = createSlice(
                 })
                 .addCase(fetchRoom.fulfilled, (state, action) => {
                     state.loading.ROOM = false;
-                    state.status.ROOM_FETCH = 200;
                     state.room = action.payload;
                 })
                 .addCase(fetchRoom.rejected, (state, action) => {
@@ -155,9 +155,9 @@ const room = createSlice(
                 .addCase(fetchRooms.pending, (state, action) => {
                     state.loading.ROOMS = true;
                 })
-                .addCase(fetchRooms.fulfilled, (state, action) => {
+                .addCase(fetchRooms.fulfilled, (state, {payload: rooms}) => {
                     state.loading.ROOMS = false;
-                    state.rooms = action.payload;
+                    state.rooms = rooms.data;
                 })
                 .addCase(fetchRooms.rejected, (state, action) => {
                     state.loading.ROOMS = false;
