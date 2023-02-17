@@ -33,4 +33,13 @@ export const login = (credentials) => {
     );
 };
 
-// todo: refresh
+export const refresh = (refreshToken) =>
+    client.post(
+        `/users/reissue`,
+        {},
+        {
+            headers: {
+                authorization: `Bearer ${refreshToken}`,
+            },
+        }
+    );

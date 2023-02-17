@@ -16,13 +16,15 @@ import Toast from "react-native-root-toast";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login, setUser} from "../module/auth";
+import {login, refresh, setUser} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useLocalStorage} from "../hooks/auth";
 
 
 function LoginScreen({navigation}) {
 
     const dispatch = useDispatch();
+    const storage = useLocalStorage();
 
     const {user, status} = useSelector(({auth}) => ({
         user: auth.user,
@@ -37,20 +39,10 @@ function LoginScreen({navigation}) {
     const {auth_id, password} = request;
 
     useEffect(() => {
-        AsyncStorage.getItem("user", (error, result) => {
-            if (result === null) {
-                return;
-            } else {
-                dispatch(setUser(JSON.parse(result)));
-                navigation.navigate('main');
-            }
-        })
-    }, []);
-
-    useEffect(() => {
         if (user && status === 200) {
-            // todo : user -> token 으로 변경
-            AsyncStorage.setItem("user", JSON.stringify(user));
+            const {access_token, refresh_token} = user;
+            AsyncStorage.setItem("access_token", access_token);
+            AsyncStorage.setItem("refresh_token", refresh_token);
             Toast.show('로그인 성공', {duration: Toast.durations.LONG});
             navigation.navigate('main');
         }
@@ -86,6 +78,10 @@ function LoginScreen({navigation}) {
         }
     }
 
+    if (storage != null) {
+        navigation.navigate('main');
+    }
+
     return (
         <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
             <View style={styles.container}>
@@ -108,8 +104,8 @@ function LoginScreen({navigation}) {
                                placeholderTextColor='black'
                                onChange={(e) => onChange("password", e)} secureTextEntry={true}/>
                     <View style={{flex: 1}}/>
-                    <TouchableOpacity style={styles.signin_button}>
-                        <Text style={styles.signin_button_text} onPress={onPressLogin}>로그인</Text>
+                    <TouchableOpacity style={styles.signin_button} onPress={onPressLogin}>
+                        <Text style={styles.signin_button_text}>로그인</Text>
                     </TouchableOpacity>
 
                     <View style={{flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
