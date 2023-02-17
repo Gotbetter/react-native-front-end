@@ -1,6 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect} from "react";
-import {fetchRooms} from "../../module/room";
+import {fetchRooms} from "../module/room";
 import {useIsFocused} from "@react-navigation/native";
 
 
