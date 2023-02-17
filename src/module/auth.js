@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState = {
     tokens: null,
+    user: null,
     status: {
         REGISTER: null,
         LOGIN: null,
@@ -18,7 +19,7 @@ const initialState = {
 export const register = createThunk("auth/REGISTER", api.register);
 export const checkDuplicate = createThunk("auth/CHECK_DUPLICATE", api.checkDuplicate);
 export const login = createThunk("auth/LOGIN", api.login);
-
+export const fetchUser = createThunk("auth/FETCH_USER", api.fetchUser);
 
 const auth = createSlice(
     {
@@ -76,7 +77,17 @@ const auth = createSlice(
                 .addCase(login.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.error = message;
                     state.status.LOGIN = status;
-                });
+                })
+                .addCase(fetchUser.pending, (state) => {
+
+                })
+                .addCase(fetchUser.fulfilled, (state, {payload: {data}}) => {
+                    state.user = data;
+                })
+                .addCase(fetchUser.rejected, (state, {payload: message, response:{status}}) => {
+                    state.status.LOGIN = status;
+                })
+
         },
     }
 );

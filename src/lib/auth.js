@@ -61,3 +61,8 @@ export const refresh = () =>
         `/users/reissue`,
         {},
     );
+
+export const fetchUser = () =>
+    client.get(
+        `/users`
+    );
