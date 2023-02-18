@@ -6,7 +6,7 @@ import {
     View,
     TouchableOpacity, Modal, Button,
 } from "react-native";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import Logo from "../components/common/Logo";
 import {useRoute} from "@react-navigation/native";
@@ -82,7 +82,7 @@ function HomeScreen({navigation}) {
     };
 
     const onPressApproval = (user_id) => {
-
+        // todo : Plan 생성 실패할 경우 참가승인도 취소해야함
         /** 참가 승인 **/
         client.patch(`/participants`,
             {
@@ -90,19 +90,41 @@ function HomeScreen({navigation}) {
                 room_id,
             })
             .then(({data}) => {
-                console.log('승인 성공');
+                /** 참가 승인이 성공했을 경우 해당 참가자의 주간 계획을 생성해주어야 한다. **/
+                const {participant_id} = data
+                client.post(`/plans`,
+                    {
+                        participant_id
+                    })
+                    .then(({data}) => {
+                        console.log('계획 생성 완료');
+                    })
+                    .catch(({message, config, response: {status}}) => {
+                        console.log('계획생성 실패');
+                        console.log(message, config);
+                        if (status === 403) {
+                            console.log('forbidden');
+                        } else if (status === 404) {
+                            console.log('존재하지 않는 사용자');
+                        } else if (status === 409) {
+                            console.log('이미 생성됨');
+                        }
+                    });
             })
             .catch(({message, config, response: {status}}) => {
                 console.log(config);
                 console.log(message, status)
                 if (status === 403) {
-                    Toast.show("forbidden",{duration: Toast.durations.SHORT})
+                    Toast.show("forbidden", {duration: Toast.durations.SHORT})
                 } else if (status === 404) {
                     Toast.show("해당 사용자 못찾음", {duration: Toast.durations.SHORT})
                 }
             });
     }
 
+    const onPressPlans = useCallback((participant_id, username) => {
+        navigation.navigate('my-plan', {participant_id, planned_name: username});
+    }, []);
 
     /**
      * Dummy Data (GET Plan and Detail Plan)
@@ -313,7 +335,7 @@ function HomeScreen({navigation}) {
                                 participants.map((participant, i) => (
                                     <View key={participant.participant_id} style={{flex: 1, alignItems: 'center'}}>
                                         <View style={{flex: 1}}/>
-                                        <TouchableOpacity style={styles.user}>
+                                        <TouchableOpacity style={styles.user} onPress={() => onPressPlans(participant.participant_id, participant.username)}>
                                             <Text style={styles.button_text}>{participant.username}</Text>
                                         </TouchableOpacity>
                                         <View style={{flex: 1}}/>
@@ -367,7 +389,8 @@ function HomeScreen({navigation}) {
                                         <Text style={styles.modal_text}>
                                             {participants.username}
                                         </Text>
-                                        <Button title={'승인'} onPress={() => onPressApproval(participants.user_id)}/>
+                                        <Button title={'승인'}
+                                                onPress={() => onPressApproval(participants.user_id, participants.participant_id)}/>
                                     </View>
 
                                 ))
