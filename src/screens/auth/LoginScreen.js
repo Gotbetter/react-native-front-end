@@ -18,7 +18,6 @@ import Toast from "react-native-root-toast";
 import {useDispatch, useSelector} from "react-redux";
 import {login, resetLoginStatus, setLogin} from "../../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useLocalStorage} from "../../hooks/auth";
 
 
 function LoginScreen({navigation}) {
@@ -28,10 +27,16 @@ function LoginScreen({navigation}) {
         status: auth.status.LOGIN
     }));
 
-    const storage = useLocalStorage();
+    const [storage, setStorage] = useState(null);
 
 
     useEffect(() => {
+
+        /** 기존에 로그인을 했는지 검사 */
+        if (status === null) {
+            AsyncStorage.getItem("access_token")
+                .then(token => setStorage(token))
+        }
 
         /** status === 200일 경우 로그인 상태*/
         if (status === 200) {

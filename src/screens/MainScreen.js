@@ -10,11 +10,7 @@ import {useFocusEffect, useRoute} from "@react-navigation/native";
 function MainScreen({navigation}) {
 
     const dispatch = useDispatch();
-
-
     const curScreen = useRoute();
-
-
 
     const {isLogin} = useSelector(({auth}) => ({
         isLogin: auth.status.LOGIN,
@@ -36,14 +32,18 @@ function MainScreen({navigation}) {
     }, [curScreen]));
 
     useEffect(() => {
-        if (isLogin === null) {
-            navigation.navigate('login');
-        }
+        AsyncStorage.getAllKeys()
+            .then(keys => {
+                if (keys.length === 0 && isLogin === null) {
+                    navigation.navigate('login');
+                }
+            });
     }, [isLogin]);
 
-    const onPressLogout = async () => {
-        await AsyncStorage.clear();
-        dispatch(logout());
+    const onPressLogout = () => {
+        AsyncStorage.getAllKeys()
+            .then(keys => AsyncStorage.multiRemove(keys))
+            .then(() => dispatch(logout()));
     };
 
 
@@ -54,7 +54,7 @@ function MainScreen({navigation}) {
                 <View style={{flex: 1}}/>
                 <View style={{flex: 2}}>
                     <Logo/>
-                    <Button title={'로그아웃'} onPress={onPressLogout}/>
+                    <Button title={'로그아웃'} onPress={() => onPressLogout()}/>
                 </View>
                 <View style={{flex: 1}}/>
             </View>
@@ -82,11 +82,11 @@ function MainScreen({navigation}) {
                     <View style={{flex: 4.5, flexDirection: 'row',}}>
                         {rooms && (
                             rooms.map((room, index) => (
-                                <View key={rooms[index].room_id} style={{flex: 1, alignItems: 'center'}}>
+                                <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
                                     <View style={{flex: 1}}/>
                                     <TouchableOpacity style={styles.room}
-                                                      onPress={() => navigation.navigate('home', {room_id: rooms[index].room_id})}>
-                                        <Text style={styles.button_text}>{rooms[index].title}</Text>
+                                                      onPress={() => navigation.navigate('home', {room_id: room.room_id})}>
+                                        <Text style={styles.button_text}>{room.title}</Text>
                                     </TouchableOpacity>
                                     <View style={{flex: 1}}/>
                                 </View>
