@@ -12,7 +12,7 @@ client.interceptors.request.use(async (config) => {
         return config;
     }
 
-    if (config.url === '/users/login' || config.url === '/users') {
+    if (config.url === '/users/login' || (config.url === '/users' && config.method === "POST")) {
         return config;
     }
 
@@ -35,7 +35,6 @@ client.interceptors.response.use((res) => res,
 
         const {config, response: {status}} = err;
 
-
         /** 1 */
         if (config.url === `/users/reissue` || status !== 401 || config.sent) {
             return Promise.reject(err);
@@ -46,7 +45,6 @@ client.interceptors.response.use((res) => res,
         const refresh_token = await AsyncStorage.getItem('refresh_token');
 
         const accessToken = await refreshToken(refresh_token);
-
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }
@@ -54,6 +52,8 @@ client.interceptors.response.use((res) => res,
         return client(config);
     });
 const refreshToken = async (refreshToken) => {
+
+    console.log('refresh' + refreshToken);
 
     const {data: {access_token, refresh_token}} = await client.post(
         `/users/reissue`,
@@ -65,7 +65,6 @@ const refreshToken = async (refreshToken) => {
         }
     ).catch(err => console.log(err));
 
-    await AsyncStorage.clear();
     await AsyncStorage.setItem('access_token', access_token);
     await AsyncStorage.setItem('refresh_token', refresh_token);
 
