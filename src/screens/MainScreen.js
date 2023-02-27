@@ -1,49 +1,56 @@
 import React, {useCallback, useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {useFetchRoom} from "../hooks/room";
-import {logout} from "../module/auth";
+import {fetchUser, logout} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {BackHandler, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../components/common/Logo";
-import {useFocusEffect, useRoute} from "@react-navigation/native";
+import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
+import {resetParticipants, resetPlanAndDetailPlan, resetRoomInfo} from "../module/room";
 
 function MainScreen({navigation}) {
 
     const dispatch = useDispatch();
     const curScreen = useRoute();
 
-    const {isLogin} = useSelector(({auth}) => ({
-        isLogin: auth.status.LOGIN,
-    }));
 
     const [rooms, isFetchRoom] = useFetchRoom();
 
     /** Android 로그인 화면으로 뒤로가기 금지하기 **/
     useFocusEffect(useCallback(() => {
         const onBackPress = () => {
-            if (curScreen.name === 'main' && isLogin === true) {
-                return false;
-            } else {
+            if (curScreen.name === 'main') {
                 return true;
+            } else {
+                return false;
             }
         }
 
         return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     }, [curScreen]));
 
+
     useEffect(() => {
-        AsyncStorage.getAllKeys()
-            .then(keys => {
-                if (keys.length === 0 && isLogin === null) {
-                    navigation.navigate('login');
-                }
-            });
-    }, [isLogin]);
+        /** 로그인한 유저 정보 불러오기 **/
+        dispatch(fetchUser());
+
+    }, [rooms]);
+
+    useEffect(() => {
+        dispatch(resetPlanAndDetailPlan());
+        dispatch(resetRoomInfo());
+        dispatch(resetParticipants());
+    }, [useIsFocused()]);
 
     const onPressLogout = () => {
         AsyncStorage.getAllKeys()
             .then(keys => AsyncStorage.multiRemove(keys))
-            .then(() => dispatch(logout()));
+            .catch(err => err)
+            .then(() => {
+                dispatch(logout());
+                navigation.navigate('login');
+            })
+            .catch(err => err);
     };
 
 
@@ -81,7 +88,7 @@ function MainScreen({navigation}) {
                     <View style={{flex: 0.5}}/>
                     <View style={{flex: 4.5, flexDirection: 'row',}}>
                         {rooms && (
-                            rooms.map((room, index) => (
+                            rooms.map((room) => (
                                 <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
                                     <View style={{flex: 1}}/>
                                     <TouchableOpacity style={styles.room}
