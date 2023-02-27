@@ -34,6 +34,7 @@ const auth = createSlice(
             },
             logout: (state) => {
                 state.status.LOGIN = null;
+                state.user = null;
             },
             setLogin: (state) => {
                 state.status.LOGIN = 200;
@@ -84,7 +85,7 @@ const auth = createSlice(
                 .addCase(fetchUser.fulfilled, (state, {payload: {data}}) => {
                     state.user = data;
                 })
-                .addCase(fetchUser.rejected, (state, {payload: message, response:{status}}) => {
+                .addCase(fetchUser.rejected, (state, {payload: {message, response:{status}}}) => {
                     state.status.LOGIN = status;
                 })
 
