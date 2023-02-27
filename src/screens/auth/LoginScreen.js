@@ -17,7 +17,6 @@ import Toast from "react-native-root-toast";
 
 import {useDispatch, useSelector} from "react-redux";
 import {login, resetLoginStatus, setLogin} from "../../module/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 function LoginScreen({navigation}) {
@@ -27,25 +26,11 @@ function LoginScreen({navigation}) {
         status: auth.status.LOGIN
     }));
 
-    const [storage, setStorage] = useState(null);
-
-
     useEffect(() => {
-
-        /** 기존에 로그인을 했는지 검사 */
-        if (status === null) {
-            AsyncStorage.getItem("access_token")
-                .then(token => setStorage(token))
-        }
 
         /** status === 200일 경우 로그인 상태*/
         if (status === 200) {
             navigation.navigate('main');
-        }
-
-        /** 기존에 로그인 했을 경우 로그인 상태로 변경 */
-        if (storage != null) {
-            dispatch(setLogin());
         }
 
         /** 아이디 또는 비밀번호 틀렸을시 오류 메세지 출력 */
@@ -55,7 +40,7 @@ function LoginScreen({navigation}) {
         }
 
 
-    }, [storage, status]);
+    }, [status]);
 
     const [request, setRequest] = useState({
         auth_id: '',
@@ -84,7 +69,7 @@ function LoginScreen({navigation}) {
         }
 
         if (flag === false) {
-            Toast.show('모든 정보를 입력하세요', {duration: Toast.durations.LONG});
+            Toast.show('모든 정보를 입력하세요', {duration: Toast.durations.SHORT});
         } else {
             dispatch(login(request));
             const resetRequest = {
