@@ -9,16 +9,16 @@ export const useFetchRoom = () => {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
 
-    const {rooms, loading} = useSelector(({auth, room}) => ({
-        rooms: room.rooms,
-        loading: room.loading.ROOM_FETCH,
+    const {roomList, loading} = useSelector(({auth, room}) => ({
+        roomList: room.roomList,
     }));
 
     useEffect(() => {
-        dispatch(fetchRooms());
-    }, [isFocused]);
+        if (isFocused == true) {
+            dispatch(fetchRooms());
+        }
+    }, [dispatch, isFocused]);
 
 
-
-    return [rooms, loading];
+    return [roomList, loading];
 }
