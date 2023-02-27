@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {onChangeRequest} from "../../../module/room";
+import {onChangeRoomRequest} from "../../../module/room";
 import Toast from "react-native-root-toast";
 import {StyleSheet, Text, View} from "react-native";
 import Logo from "../../../components/common/Logo";
@@ -15,7 +15,7 @@ function RoomTitleFormScreen({navigation}) {
 
     const dispatch = useDispatch();
     const {request} = useSelector(({room}) => ({
-        request: room.request,
+        request: room.roomRequest,
     }));
 
     const getSelectItems = useCallback(() => {
@@ -34,7 +34,7 @@ function RoomTitleFormScreen({navigation}) {
             ...request,
             [targetName]: value,
         };
-        dispatch(onChangeRequest(next));
+        dispatch(onChangeRoomRequest(next));
     };
 
     const onPress = useCallback(() => {

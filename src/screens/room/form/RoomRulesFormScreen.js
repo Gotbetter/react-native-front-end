@@ -1,6 +1,11 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {createRoom, fetchRules, onChangeRequest, resetRequest, resetStatus} from "../../../module/room";
+import {
+    createRoom,
+    fetchRules,
+    onChangeRoomRequest, resetRoomCreateRequest,
+    resetStatus
+} from "../../../module/room";
 import Toast from "react-native-root-toast";
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../../../components/common/Logo";
@@ -11,11 +16,10 @@ function RoomRulesFormScreen({navigation}) {
     const SCREEN_TITLE = "룰을 선택하세요";
 
     const dispatch = useDispatch();
-    const {rules, loading, status, request} = useSelector(({room}) => ({
-        rules: room.rules,
-        loading: room.loading.RULES,
+    const {rules, status, request} = useSelector(({room}) => ({
+        rules: room.roomRules,
         status: room.status.ROOM_CREATE,
-        request: room.request,
+        request: room.roomRequest,
     }));
 
     const [selectedRule, setSelectedRule] = useState(null);
@@ -30,7 +34,7 @@ function RoomRulesFormScreen({navigation}) {
     useEffect(() => {
         if (status === 201) {
             Toast.show('방 생성 완료', {duration: Toast.durations.LONG});
-            dispatch(resetRequest());
+            dispatch(resetRoomCreateRequest());
             dispatch(resetStatus('ROOM_CREATE'));
             navigation.navigate('main');
         } else if (status === 403) {
@@ -45,7 +49,7 @@ function RoomRulesFormScreen({navigation}) {
             ...request,
             [targetName]: value,
         };
-        dispatch(onChangeRequest(next));
+        dispatch(onChangeRoomRequest(next));
     };
 
     const onSelectRule = (rule_id, contents) => {
@@ -55,7 +59,7 @@ function RoomRulesFormScreen({navigation}) {
             ...request,
             ["rule_id"]: rule_id,
         };
-        dispatch(onChangeRequest(next));
+        dispatch(onChangeRoomRequest(next));
     };
 
     const onPress = useCallback(() => {
@@ -78,9 +82,6 @@ function RoomRulesFormScreen({navigation}) {
         }
     }, [dispatch,request]);
 
-    if (loading) {
-        return <Text>로딩중...</Text>;
-    }
 
     return (
         <View style={styles.container}>
