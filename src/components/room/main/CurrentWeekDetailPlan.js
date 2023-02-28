@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View, StyleSheet} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
+import {useFetchMyCurrentWeekDetailPlan} from "../../../hooks/room";
+import {fetchDetailPlan, fetchPlan} from "../../../lib/plans";
+import useUpdateEffect from "../../../hooks/common";
 
 
 
@@ -13,7 +16,7 @@ function CurrentWeekDetailPlan({detailPlans}) {
             </View>
             <View style={styles.detailPlan_container}>
                 {
-                    detailPlans && detailPlans.map((detailPlan) => (
+                    detailPlans.map((detailPlan) => (
                         <View key={detailPlan.detail_plan_id} style={styles.detailPlan}>
                             <Text style={styles.detailPlan_text}>{detailPlan.content}</Text>
                         </View>
