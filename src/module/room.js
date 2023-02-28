@@ -45,10 +45,10 @@ export const fetchParticipants = createAsyncThunk("room/FETCH_PARTICIPANTS",
     }
 );
 export const fetchRules = createThunk("room/FETCH_RULES", roomApi.fetchRules);
-export const fetchDislikeInfo = createThunk("plan/DISLIKE", planApi.fetchPlanDislike);
+export const fetchDislikeInfo = createThunk("plan/FETCH_DISLIKE_INFO", planApi.fetchPlanDislike);
 export const fetchDetailPlan = createThunk("plan/FETCH_DETAIL_PLAN", planApi.fetchDetailPlan);
 export const createRoom = createAsyncThunk(
-    "plans/CREATE_ROOM",
+    "plan/CREATE_ROOM",
     async (args, thunkApi) => {
         try {
             /** 방 생성 **/
@@ -73,7 +73,6 @@ export const fetchPlanAndDetailPlan = createAsyncThunk(
              * participant_id: (int)
              * week: (int)
              */
-
             /** fetch plan_id  **/
             const {data: plan} = await planApi.fetchPlan(args);
             thunkApi.dispatch(storePlan(plan));
@@ -90,11 +89,12 @@ export const fetchPlanAndDetailPlan = createAsyncThunk(
         }
 
     });
-export const planDislike = createThunk("plans/DISLIKE", planApi.planDislike);
-export const planDislikeCancel = createThunk("plans/DISLIKE_CANCEL",planApi.planDislikeCancel);
-export const createDetailPlan = createThunk("plans/CREATE_DETAIL_PLAN", planApi.createDetailPlan);
-export const modifyDetailPlan = createThunk("plans/MODIFY_DETAIL_PLAN", planApi.updateDetailPlan);
-
+export const doPlanDislike = createThunk("plan/DISLIKE", planApi.doPlanDislike);
+export const cancelPlanDislike = createThunk("plan/DISLIKE_CANCEL",planApi.cancelPlanDislike);
+export const createDetailPlan = createThunk("plan/CREATE_DETAIL_PLAN", planApi.createDetailPlan);
+export const modifyDetailPlan = createThunk("plan/MODIFY_DETAIL_PLAN", planApi.updateDetailPlan);
+export const completeDetailPlan = createThunk("plan/COMPLETE_DETAIL_PLAN", planApi.completeDetailPlan);
+export const undoCompleteDetailPlan = createThunk("plan/UNDO_COMPLETE_DETAIL_PLAN", planApi.undoCompleteDetailPlan);
 const room = createSlice(
     {
         name: 'room',
@@ -190,7 +190,7 @@ const room = createSlice(
                     } : detailPlan);
                     state.detailPlans = next;
                 })
-                .addCase(planDislike.rejected, (state, {payload: {message}}) => {
+                .addCase(doPlanDislike.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 })
                 .addCase(fetchDislikeInfo.fulfilled, (state, {payload: {data}}) => {
@@ -210,6 +210,29 @@ const room = createSlice(
                     }
                 })
                 .addCase(fetchPlanAndDetailPlan.rejected, (state, {payload: {message}}) => {
+                    state.error = message;
+                })
+                .addCase(completeDetailPlan.fulfilled, (state, {payload: {data}}) => {
+                    const prev = state.detailPlans;
+                    const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
+                        ...detailPlan,
+                        approve_comment: data.approve_comment,
+                        checked: data.checked
+                    } : detailPlan);
+                    state.detailPlans = next;
+                })
+                .addCase(completeDetailPlan.rejected, (state, {payload: {message}}) => {
+                    state.error = message;
+                })
+                .addCase(undoCompleteDetailPlan.fulfilled, (state, {payload: {data}}) => {
+                    const prev = state.detailPlans;
+                    const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
+                        ...detailPlan,
+                        checked: data.checked
+                    } : detailPlan);
+                    state.detailPlans = next;
+                })
+                .addCase(undoCompleteDetailPlan.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 });
 

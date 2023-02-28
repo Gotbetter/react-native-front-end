@@ -15,13 +15,14 @@ import DetailPlanList from "../../components/plans/detail/DetailPlanList";
 import {useFetchPlanAndDetailPlans, usePlanner, useWeekSelector} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
 import {
+    completeDetailPlan,
     createDetailPlan,
     modifyDetailPlan,
     onChangeDetailPlanRequest,
-    planDislike,
-    planDislikeCancel,
+    doPlanDislike,
+    cancelPlanDislike,
     pressDislike,
-    resetDetailPlanRequest,
+    resetDetailPlanRequest, undoCompleteDetailPlan,
 } from "../../module/room";
 
 
@@ -48,6 +49,20 @@ export default function PlanScreen() {
 
     }, [clickedWeek]);
 
+    const onPressCheckBox = (checked, detail_plan_id, approve_comment) => {
+
+        const {plan_id} = plan;
+
+        if (doUnCheck()) {
+            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id, approve_comment}));
+        } else {
+            dispatch(completeDetailPlan({plan_id, detail_plan_id}));
+        }
+    };
+
+    const doUnCheck = (checked) => {
+        return checked === true;
+    }
 
     const onPressAddDetailPlan = () => {
         if ('' != request) {
@@ -78,11 +93,10 @@ export default function PlanScreen() {
 
     const onPressPlanDislike = () => {
         const {checked} = planDislikeInfo;
-        console.log(checked);
         if (checked) {
-            dispatch(planDislikeCancel(plan.plan_id));
+            dispatch(cancelPlanDislike(plan.plan_id));
         } else {
-            dispatch(planDislike(plan.plan_id));
+            dispatch(doPlanDislike(plan.plan_id));
         }
         dispatch(pressDislike(checked));
     };
@@ -113,6 +127,7 @@ export default function PlanScreen() {
                             setAddButtonPressed={setIsAddButtonPressed}
                             setModifyButtonPressed={setIsModifyButtonPressed}
                             onPressModifyButton={setModifyDetailPlanId}
+                            onPressCheckBox={onPressCheckBox}
                         />
                     }
                     {

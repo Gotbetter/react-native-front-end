@@ -6,15 +6,26 @@ import CheckIcon from "react-native-vector-icons/Fontisto";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import Icon from "react-native-vector-icons/Entypo";
 
-function DetailPlanList({isMyPlan, detailPlans, onPressCheckBox, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) {
+function DetailPlanList({
+                            isMyPlan,
+                            detailPlans,
+                            onPressCheckBox,
+                            onPressModifyButton,
+                            setAddButtonPressed,
+                            setModifyButtonPressed
+                        }) {
 
     return (
         detailPlans.map((detailPlan) => (
             <View style={styles.detail_plan} key={detailPlan.detail_plan_id}>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-                    <CheckBox complete={detailPlan.complete}
-                              onPressCheckBox={isMyPlan === true ? onPressCheckBox : null}
-                    />
+                    {
+                        isMyPlan !== true ?
+                            <View/> : <CheckBox detailPlanId={detailPlan.detail_plan_id}
+                                                checked={detailPlan.checked}
+                                                complete={detailPlan.complete}
+                                                onPressCheckBox={onPressCheckBox}/>
+                    }
                 </View>
                 <View style={{flex: 6}}>
                     <DetailPlanItem content={detailPlan.content}
@@ -40,23 +51,23 @@ const DetailPlanItem = ({content}) => {
     return <Text style={styles.detail_plan_text}>{content}</Text>
 };
 
-const CheckBox = ({complete, onPressCheckBox}) => {
+const CheckBox = ({detailPlanId, complete, checked, onPressCheckBox}) => {
     return (
-        complete === true ?
+        checked === true ?
             (
-                <TouchableOpacity onPress={() => onPressCheckBox()}>
+                <TouchableOpacity onPress={() => onPressCheckBox(checked,detailPlanId)}>
                     <CheckIcon name="checkbox-active" size={wp(5)}/>
                 </TouchableOpacity>
             ) :
             (
-                <TouchableOpacity onPress={() => onPressCheckBox()}>
+                <TouchableOpacity onPress={() => onPressCheckBox(checked, detailPlanId)}>
                     <CheckIcon name="checkbox-passive" size={wp(5)}/>
                 </TouchableOpacity>
             )
     );
 };
 
-const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPressed,setModifyButtonPressed}) => {
+const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) => {
     return (
         <View style={{justifyContent: 'center'}}>
             <TouchableOpacity onPress={() => {
