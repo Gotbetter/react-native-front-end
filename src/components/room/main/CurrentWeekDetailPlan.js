@@ -1,10 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Text, View, StyleSheet} from "react-native";
-import {useDispatch, useSelector} from "react-redux";
-import {useFetchMyCurrentWeekDetailPlan} from "../../../hooks/room";
-import {fetchDetailPlan, fetchPlan} from "../../../lib/plans";
-import useUpdateEffect from "../../../hooks/common";
-
+import React from 'react';
+import {StyleSheet, Text, View} from "react-native";
 
 
 function CurrentWeekDetailPlan({detailPlans}) {

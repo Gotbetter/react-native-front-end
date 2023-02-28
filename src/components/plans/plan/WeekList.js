@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, Text, TouchableOpacity, View, StyleSheet} from "react-native";
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 function WeekList({plannerName, weekList, clickedWeek, setClickedWeek}) {

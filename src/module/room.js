@@ -2,7 +2,6 @@ import * as roomApi from "../lib/room";
 import * as planApi from "../lib/plans";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {createThunk} from "./utils";
-import thunk from "redux-thunk";
 
 
 const initialState = {

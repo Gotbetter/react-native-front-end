@@ -1,18 +1,15 @@
 import {
-    View,
-    Text,
     Image,
+    Keyboard,
+    StyleSheet,
+    Text,
     TextInput,
     TouchableOpacity,
-    Keyboard,
     TouchableWithoutFeedback,
-    StyleSheet,
+    View,
 } from "react-native";
 
-import {
-    useState,
-    useEffect,
-} from "react";
+import {useEffect, useState,} from "react";
 import {checkDuplicate, register, resetDuplicate, resetRegister} from "../../module/auth";
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";

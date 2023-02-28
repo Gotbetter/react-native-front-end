@@ -1,12 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import CheckIcon from "react-native-vector-icons/Fontisto";
 
 // 화면 비율 맞추기 위한 lib
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import Icon from "react-native-vector-icons/Entypo";
 
 function DetailPlanList({isMyPlan, detailPlans, onPressCheckBox, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) {

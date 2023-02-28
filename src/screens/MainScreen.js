@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {useFetchRoom} from "../hooks/room";
 import {fetchUser, logout} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";

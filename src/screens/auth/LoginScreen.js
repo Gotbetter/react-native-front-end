@@ -1,22 +1,19 @@
 import {
-    View,
-    Text,
     Image,
+    Keyboard,
+    StyleSheet,
+    Text,
     TextInput,
     TouchableOpacity,
-    Keyboard,
     TouchableWithoutFeedback,
-    StyleSheet,
+    View,
 } from "react-native";
-import {
-    useState,
-    useEffect,
-} from "react";
+import {useEffect, useState,} from "react";
 import Toast from "react-native-root-toast";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login, resetLoginStatus, setLogin} from "../../module/auth";
+import {login, resetLoginStatus} from "../../module/auth";
 
 
 function LoginScreen({navigation}) {

@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 import * as api from "../lib/auth";
 import {createThunk} from "./utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";

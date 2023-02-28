@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
