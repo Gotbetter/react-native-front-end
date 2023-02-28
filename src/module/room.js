@@ -2,7 +2,6 @@ import * as roomApi from "../lib/room";
 import * as planApi from "../lib/plans";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {createThunk} from "./utils";
-import thunk from "redux-thunk";
 
 
 const initialState = {
@@ -137,15 +136,13 @@ const room = createSlice(
             resetDetailPlanRequest: (state) => {
                 state.detailPlanRequest = "";
             },
-            resetRoomInfo: (state) => {
+            resetRoom: (state) => {
                 state.roomInfo = null;
+                state.participants = [];
             },
             resetPlanAndDetailPlan: (state) => {
                 state.plan = null;
                 state.detailPlans = [];
-            },
-            resetParticipants: (state) => {
-                state.participants = [];
             },
             resetStatus: (state, action) => {
                 state.status = {
@@ -156,17 +153,11 @@ const room = createSlice(
         },
         extraReducers: (builder) => {
             builder
-                .addCase(fetchRoom.pending, (state) => {
-
-                })
                 .addCase(fetchRoom.fulfilled, (state, {payload: {data}}) => {
                     state.roomInfo = data;
                 })
                 .addCase(fetchRoom.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.error = message;
-                })
-                .addCase(fetchRooms.pending, (state, action) => {
-
                 })
                 .addCase(fetchRooms.fulfilled, (state, {payload: {data}}) => {
                     state.roomList = data;
@@ -198,16 +189,9 @@ const room = createSlice(
                         content: data.content
                     } : detailPlan);
                     state.detailPlans = next;
-
-                })
-                .addCase(planDislike.fulfilled, (state, {payload: {data}}) => {
-
                 })
                 .addCase(planDislike.rejected, (state, {payload: {message}}) => {
                     state.error = message;
-                })
-                .addCase(planDislikeCancel.fulfilled, (state, {payload: {data}}) => {
-
                 })
                 .addCase(fetchDislikeInfo.fulfilled, (state, {payload: {data}}) => {
                     state.planDislikeInfo = data;
@@ -215,7 +199,6 @@ const room = createSlice(
                 .addCase(fetchDislikeInfo.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 })
-
                 .addCase(fetchDetailPlan.fulfilled, (state, {payload: {data}}) => {
                     state.detailPlans = data;
                 })
@@ -226,28 +209,24 @@ const room = createSlice(
                         state.waitingParticipants = data;
                     }
                 })
-                .addCase(fetchPlanAndDetailPlan.fulfilled, (state, action) => {
-                })
                 .addCase(fetchPlanAndDetailPlan.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 });
 
         }
     }
-)
+);
 
 export const {
     storePlan,
     storePlanDislikeInfo,
     storeDetailPlans,
-    storeParticipants,
     onChangeRoomRequest,
     onChangeDetailPlanRequest,
     resetRoomCreateRequest,
     resetPlanAndDetailPlan,
     resetDetailPlanRequest,
-    resetRoomInfo,
-    resetParticipants,
+    resetRoom,
     resetStatus,
     pressDislike
 } = room.actions;

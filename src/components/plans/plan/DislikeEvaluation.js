@@ -1,4 +1,4 @@
-import {View, TouchableOpacity, StyleSheet} from "react-native";
+import {StyleSheet, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 

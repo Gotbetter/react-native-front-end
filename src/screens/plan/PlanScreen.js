@@ -1,21 +1,12 @@
-import {
-    StyleSheet,
-    View,
-    ScrollView,
-} from "react-native";
+import {ScrollView, StyleSheet, View,} from "react-native";
 
-import {
-    useState,
-    useEffect,
-} from "react";
+import {useEffect, useState,} from "react";
 
 // 화면 비율 맞추기 위한 lib
-import {
-    widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 
 import Logo from "../../components/common/Logo";
-import {useIsFocused, useRoute} from "@react-navigation/native";
+import {useRoute} from "@react-navigation/native";
 import {DislikeEvaluationCount} from "../../components/plans/plan/DislikeEvaluationCount";
 import DislikeEvaluation from "../../components/plans/plan/DislikeEvaluation";
 import WeekList from "../../components/plans/plan/WeekList";
@@ -25,10 +16,12 @@ import {useFetchPlanAndDetailPlans, usePlanner, useWeekSelector} from "../../hoo
 import {useDispatch, useSelector} from "react-redux";
 import {
     createDetailPlan,
-
     modifyDetailPlan,
-    onChangeDetailPlanRequest, planDislike, planDislikeCancel, pressDislike, resetDetailPlanRequest,
-
+    onChangeDetailPlanRequest,
+    planDislike,
+    planDislikeCancel,
+    pressDislike,
+    resetDetailPlanRequest,
 } from "../../module/room";
 
 

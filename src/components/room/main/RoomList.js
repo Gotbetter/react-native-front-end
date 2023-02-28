@@ -1,26 +1,22 @@
 import React from 'react';
-import {Text, TouchableOpacity, View, StyleSheet} from "react-native";
-import {useNavigation} from "@react-navigation/native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 
-function RoomList({rooms, curRoomId}) {
-    const navigation = useNavigation();
+function RoomList({rooms, curRoomId, onPress}) {
+
     return (
-        rooms &&
-        (
-            rooms.map(room => (
-                    <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
-                        <View style={{flex: 1}}/>
-                        <TouchableOpacity
-                            style={room.room_id === curRoomId ? styles.current_room : styles.room}
-                            onPress={() => navigation.navigate('home', {room_id: room.room_id})}>
-                            <Text
-                                style={room.room_id === curRoomId ? styles.current_button_text : styles.button_text}>
-                                {room.title}
-                            </Text>
-                        </TouchableOpacity>
-                        <View style={{flex: 1}}/>
-                    </View>
-                )
+        rooms.map(room => (
+                <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
+                    <View style={{flex: 1}}/>
+                    <TouchableOpacity
+                        style={room.room_id === curRoomId ? styles.current_room : styles.room}
+                        onPress={() => onPress(room.room_id)}>
+                        <Text
+                            style={room.room_id === curRoomId ? styles.current_button_text : styles.button_text}>
+                            {room.title}
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={{flex: 1}}/>
+                </View>
             )
         )
     );

@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Text, View, StyleSheet} from "react-native";
-import {useDispatch, useSelector} from "react-redux";
-
+import React from 'react';
+import {StyleSheet, Text, View} from "react-native";
 
 
 function CurrentWeekDetailPlan({detailPlans}) {
@@ -13,7 +11,7 @@ function CurrentWeekDetailPlan({detailPlans}) {
             </View>
             <View style={styles.detailPlan_container}>
                 {
-                    detailPlans && detailPlans.map((detailPlan) => (
+                    detailPlans.map((detailPlan) => (
                         <View key={detailPlan.detail_plan_id} style={styles.detailPlan}>
                             <Text style={styles.detailPlan_text}>{detailPlan.content}</Text>
                         </View>

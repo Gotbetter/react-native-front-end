@@ -3,6 +3,7 @@ import {logger} from "redux-logger/src";
 import ReduxThunk from 'redux-thunk';
 import auth from "./auth";
 import room from "./room";
+
 export const store = configureStore({
     reducer: {
         auth,

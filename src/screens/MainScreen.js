@@ -1,12 +1,12 @@
 import React, {useCallback, useEffect} from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {useFetchRoom} from "../hooks/room";
 import {fetchUser, logout} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {BackHandler, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../components/common/Logo";
 import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
-import {resetParticipants, resetPlanAndDetailPlan, resetRoomInfo} from "../module/room";
+import {resetPlanAndDetailPlan, resetRoom} from "../module/room";
 
 function MainScreen({navigation}) {
 
@@ -38,8 +38,7 @@ function MainScreen({navigation}) {
 
     useEffect(() => {
         dispatch(resetPlanAndDetailPlan());
-        dispatch(resetRoomInfo());
-        dispatch(resetParticipants());
+        dispatch(resetRoom());
     }, [useIsFocused()]);
 
     const onPressLogout = () => {

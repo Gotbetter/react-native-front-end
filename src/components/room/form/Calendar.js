@@ -1,8 +1,6 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import {Button, Text, View} from "react-native";
-import {Platform} from 'react-native';
-import {useIsFocused} from "@react-navigation/native";
+import {Button, Platform, View} from "react-native";
 
 
 function Calendar({onChangeDateAndroid, onChangeDateIOS, date, onConfirm, onCancel,onChange}) {

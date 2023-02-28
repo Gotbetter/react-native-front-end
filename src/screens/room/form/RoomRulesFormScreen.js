@@ -1,11 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {
-    createRoom,
-    fetchRules,
-    onChangeRoomRequest, resetRoomCreateRequest,
-    resetStatus
-} from "../../../module/room";
+import {createRoom, fetchRules, onChangeRoomRequest, resetRoomCreateRequest, resetStatus} from "../../../module/room";
 import Toast from "react-native-root-toast";
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../../../components/common/Logo";

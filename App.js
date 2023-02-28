@@ -16,7 +16,6 @@ import RoomMainScreen from './src/screens/room/RoomMainScreen';
 import MyPlanScreen from './src/screens/plan/PlanScreen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useEffect, useState} from "react";
-import {Text, View} from "react-native";
 
 
 const Stack = createNativeStackNavigator();

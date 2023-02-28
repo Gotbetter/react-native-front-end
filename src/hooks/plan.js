@@ -1,7 +1,6 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import {useIsFocused} from "@react-navigation/native";
-import {fetchDislikeInfo, fetchPlanAndDetailPlan} from "../module/room";
+import {fetchPlanAndDetailPlan} from "../module/room";
 
 
 export function useWeekSelector() {

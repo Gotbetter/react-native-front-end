@@ -1,20 +1,15 @@
 import {
-    View,
+    Keyboard,
+    Modal,
+    StyleSheet,
     Text,
-    Image,
     TextInput,
     TouchableOpacity,
-    Keyboard,
     TouchableWithoutFeedback,
-    StyleSheet,
-    Modal
+    View
 } from "react-native";
 
-import {useState, useEffect} from 'react';
-
-import {store} from "../../../module/store";
-
-import {useIsFocused} from '@react-navigation/native';
+import {useState} from 'react';
 
 import client from "../../../lib/client";
 

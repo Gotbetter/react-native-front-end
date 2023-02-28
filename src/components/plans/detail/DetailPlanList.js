@@ -1,28 +1,23 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import CheckIcon from "react-native-vector-icons/Fontisto";
 
 // 화면 비율 맞추기 위한 lib
-import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import Icon from "react-native-vector-icons/Entypo";
 
 function DetailPlanList({isMyPlan, detailPlans, onPressCheckBox, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) {
 
     return (
         detailPlans.map((detailPlan) => (
-            <View style={styles.detail_plan}>
+            <View style={styles.detail_plan} key={detailPlan.detail_plan_id}>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-                    <CheckBox key={detailPlan.detail_plan_id}
-                              complete={detailPlan.complete}
+                    <CheckBox complete={detailPlan.complete}
                               onPressCheckBox={isMyPlan === true ? onPressCheckBox : null}
                     />
                 </View>
                 <View style={{flex: 6}}>
-                    <DetailPlanItem key={detailPlan.detail_plan_id}
-                                    content={detailPlan.content}
+                    <DetailPlanItem content={detailPlan.content}
                     />
                 </View>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
