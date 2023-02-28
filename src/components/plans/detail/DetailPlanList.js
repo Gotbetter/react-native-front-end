@@ -13,16 +13,14 @@ function DetailPlanList({isMyPlan, detailPlans, onPressCheckBox, onPressModifyBu
 
     return (
         detailPlans.map((detailPlan) => (
-            <View style={styles.detail_plan}>
+            <View style={styles.detail_plan} key={detailPlan.detail_plan_id}>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-                    <CheckBox key={detailPlan.detail_plan_id}
-                              complete={detailPlan.complete}
+                    <CheckBox complete={detailPlan.complete}
                               onPressCheckBox={isMyPlan === true ? onPressCheckBox : null}
                     />
                 </View>
                 <View style={{flex: 6}}>
-                    <DetailPlanItem key={detailPlan.detail_plan_id}
-                                    content={detailPlan.content}
+                    <DetailPlanItem content={detailPlan.content}
                     />
                 </View>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
