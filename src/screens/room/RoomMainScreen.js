@@ -1,82 +1,46 @@
-import {
-    Keyboard,
-    StyleSheet,
-    Text,
-    TouchableWithoutFeedback,
-    View,
-    TouchableOpacity, Modal, Button,
-} from "react-native";
-import React, {useCallback, useEffect, useState} from "react";
+import {StyleSheet, View,} from "react-native";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import Logo from "../../components/common/Logo";
-import {useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
-import {
-    fetchPlanAndDetailPlan,
-    fetchRoom,
-    fetchParticipants,
-    resetPlanAndDetailPlan,
-    fetchRooms
-} from "../../module/room";
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {fetchParticipants, resetRoom} from "../../module/room";
 import client from "../../lib/client";
 import Toast from "react-native-root-toast";
 import RoomList from "../../components/room/main/RoomList";
-import ToolBar from "../../components/room/main/ToolBar";
+import DateInfo from "../../components/room/main/DateInfo";
 import CurrentWeekDetailPlan from "../../components/room/main/CurrentWeekDetailPlan";
 import ParticipantsPlan from "../../components/room/main/ParticipantsPlan";
 import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
+import {
+    useFetchMyCurrentWeekDetailPlan,
+    useFetchRoomInfo,
+    useFetchRoomList,
+    useGetDayInfo,
+    useRoomLeader
+} from "../../hooks/room";
+import MenuList from "../../components/room/main/MenuList";
 
 function RoomMainScreen() {
 
     const {params: {room_id}} = useRoute();
     const dispatch = useDispatch();
     const navigation = useNavigation();
-    const isFocused = useIsFocused();
 
-    const user = useSelector(({auth}) => auth.user);
-    const {roomList, roomInfo, detailPlans, participants, waitingParticipants} = useSelector(({room}) => room);
+    const {participants, waitingParticipants} = useSelector(({room}) => room);
 
-    const [authority, setAuthority] = useState(false);
+    const roomInfo = useFetchRoomInfo(room_id);
+    const roomList = useFetchRoomList();
+    const isRoomLeader = useRoomLeader();
+    const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
+    const [curWeekLeftDay, studyWeekLeft] = useGetDayInfo();
+
     const [approvalModal, setApprovalModal] = useState(false);
 
     useEffect(() => {
-
-        /** 현재 방 정보 불러오기 **/
-        dispatch(fetchRoom({room_id}));
-
-        /** 내가 만든 방  리스트 불러오기 **/
-        dispatch(fetchRooms());
-
         /** 참가자 정보 불러오기 **/
         dispatch(fetchParticipants({room_id, accepted: true}));
 
-        /** 방장인지 체크 **/
-        if (user != null && participants != null) {
-            participants.map((participants) => {
-                if (participants.auth_id === user.auth_id) {
-                    setAuthority(participants.authority);
-                }
-            });
-        }
-
-    }, [room_id, authority]);
-
-    useEffect(() => {
-        /** 나의 participant_id 찾기 **/
-        if (isFocused == true) {
-            if (participants.length !== 0) {
-                let targetParticipantId = null;
-                participants.forEach((participant) => {
-                    if (participant.user_id === user.user_id) {
-                        targetParticipantId = participant.participant_id;
-                    }
-                });
-
-                /** 이번주 나의 세부 계획 불러오기 **/
-                dispatch(fetchPlanAndDetailPlan({participant_id: targetParticipantId, week: roomInfo.current_week}));
-            }
-        }
-    }, [isFocused]);
-
+    }, [room_id]);
 
     const onPressApproveParticipate = () => {
         setApprovalModal(true);
@@ -124,6 +88,10 @@ function RoomMainScreen() {
             });
     }
 
+    const onPressRoomList = (room_id) => {
+        dispatch(resetRoom());
+        navigation.navigate('home', {room_id});
+    }
     const onPressPlans = (participant) => {
         navigation.navigate('my-plan', {planner: participant});
     }
@@ -138,25 +106,30 @@ function RoomMainScreen() {
 
             <View style={{flex: 0.1}}/>
             <View style={styles.myRoomContainer}>
-                <RoomList rooms={roomList} curRoomId={room_id}/>
+                {
+                    roomList && <RoomList rooms={roomList} curRoomId={room_id} onPress={onPressRoomList}/>
+                }
             </View>
             <View style={{flex: 0.1}}/>
 
             <View style={{flex: 0.1}}/>
             <View style={styles.topBar}>
-                {
-                    roomInfo && <ToolBar roomInfo={roomInfo} authority={authority} onPress={onPressApproveParticipate}/>
-                }
+                <MenuList authority={isRoomLeader} onPress={onPressApproveParticipate}/>
+                <View style={{flex: 1, flexDirection: 'row',}}>
+                    {
+                        roomInfo && <DateInfo studyWeekLeft={studyWeekLeft} weekDayLeft={curWeekLeftDay}/>
+                    }
+                </View>
+
             </View>
             <View style={{flex: 0.1}}/>
 
             <View style={{flex: 0.25}}/>
             <View style={{flex: 4.75, width: '95%', alignSelf: 'center', flexDirection: 'row'}}>
 
-                <View style={{flex: 1, backgroundColor: 'tomato', borderRadius: 20}}>
+                <View style={{flex: 1, borderRadius: 20}}>
                     {
-                        detailPlans &&
-                        <CurrentWeekDetailPlan detailPlans={detailPlans}/>
+                        detailPlans && <CurrentWeekDetailPlan detailPlans={detailPlans}/>
                     }
                 </View>
 
@@ -176,11 +149,8 @@ function RoomMainScreen() {
                                            waitingParticipants={waitingParticipants}
                                            onPressApproval={onPressApproval}/>
             }
-
-
         </View>
     );
-
 }
 
 const styles = StyleSheet.create({
