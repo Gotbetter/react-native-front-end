@@ -107,9 +107,7 @@ function RoomRulesFormScreen({navigation}) {
                             <Text>스터디방 참가비: {request.entry_fee}</Text>
                             <Text>스터디방 규칙: {selectedRuleContents}</Text>
                         </View>
-                        <View style={styles.modal_input_container}>
-                            <InputGroup title={'계좌정보 입력'} targetName={'account'} onChange={onChange}/>
-                        </View>
+                        <InputGroup title={'계좌정보 입력'} targetName={'account'} onChange={onChange}/>
                         <View style={styles.modal_button_container}>
                             <ContinueButton name={'취소'} onPress={() => setShow(false)}/>
                             <ContinueButton name={'방 생성'} onPress={onPressCreateRoom}/>
@@ -176,9 +174,6 @@ const styles = StyleSheet.create(
             borderWidth: 1,
             borderRadius: 10,
             padding: 10,
-        },
-        modal_input_container: {
-            width: "90%"
         },
         modal_button_container: {
             flexDirection: "row",
