@@ -5,6 +5,7 @@ import CheckIcon from "react-native-vector-icons/Fontisto";
 // 화면 비율 맞추기 위한 lib
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import Icon from "react-native-vector-icons/Entypo";
+import InputModal from "../../common/InputModal";
 
 function DetailPlanList({
                             isMyPlan,
@@ -13,7 +14,8 @@ function DetailPlanList({
                             onPressModifyButton,
                             setAddButtonPressed,
                             setModifyButtonPressed,
-                            onPressDetailPlanDislike
+                            onPressDetailPlanDislike,
+
                         }) {
 
     return (
@@ -24,12 +26,13 @@ function DetailPlanList({
                         isMyPlan !== true ?
                             <View/> : <CheckBox detailPlanId={detailPlan.detail_plan_id}
                                                 complete={detailPlan.complete}
-                                                onPressCheckBox={onPressCheckBox}/>
+                                                onPressCheckBox={onPressCheckBox}
+                            />
                     }
                 </View>
                 <View style={{flex: 6}}>
-                    <DetailPlanItem content={detailPlan.content}
-                    />
+                    <DetailPlanItem content={detailPlan.content}/>
+                    <Text>{detailPlan.approve_comment}</Text>
                 </View>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
                     {
@@ -43,10 +46,11 @@ function DetailPlanList({
                                                  setModifyButtonPressed={setModifyButtonPressed}/>
                     }
                 </View>
-
             </View>
+
         ))
-    );
+    )
+        ;
 
 }
 
@@ -56,17 +60,9 @@ const DetailPlanItem = ({content}) => {
 
 const CheckBox = ({detailPlanId, complete, onPressCheckBox}) => {
     return (
-        complete === true ?
-            (
-                <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
-                    <CheckIcon name="checkbox-active" size={wp(5)}/>
-                </TouchableOpacity>
-            ) :
-            (
-                <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
-                    <CheckIcon name="checkbox-passive" size={wp(5)}/>
-                </TouchableOpacity>
-            )
+        <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
+            <CheckIcon name={complete === true ? "checkbox-active" : "checkbox-passive"} size={wp(5)}/>
+        </TouchableOpacity>
     );
 };
 
@@ -120,6 +116,8 @@ const styles = StyleSheet.create(
             alignSelf: 'center',
             marginTop: hp(1),
             flexDirection: 'row',
+            borderWidth: 1,
+
         },
 
         detail_plan_text: {
