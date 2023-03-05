@@ -14,6 +14,7 @@ import Toast from "react-native-root-toast";
 
 import {useDispatch, useSelector} from "react-redux";
 import {login, resetLoginStatus} from "../../module/auth";
+import Logo from "../../components/common/Logo";
 
 
 function LoginScreen({navigation}) {
@@ -84,13 +85,12 @@ function LoginScreen({navigation}) {
                 <View style={{flex: 3}}>
                     <View style={{flex: 1}}/>
                     <View style={{flex: 2}}>
-                        <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
-                               style={styles.logo_image}/>
+                        <Logo/>
                     </View>
                 </View>
 
 
-                <View style={styles.signin_container}>
+                <View style={styles.login_container}>
                     <View style={{flex: 1}}/>
                     <TextInput value={auth_id} style={styles.text_input} placeholder='아이디' placeholderTextColor='black'
                                onChange={(e) => onChange("auth_id", e)}/>
@@ -99,8 +99,8 @@ function LoginScreen({navigation}) {
                                placeholderTextColor='black'
                                onChange={(e) => onChange("password", e)} secureTextEntry={true}/>
                     <View style={{flex: 1}}/>
-                    <TouchableOpacity style={styles.signin_button} onPress={onPressLogin}>
-                        <Text style={styles.signin_button_text}>로그인</Text>
+                    <TouchableOpacity style={styles.login_button} onPress={onPressLogin}>
+                        <Text style={styles.login_button_text}>로그인</Text>
                     </TouchableOpacity>
 
                     <View style={{flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: '80%',
     },
-    signin_container: {
+    login_container: {
         flex: 5,
         alignItems: 'center',
         justifyContent: 'center',
@@ -146,14 +146,14 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         fontSize: 15,
     },
-    signin_button: {
+    login_button: {
         flex: 2,
         width: '90%',
         backgroundColor: 'black',
         borderRadius: 20,
         justifyContent: 'center',
     },
-    signin_button_text: {
+    login_button_text: {
         color: '#FFFFFF',
         textAlign: 'center',
         fontSize: 30,

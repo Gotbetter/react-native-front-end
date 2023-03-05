@@ -15,13 +15,16 @@ import DetailPlanList from "../../components/plans/detail/DetailPlanList";
 import {useFetchPlanAndDetailPlans, usePlanner, useWeekSelector} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    createDetailPlan,
+    cancelDetailPlanDislike,
+    cancelPlanDislike,
+    completeDetailPlan,
+    createDetailPlan, doDetailPlanDislike,
+    doPlanDislike,
     modifyDetailPlan,
     onChangeDetailPlanRequest,
-    planDislike,
-    planDislikeCancel,
     pressDislike,
     resetDetailPlanRequest,
+    undoCompleteDetailPlan,
 } from "../../module/room";
 
 
@@ -48,6 +51,20 @@ export default function PlanScreen() {
 
     }, [clickedWeek]);
 
+    const onPressCheckBox = (complete, detail_plan_id, approve_comment) => {
+
+        const {plan_id} = plan;
+
+        if (doUnCheck(complete)) {
+            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id, approve_comment}));
+        } else {
+            dispatch(completeDetailPlan({plan_id, detail_plan_id}));
+        }
+    };
+
+    const doUnCheck = (complete) => {
+        return complete === true;
+    }
 
     const onPressAddDetailPlan = () => {
         if ('' != request) {
@@ -78,14 +95,26 @@ export default function PlanScreen() {
 
     const onPressPlanDislike = () => {
         const {checked} = planDislikeInfo;
-        console.log(checked);
         if (checked) {
-            dispatch(planDislikeCancel(plan.plan_id));
+            dispatch(cancelPlanDislike(plan.plan_id));
         } else {
-            dispatch(planDislike(plan.plan_id));
+            dispatch(doPlanDislike(plan.plan_id));
         }
         dispatch(pressDislike(checked));
     };
+
+    const onPressDetailPlanDislike = (detail_plan_id, isChecked) => {
+
+        if (cancelDislike(isChecked)) {
+            dispatch(cancelDetailPlanDislike(detail_plan_id))
+        } else {
+            dispatch(doDetailPlanDislike(detail_plan_id))
+        }
+    }
+
+    const cancelDislike = (isChecked) => {
+        return isChecked === true;
+    }
 
     return (
         <View style={styles.container}>
@@ -113,6 +142,8 @@ export default function PlanScreen() {
                             setAddButtonPressed={setIsAddButtonPressed}
                             setModifyButtonPressed={setIsModifyButtonPressed}
                             onPressModifyButton={setModifyDetailPlanId}
+                            onPressCheckBox={onPressCheckBox}
+                            onPressDetailPlanDislike={onPressDetailPlanDislike}
                         />
                     }
                     {

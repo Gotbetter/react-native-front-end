@@ -6,15 +6,26 @@ import CheckIcon from "react-native-vector-icons/Fontisto";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
 import Icon from "react-native-vector-icons/Entypo";
 
-function DetailPlanList({isMyPlan, detailPlans, onPressCheckBox, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) {
+function DetailPlanList({
+                            isMyPlan,
+                            detailPlans,
+                            onPressCheckBox,
+                            onPressModifyButton,
+                            setAddButtonPressed,
+                            setModifyButtonPressed,
+                            onPressDetailPlanDislike
+                        }) {
 
     return (
         detailPlans.map((detailPlan) => (
             <View style={styles.detail_plan} key={detailPlan.detail_plan_id}>
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
-                    <CheckBox complete={detailPlan.complete}
-                              onPressCheckBox={isMyPlan === true ? onPressCheckBox : null}
-                    />
+                    {
+                        isMyPlan !== true ?
+                            <View/> : <CheckBox detailPlanId={detailPlan.detail_plan_id}
+                                                complete={detailPlan.complete}
+                                                onPressCheckBox={onPressCheckBox}/>
+                    }
                 </View>
                 <View style={{flex: 6}}>
                     <DetailPlanItem content={detailPlan.content}
@@ -23,10 +34,13 @@ function DetailPlanList({isMyPlan, detailPlans, onPressCheckBox, onPressModifyBu
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
                     {
                         isMyPlan !== true ?
-                            <EvaluationButton/> : <ModifyFileAddButton detailPlanId={detailPlan.detail_plan_id}
-                                                                       onPressModifyButton={onPressModifyButton}
-                                                                       setAddButtonPressed={setAddButtonPressed}
-                                                                       setModifyButtonPressed={setModifyButtonPressed}/>
+                            <EvaluationButton detailPlanId={detailPlan.detail_plan_id}
+                                              isDislikeChecked={detailPlan.detail_plan_dislike_checked}
+                                              onPress={onPressDetailPlanDislike}/> :
+                            <ModifyFileAddButton detailPlanId={detailPlan.detail_plan_id}
+                                                 onPressModifyButton={onPressModifyButton}
+                                                 setAddButtonPressed={setAddButtonPressed}
+                                                 setModifyButtonPressed={setModifyButtonPressed}/>
                     }
                 </View>
 
@@ -40,23 +54,23 @@ const DetailPlanItem = ({content}) => {
     return <Text style={styles.detail_plan_text}>{content}</Text>
 };
 
-const CheckBox = ({complete, onPressCheckBox}) => {
+const CheckBox = ({detailPlanId, complete, onPressCheckBox}) => {
     return (
         complete === true ?
             (
-                <TouchableOpacity onPress={() => onPressCheckBox()}>
+                <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
                     <CheckIcon name="checkbox-active" size={wp(5)}/>
                 </TouchableOpacity>
             ) :
             (
-                <TouchableOpacity onPress={() => onPressCheckBox()}>
+                <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
                     <CheckIcon name="checkbox-passive" size={wp(5)}/>
                 </TouchableOpacity>
             )
     );
 };
 
-const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPressed,setModifyButtonPressed}) => {
+const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) => {
     return (
         <View style={{justifyContent: 'center'}}>
             <TouchableOpacity onPress={() => {
@@ -78,11 +92,15 @@ const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPre
     )
 }
 
-const EvaluationButton = () => {
+const EvaluationButton = ({detailPlanId, isDislikeChecked, onPress}) => {
     return (
         <View style={styles.detail_dislike_button}>
-            <TouchableOpacity>
-                <Icon name="thumbs-down" color="#BFBFBF" size={hp(4)}/>
+            <TouchableOpacity onPress={() => onPress(detailPlanId, isDislikeChecked)}>
+                <Icon
+                    style={isDislikeChecked === false ? styles.default_detail_plan_thumb : styles.disliked_detail_plan_thumb}
+                    name="thumbs-down"
+                    size={hp(4)}
+                />
             </TouchableOpacity>
         </View>
 
@@ -114,7 +132,12 @@ const styles = StyleSheet.create(
             justifyContent: 'center',
             alignItems: 'center',
         },
-
+        disliked_detail_plan_thumb: {
+            color: "red",
+        },
+        default_detail_plan_thumb: {
+            color: "#BFBFBF"
+        },
         fix_button: {
             backgroundColor: '#DFDFDF',
             width: wp(12),
