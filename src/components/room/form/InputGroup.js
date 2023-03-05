@@ -19,6 +19,8 @@ const styles = StyleSheet.create(
             alignItems: "center",
             flexDirection: 'row',
             width: '90%',
+            height: '10%',
+
         },
         input_title: {
             fontSize: 18,
@@ -29,7 +31,7 @@ const styles = StyleSheet.create(
             borderColor: 'black',
             width: "60%",
             height: "100%",
-            padding: 20,
+            padding: 10,
         },
     }
 );
