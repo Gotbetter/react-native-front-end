@@ -19,8 +19,8 @@ export const doPlanDislike = (plan_id) =>
     client.post(`/plans/${plan_id}/dislike`, {});
 export const cancelPlanDislike = (plan_id) =>
     client.delete(`/plans/${plan_id}/dislike`, {});
-export const completeDetailPlan = ({plan_id, detail_plan_id, approve_comment}) =>
-    client.patch(`/plans/${plan_id}/details/${detail_plan_id}/completed`, {approve_comment: "test"});
+export const completeDetailPlan = ({plan_id, detail_plan_id, approveComment}) =>
+    client.patch(`/plans/${plan_id}/details/${detail_plan_id}/completed`, {approve_comment: approveComment});
 export const undoCompleteDetailPlan = ({plan_id, detail_plan_id}) =>
     client.patch(`/plans/${plan_id}/details/${detail_plan_id}/completed-undo`);
 export const doDetailPlanDislike = (detail_plan_id) =>

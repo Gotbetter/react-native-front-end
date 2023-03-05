@@ -1,6 +1,6 @@
 import {ScrollView, StyleSheet, View,} from "react-native";
 
-import {useEffect, useState,} from "react";
+import React, {useEffect, useState,} from "react";
 
 // 화면 비율 맞추기 위한 lib
 import {widthPercentageToDP as wp,} from 'react-native-responsive-screen';
@@ -26,6 +26,7 @@ import {
     resetDetailPlanRequest,
     undoCompleteDetailPlan,
 } from "../../module/room";
+import InputModal from "../../components/common/InputModal";
 
 
 export default function PlanScreen() {
@@ -42,6 +43,10 @@ export default function PlanScreen() {
     const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, clickedWeek);
     const isMyPlan = usePlanner(planner);
 
+    const [isCompleted, setIsCompleted] = useState(null);
+    const [completedDetailPlanId, setCompletedDetailPlanId] = useState(null);
+    const [approveComment, setApproveComment] = useState('');
+    const [openApproveCommentModal, setOpenApproveCommentModal] = useState(false);
 
     useEffect(() => {
         /** 추가하기 버튼 상태 초기화 **/
@@ -51,21 +56,30 @@ export default function PlanScreen() {
 
     }, [clickedWeek]);
 
-    const onPressCheckBox = (complete, detail_plan_id, approve_comment) => {
+    /** 세부계획 완료 체크 박스 **/
+    const onPressCheckBox = (complete, detailPlanId) => {
+        setOpenApproveCommentModal(true);
+        setIsCompleted(complete);
+        setCompletedDetailPlanId(detailPlanId);
 
-        const {plan_id} = plan;
-
-        if (doUnCheck(complete)) {
-            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id, approve_comment}));
-        } else {
-            dispatch(completeDetailPlan({plan_id, detail_plan_id}));
-        }
     };
+
+    const onPressEnter = () => {
+        const {plan_id} = plan;
+        if (doUnCheck(isCompleted)) {
+            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id: completedDetailPlanId}));
+        } else {
+            dispatch(completeDetailPlan({plan_id, detail_plan_id: completedDetailPlanId, approveComment}));
+        }
+        setOpenApproveCommentModal(false);
+        setApproveComment('');
+    }
 
     const doUnCheck = (complete) => {
         return complete === true;
     }
 
+    /** 세부계획 추가하기 버튼 **/
     const onPressAddDetailPlan = () => {
         if ('' != request) {
             dispatch(createDetailPlan({
@@ -77,6 +91,7 @@ export default function PlanScreen() {
         }
     }
 
+    /** 세부계획 수정하기 버튼 **/
     const onPressModifyDetailPlan = () => {
         if ('' != request) {
             dispatch(modifyDetailPlan({
@@ -93,6 +108,7 @@ export default function PlanScreen() {
         dispatch(onChangeDetailPlanRequest(text));
     }
 
+    /** 계획 싫어요 버튼 **/
     const onPressPlanDislike = () => {
         const {checked} = planDislikeInfo;
         if (checked) {
@@ -103,6 +119,7 @@ export default function PlanScreen() {
         dispatch(pressDislike(checked));
     };
 
+    /** 세부계획 싫어요 버튼 **/
     const onPressDetailPlanDislike = (detail_plan_id, isChecked) => {
 
         if (cancelDislike(isChecked)) {
@@ -172,11 +189,16 @@ export default function PlanScreen() {
                     isMyPlan && isMyPlan === true ?
                         planDislikeInfo && <DislikeEvaluationCount planDislikeInfo={planDislikeInfo}/>
                         :
-                        planDislikeInfo && <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
+                        planDislikeInfo &&
+                        <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
                 }
             </View>
-
             <View style={{flex: 0.5}}/>
+
+            <InputModal modalTitle={'Memo'} inputTitle={'메모 입력'} target={approveComment}
+                        onChangeTarget={setApproveComment} show={openApproveCommentModal}
+                        setShow={setOpenApproveCommentModal}
+                        onPress={onPressEnter}/>
         </View>
     );
 }
