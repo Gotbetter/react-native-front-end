@@ -12,7 +12,8 @@ function DetailPlanList({
                             onPressCheckBox,
                             onPressModifyButton,
                             setAddButtonPressed,
-                            setModifyButtonPressed
+                            setModifyButtonPressed,
+                            onPressDetailPlanDislike
                         }) {
 
     return (
@@ -22,7 +23,6 @@ function DetailPlanList({
                     {
                         isMyPlan !== true ?
                             <View/> : <CheckBox detailPlanId={detailPlan.detail_plan_id}
-                                                checked={detailPlan.checked}
                                                 complete={detailPlan.complete}
                                                 onPressCheckBox={onPressCheckBox}/>
                     }
@@ -34,10 +34,13 @@ function DetailPlanList({
                 <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
                     {
                         isMyPlan !== true ?
-                            <EvaluationButton/> : <ModifyFileAddButton detailPlanId={detailPlan.detail_plan_id}
-                                                                       onPressModifyButton={onPressModifyButton}
-                                                                       setAddButtonPressed={setAddButtonPressed}
-                                                                       setModifyButtonPressed={setModifyButtonPressed}/>
+                            <EvaluationButton detailPlanId={detailPlan.detail_plan_id}
+                                              isDislikeChecked={detailPlan.detail_plan_dislike_checked}
+                                              onPress={onPressDetailPlanDislike}/> :
+                            <ModifyFileAddButton detailPlanId={detailPlan.detail_plan_id}
+                                                 onPressModifyButton={onPressModifyButton}
+                                                 setAddButtonPressed={setAddButtonPressed}
+                                                 setModifyButtonPressed={setModifyButtonPressed}/>
                     }
                 </View>
 
@@ -51,16 +54,16 @@ const DetailPlanItem = ({content}) => {
     return <Text style={styles.detail_plan_text}>{content}</Text>
 };
 
-const CheckBox = ({detailPlanId, complete, checked, onPressCheckBox}) => {
+const CheckBox = ({detailPlanId, complete, onPressCheckBox}) => {
     return (
-        checked === true ?
+        complete === true ?
             (
-                <TouchableOpacity onPress={() => onPressCheckBox(checked,detailPlanId)}>
+                <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
                     <CheckIcon name="checkbox-active" size={wp(5)}/>
                 </TouchableOpacity>
             ) :
             (
-                <TouchableOpacity onPress={() => onPressCheckBox(checked, detailPlanId)}>
+                <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
                     <CheckIcon name="checkbox-passive" size={wp(5)}/>
                 </TouchableOpacity>
             )
@@ -89,11 +92,15 @@ const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPre
     )
 }
 
-const EvaluationButton = () => {
+const EvaluationButton = ({detailPlanId, isDislikeChecked, onPress}) => {
     return (
         <View style={styles.detail_dislike_button}>
-            <TouchableOpacity>
-                <Icon name="thumbs-down" color="#BFBFBF" size={hp(4)}/>
+            <TouchableOpacity onPress={() => onPress(detailPlanId, isDislikeChecked)}>
+                <Icon
+                    style={isDislikeChecked === false ? styles.default_detail_plan_thumb : styles.disliked_detail_plan_thumb}
+                    name="thumbs-down"
+                    size={hp(4)}
+                />
             </TouchableOpacity>
         </View>
 
@@ -125,7 +132,12 @@ const styles = StyleSheet.create(
             justifyContent: 'center',
             alignItems: 'center',
         },
-
+        disliked_detail_plan_thumb: {
+            color: "red",
+        },
+        default_detail_plan_thumb: {
+            color: "#BFBFBF"
+        },
         fix_button: {
             backgroundColor: '#DFDFDF',
             width: wp(12),

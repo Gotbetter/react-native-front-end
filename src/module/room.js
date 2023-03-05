@@ -95,6 +95,8 @@ export const createDetailPlan = createThunk("plan/CREATE_DETAIL_PLAN", planApi.c
 export const modifyDetailPlan = createThunk("plan/MODIFY_DETAIL_PLAN", planApi.updateDetailPlan);
 export const completeDetailPlan = createThunk("plan/COMPLETE_DETAIL_PLAN", planApi.completeDetailPlan);
 export const undoCompleteDetailPlan = createThunk("plan/UNDO_COMPLETE_DETAIL_PLAN", planApi.undoCompleteDetailPlan);
+export const doDetailPlanDislike = createThunk("plan/DISLIKE_DETAIL_PLAN", planApi.doDetailPlanDislike);
+export const cancelDetailPlanDislike = createThunk("plan/CANCEL_DISLIKE_DETAIL_PLAN", planApi.cancelDetailPlanDislike);
 const room = createSlice(
     {
         name: 'room',
@@ -217,6 +219,7 @@ const room = createSlice(
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
                         approve_comment: data.approve_comment,
+                        complete: data.complete,
                         checked: data.checked
                     } : detailPlan);
                     state.detailPlans = next;
@@ -228,13 +231,37 @@ const room = createSlice(
                     const prev = state.detailPlans;
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
+                        complete: data.complete,
                         checked: data.checked
                     } : detailPlan);
                     state.detailPlans = next;
                 })
                 .addCase(undoCompleteDetailPlan.rejected, (state, {payload: {message}}) => {
                     state.error = message;
-                });
+                })
+                .addCase(doDetailPlanDislike.fulfilled, (state, {payload: {data}}) => {
+                    const prev = state.detailPlans;
+                    const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
+                        ...detailPlan,
+                        detail_plan_dislike_checked: data.detail_plan_dislike_checked
+                    } : detailPlan);
+                    state.detailPlans = next;
+                })
+                .addCase(doDetailPlanDislike.rejected, (state, {payload:{message}}) => {
+                    state.error = message;
+                })
+                .addCase(cancelDetailPlanDislike.fulfilled, (state, {payload: {data}}) => {
+                    const prev = state.detailPlans;
+                    const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
+                        ...detailPlan,
+                        detail_plan_dislike_checked: data.detail_plan_dislike_checked
+                    } : detailPlan);
+                    state.detailPlans = next;
+                })
+                .addCase(cancelDetailPlanDislike.rejected, (state, {payload:{message}}) => {
+                    state.error = message;
+                })
+
 
         }
     }

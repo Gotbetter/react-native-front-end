@@ -15,14 +15,16 @@ import DetailPlanList from "../../components/plans/detail/DetailPlanList";
 import {useFetchPlanAndDetailPlans, usePlanner, useWeekSelector} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
 import {
+    cancelDetailPlanDislike,
+    cancelPlanDislike,
     completeDetailPlan,
-    createDetailPlan,
+    createDetailPlan, doDetailPlanDislike,
+    doPlanDislike,
     modifyDetailPlan,
     onChangeDetailPlanRequest,
-    doPlanDislike,
-    cancelPlanDislike,
     pressDislike,
-    resetDetailPlanRequest, undoCompleteDetailPlan,
+    resetDetailPlanRequest,
+    undoCompleteDetailPlan,
 } from "../../module/room";
 
 
@@ -49,19 +51,19 @@ export default function PlanScreen() {
 
     }, [clickedWeek]);
 
-    const onPressCheckBox = (checked, detail_plan_id, approve_comment) => {
+    const onPressCheckBox = (complete, detail_plan_id, approve_comment) => {
 
         const {plan_id} = plan;
 
-        if (doUnCheck()) {
+        if (doUnCheck(complete)) {
             dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id, approve_comment}));
         } else {
             dispatch(completeDetailPlan({plan_id, detail_plan_id}));
         }
     };
 
-    const doUnCheck = (checked) => {
-        return checked === true;
+    const doUnCheck = (complete) => {
+        return complete === true;
     }
 
     const onPressAddDetailPlan = () => {
@@ -101,6 +103,19 @@ export default function PlanScreen() {
         dispatch(pressDislike(checked));
     };
 
+    const onPressDetailPlanDislike = (detail_plan_id, isChecked) => {
+
+        if (cancelDislike(isChecked)) {
+            dispatch(cancelDetailPlanDislike(detail_plan_id))
+        } else {
+            dispatch(doDetailPlanDislike(detail_plan_id))
+        }
+    }
+
+    const cancelDislike = (isChecked) => {
+        return isChecked === true;
+    }
+
     return (
         <View style={styles.container}>
 
@@ -128,6 +143,7 @@ export default function PlanScreen() {
                             setModifyButtonPressed={setIsModifyButtonPressed}
                             onPressModifyButton={setModifyDetailPlanId}
                             onPressCheckBox={onPressCheckBox}
+                            onPressDetailPlanDislike={onPressDetailPlanDislike}
                         />
                     }
                     {
