@@ -1,20 +1,20 @@
 import React, {useCallback, useEffect} from 'react';
 import {useDispatch} from "react-redux";
-import {useFetchRoom} from "../hooks/room";
+import {useFetchRoomList} from "../hooks/room";
 import {fetchUser, logout} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {BackHandler, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../components/common/Logo";
 import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
-import {resetPlanAndDetailPlan, resetRoom} from "../module/room";
+import {resetPlanAndDetailPlan, resetRoom, resetRoomCreateRequest} from "../module/room";
 
 function MainScreen({navigation}) {
 
     const dispatch = useDispatch();
     const curScreen = useRoute();
+    const isFocused = useIsFocused();
 
-
-    const [rooms, isFetchRoom] = useFetchRoom();
+    const roomList = useFetchRoomList();
 
     /** Android 로그인 화면으로 뒤로가기 금지하기 **/
     useFocusEffect(useCallback(() => {
@@ -34,12 +34,16 @@ function MainScreen({navigation}) {
         /** 로그인한 유저 정보 불러오기 **/
         dispatch(fetchUser());
 
-    }, [rooms]);
+    }, [roomList]);
 
     useEffect(() => {
-        dispatch(resetPlanAndDetailPlan());
-        dispatch(resetRoom());
-    }, [useIsFocused()]);
+        /** 방 정보, 리스트, 계획, 세부계획 정보 초기값으로 리셋**/
+        if (isFocused) {
+            dispatch(resetPlanAndDetailPlan());
+            dispatch(resetRoomCreateRequest());
+            dispatch(resetRoom());
+        }
+    }, [isFocused]);
 
     const onPressLogout = () => {
         AsyncStorage.getAllKeys()
@@ -77,17 +81,13 @@ function MainScreen({navigation}) {
                 <View style={{flex: 0.5}}/>
             </View>
 
-            {isFetchRoom && (
-                <Text>로딩중...</Text>
-            )}
-
             <View style={{flex: 3, alignItems: 'center'}}>
                 <View style={{flex: 1}}/>
                 <View style={styles.rooms_container}>
                     <View style={{flex: 0.5}}/>
                     <View style={{flex: 4.5, flexDirection: 'row',}}>
-                        {rooms && (
-                            rooms.map((room) => (
+                        {roomList && (
+                            roomList.map((room) => (
                                 <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
                                     <View style={{flex: 1}}/>
                                     <TouchableOpacity style={styles.room}
