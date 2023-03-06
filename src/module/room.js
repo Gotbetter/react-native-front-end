@@ -176,6 +176,7 @@ const room = createSlice(
                 })
                 .addCase(createRoom.fulfilled, (state, {payload: {data, status}}) => {
                     state.status.ROOM_CREATE = status
+                    state.roomInfo = data;
                 })
                 .addCase(createRoom.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.error = message;

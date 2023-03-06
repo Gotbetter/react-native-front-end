@@ -28,10 +28,9 @@ function RoomRulesFormScreen({navigation}) {
 
     useEffect(() => {
         if (status === 201) {
-            Toast.show('방 생성 완료', {duration: Toast.durations.LONG});
-            dispatch(resetRoomCreateRequest());
+            navigation.navigate('room-create-result-screen',{selectedRuleContents});
+            setShow(false);
             dispatch(resetStatus('ROOM_CREATE'));
-            navigation.navigate('main');
         } else if (status === 403) {
             Toast.show('토큰 만료', {duration: Toast.durations.LONG});
         } else if (status === 400) {
@@ -99,14 +98,6 @@ function RoomRulesFormScreen({navigation}) {
                 <Modal isVisible={true}
                        transparent>
                     <View style={styles.modal_container}>
-                        <View style={styles.modal_subinfo}>
-                            <Text>스터디방 이름: {request.title}</Text>
-                            <Text>스터디방 인원: {request.max_user_num}</Text>
-                            <Text>스터디 시작일: {request.start_date.toLocaleDateString()}</Text>
-                            <Text>스터디 기간: {request.week}주</Text>
-                            <Text>스터디방 참가비: {request.entry_fee}</Text>
-                            <Text>스터디방 규칙: {selectedRuleContents}</Text>
-                        </View>
                         <InputGroup title={'계좌정보 입력'} targetName={'account'} onChange={onChange}/>
                         <View style={styles.modal_button_container}>
                             <ContinueButton name={'취소'} onPress={() => setShow(false)}/>
@@ -116,8 +107,6 @@ function RoomRulesFormScreen({navigation}) {
                 </Modal>
 
             )}
-
-
         </View>
     );
 }
@@ -161,14 +150,12 @@ const styles = StyleSheet.create(
         },
 
         modal_container: {
-            height: "60%",
-            position: "absolute",
-            top: "25%", left: 0, bottom: 0, right: 0,
+            height: "100%",
+            width: "100%",
             backgroundColor: 'white',
             justifyContent: "center",
             alignItems: "center",
         },
-
         modal_subinfo: {
             width: "90%",
             borderWidth: 1,
