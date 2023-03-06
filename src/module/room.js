@@ -8,14 +8,15 @@ const initialState = {
     roomInfo: null,
     roomRules: [],
     roomList: [],
+    /** 기본 값이 바뀔경우 수정 필요 **/
     roomRequest: {
         title: '',
-        max_user_num: 1,
+        max_user_num: 2,
         start_date: null,
-        week: null,
+        week: 1,
         current_week: 1,
-        entry_fee: null,
-        rule_id: null,
+        entry_fee: 5000,
+        rule_id: 1,
         account: '',
     },
     detailPlanRequest: "",
@@ -126,14 +127,14 @@ const room = createSlice(
             resetRoomCreateRequest: (state, action) => {
                 state.roomRequest = {
                     title: '',
-                    max_user_num: null,
+                    max_user_num: 2,
                     start_date: null,
-                    week: null,
+                    week: 1,
                     current_week: 1,
-                    entry_fee: null,
-                    rule_id: null,
+                    entry_fee: 5000,
+                    rule_id: 1,
                     account: '',
-                };
+                }
             },
             resetDetailPlanRequest: (state) => {
                 state.detailPlanRequest = "";
