@@ -6,25 +6,6 @@ import useUpdateEffect from "./common";
 import {fetchDetailPlan, fetchPlan} from "../lib/plans";
 
 
-export const useFetchRoom = () => {
-
-    const dispatch = useDispatch();
-    const isFocused = useIsFocused();
-
-    const {roomList, loading} = useSelector(({auth, room}) => ({
-        roomList: room.roomList,
-    }));
-
-    useEffect(() => {
-        if (isFocused == true) {
-            dispatch(fetchRooms());
-        }
-    }, [dispatch, isFocused]);
-
-
-    return [roomList, loading];
-}
-
 export function useFetchRoomInfo(room_id) {
 
     const dispatch = useDispatch();
