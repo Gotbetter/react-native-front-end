@@ -118,6 +118,11 @@ const room = createSlice(
             pressDislike: (state, {payload: checked}) => {
                 state.planDislikeInfo.checked = !checked;
             },
+            approvalCompleted: (state, {payload: user_id}) => {
+                const before = state.waitingParticipants;
+                const after = before.filter(participant => participant.user_id !== user_id);
+                state.waitingParticipants = after;
+            },
             onChangeRoomRequest: (state, {payload: request}) => {
                 state.roomRequest = request;
             },
@@ -273,6 +278,7 @@ export const {
     storePlan,
     storePlanDislikeInfo,
     storeDetailPlans,
+    approvalCompleted,
     onChangeRoomRequest,
     onChangeDetailPlanRequest,
     resetRoomCreateRequest,
