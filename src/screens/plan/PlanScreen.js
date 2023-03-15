@@ -162,8 +162,10 @@ export default function PlanScreen() {
             <View style={styles.detail_plans_container}>
                 <ScrollView style={{flex: 1,}}>
                     {
-                        detailPlans &&
+                        detailPlans && planDislikeInfo &&
                         <DetailPlanList
+                            participantsCount={participants.length}
+                            planDislikeInfo={planDislikeInfo}
                             isMyPlan={isMyPlan}
                             detailPlans={detailPlans}
                             setAddButtonPressed={setIsAddButtonPressed}

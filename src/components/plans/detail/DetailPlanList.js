@@ -8,6 +8,8 @@ import Icon from "react-native-vector-icons/Entypo";
 import InputModal from "../../common/InputModal";
 
 function DetailPlanList({
+                            planDislikeInfo,
+                            participantsCount,
                             isMyPlan,
                             detailPlans,
                             onPressCheckBox,
@@ -18,10 +20,11 @@ function DetailPlanList({
 
                         }) {
 
+
     return (
         detailPlans.map((detailPlan) => (
-            <View style={styles.detail_plan} key={detailPlan.detail_plan_id}>
-                <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
+            <View style={styles.outer_container} key={detailPlan.detail_plan_id}>
+                <View style={styles.main_content_container}>
                     {
                         isMyPlan !== true ?
                             <View/> : <CheckBox detailPlanId={detailPlan.detail_plan_id}
@@ -29,23 +32,29 @@ function DetailPlanList({
                                                 onPressCheckBox={onPressCheckBox}
                             />
                     }
-                </View>
-                <View style={{flex: 6}}>
-                    <DetailPlanItem content={detailPlan.content}/>
-                    <Text>{detailPlan.approve_comment}</Text>
-                </View>
-                <View style={{flex: 2, justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={styles.content_container}>
+                        <DetailPlanItem content={detailPlan.content}/>
+                        <Text style={styles.additional_info_text}>{detailPlan.approve_comment}</Text>
+                    </View>
+
                     {
                         isMyPlan !== true ?
                             <EvaluationButton detailPlanId={detailPlan.detail_plan_id}
                                               isDislikeChecked={detailPlan.detail_plan_dislike_checked}
-                                              onPress={onPressDetailPlanDislike}/> :
+                                              onPress={onPressDetailPlanDislike}/>
+                            :
                             <ModifyFileAddButton detailPlanId={detailPlan.detail_plan_id}
                                                  onPressModifyButton={onPressModifyButton}
                                                  setAddButtonPressed={setAddButtonPressed}
                                                  setModifyButtonPressed={setModifyButtonPressed}/>
                     }
+
                 </View>
+                <View style={styles.dislike_count_container}>
+                    <Text>싫어요 수: {planDislikeInfo.dislike_count} / {participantsCount}</Text>
+                </View>
+
+
             </View>
 
         ))
@@ -55,34 +64,32 @@ function DetailPlanList({
 }
 
 const DetailPlanItem = ({content}) => {
-    return <Text style={styles.detail_plan_text}>{content}</Text>
+    return <Text style={styles.content_text}>{content}</Text>
 };
 
 const CheckBox = ({detailPlanId, complete, onPressCheckBox}) => {
     return (
-        <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
-            <CheckIcon name={complete === true ? "checkbox-active" : "checkbox-passive"} size={wp(5)}/>
-        </TouchableOpacity>
+        <View>
+            <TouchableOpacity onPress={() => onPressCheckBox(complete, detailPlanId)}>
+                <CheckIcon name={complete === true ? "checkbox-active" : "checkbox-passive"} size={wp(5)}/>
+            </TouchableOpacity>
+        </View>
+
     );
 };
 
 const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) => {
     return (
-        <View style={{justifyContent: 'center'}}>
-            <TouchableOpacity onPress={() => {
+        <View style={styles.button_group_container}>
+            <TouchableOpacity style={styles.fix_button} onPress={() => {
                 onPressModifyButton(detailPlanId);
                 setAddButtonPressed(false);
                 setModifyButtonPressed(true);
             }}>
-                <View style={styles.fix_button}>
-                    <Text>수정</Text>
-                </View>
+                <Text>수정</Text>
             </TouchableOpacity>
-            <View style={{height: hp(1)}}/>
-            <TouchableOpacity>
-                <View style={styles.add_file_button}>
-                    <Text>파일 첨부</Text>
-                </View>
+            <TouchableOpacity style={styles.add_file_button}>
+                <Text>파일 첨부</Text>
             </TouchableOpacity>
         </View>
     )
@@ -106,24 +113,38 @@ const EvaluationButton = ({detailPlanId, isDislikeChecked, onPress}) => {
 
 const styles = StyleSheet.create(
     {
-        detail_plan: {
-            flex: 1,
+
+        outer_container: {
             width: wp(80),
-            height: hp(10),
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 20,
+            height: hp(16),
             alignSelf: 'center',
+            borderRadius: 20,
             marginTop: hp(1),
-            flexDirection: 'row',
             borderWidth: 1,
-
+            padding: "2%",
         },
+        main_content_container: {
 
-        detail_plan_text: {
+            width: "100%",
+            height: "80%",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+        },
+        content_container: {
+            width: "60%",
+            height: "70%",
+            justifyContent: "center",
+        },
+        content_text: {
             color: '#000000',
-            textAlign: 'center',
-            fontSize: 15,
+            textAlign: "left",
+            fontSize: "20%",
+            fontWeight: "bold",
+            marginBottom: "5%",
+        },
+        additional_info_text: {
+            fontSize: "16%",
         },
         detail_dislike_button: {
             flex: 1,
@@ -136,23 +157,27 @@ const styles = StyleSheet.create(
         default_detail_plan_thumb: {
             color: "#BFBFBF"
         },
+        button_group_container: {
+            height: "70%",
+            width: "25%",
+            justifyContent: "space-between",
+            alignItems: "center",
+        },
         fix_button: {
             backgroundColor: '#DFDFDF',
-            width: wp(12),
-            height: wp(6),
+            width: "60%",
+            height: "40%",
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 10,
-            alignSelf: 'center',
         },
         add_file_button: {
             backgroundColor: '#DFDFDF',
-            width: wp(15),
-            height: wp(6),
+            width: "100%",
+            height: "40%",
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: 10,
-            alignSelf: 'center',
         },
     }
 );
