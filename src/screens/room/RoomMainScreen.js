@@ -20,6 +20,7 @@ import {
 } from "../../hooks/room";
 import MenuList from "../../components/room/main/MenuList";
 import RoomInfoModal from "../../components/room/main/RoomInfoModal";
+import RankModal from "../../components/room/main/RankModal";
 
 function RoomMainScreen() {
 
@@ -37,6 +38,7 @@ function RoomMainScreen() {
 
     const [approvalModal, setApprovalModal] = useState(false);
     const [roomInfoModal, setRoomInfoModal] = useState(false);
+    const [rankModal, setRankModal] = useState(false);
 
     useEffect(() => {
         /** 참가자 정보 불러오기 **/
@@ -48,6 +50,10 @@ function RoomMainScreen() {
         setApprovalModal(true);
         dispatch(fetchParticipants({room_id, accepted: false}))
     };
+
+    const onPressRank = () => {
+        setRankModal(true);
+    }
 
     const onPressRoomInfo = () => {
         setRoomInfoModal(true);
@@ -125,6 +131,7 @@ function RoomMainScreen() {
             <View style={styles.topBar}>
                 {/* 메뉴 리스트 */}
                 <MenuList isRoomLeader={isRoomLeader} onPress={onPressApproveParticipate}
+                          onPressRank={onPressRank}
                           onPressRoomInfo={onPressRoomInfo}/>
                 <View style={{flex: 1, flexDirection: 'row',}}>
                     {
@@ -162,6 +169,9 @@ function RoomMainScreen() {
                                            onPressApproval={onPressApproval}/>
             }
             <RoomInfoModal show={roomInfoModal} setShow={setRoomInfoModal}/>
+            {
+                roomInfo && <RankModal room_id={roomInfo.room_id} show={rankModal} setShow={setRankModal}/>
+            }
         </View>
     );
 }
