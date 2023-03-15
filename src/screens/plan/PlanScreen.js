@@ -18,7 +18,8 @@ import {
     cancelDetailPlanDislike,
     cancelPlanDislike,
     completeDetailPlan,
-    createDetailPlan, doDetailPlanDislike,
+    createDetailPlan,
+    doDetailPlanDislike,
     doPlanDislike,
     modifyDetailPlan,
     onChangeDetailPlanRequest,
@@ -37,7 +38,10 @@ export default function PlanScreen() {
     const [isModifyButtonPressed, setIsModifyButtonPressed] = useState(false);
     const [modifyDetailPlanId, setModifyDetailPlanId] = useState(null);
 
-    const {request} = useSelector(({room}) => ({request: room.detailPlanRequest}));
+    const {request, participants} = useSelector(({room}) => ({
+        request: room.detailPlanRequest,
+        participants: room.participants
+    }));
 
     const [weekList, clickedWeek, setClickedWeek] = useWeekSelector()
     const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, clickedWeek);
@@ -77,6 +81,12 @@ export default function PlanScreen() {
 
     const doUnCheck = (complete) => {
         return complete === true;
+    }
+
+    const onPressWeekList = (week) => {
+        if (plan.week >= week) {
+            setClickedWeek(week);
+        }
     }
 
     /** 세부계획 추가하기 버튼 **/
@@ -144,7 +154,7 @@ export default function PlanScreen() {
                 plannerName={planner.username}
                 weekList={weekList}
                 clickedWeek={clickedWeek}
-                setClickedWeek={setClickedWeek}
+                onPress={onPressWeekList}
             />
 
             <View style={{flex: 0.1}}/>
@@ -169,8 +179,8 @@ export default function PlanScreen() {
                                 plan && plan.three_days_passed === false ?
                                     (
                                         <DetailPlanInput
-                                            isAddButtonPressed={isAddButtonPressed}
-                                            isModifyButtonPressed={isModifyButtonPressed}
+                                            addButtonPressed={isAddButtonPressed}
+                                            modifyButtonPressed={isModifyButtonPressed}
                                             setAddButtonPressed={setIsAddButtonPressed}
                                             setModifyButtonPressed={setIsModifyButtonPressed}
                                             onPressModifyDetailPlan={onPressModifyDetailPlan}
@@ -187,7 +197,8 @@ export default function PlanScreen() {
             <View style={{flex: 1, flexDirection: 'row',}}>
                 {
                     isMyPlan && isMyPlan === true ?
-                        planDislikeInfo && <DislikeEvaluationCount planDislikeInfo={planDislikeInfo}/>
+                        planDislikeInfo && participants &&
+                        <DislikeEvaluationCount participantsCount={participants.length} planDislikeInfo={planDislikeInfo}/>
                         :
                         planDislikeInfo &&
                         <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
