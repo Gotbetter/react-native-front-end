@@ -2,7 +2,7 @@ import React from 'react';
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
-function WeekList({plannerName, weekList, clickedWeek, setClickedWeek}) {
+function WeekList({plannerName, weekList, clickedWeek, onPress}) {
     return (
         <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={{flex: 0.5}}/>
@@ -16,7 +16,7 @@ function WeekList({plannerName, weekList, clickedWeek, setClickedWeek}) {
                             weekList.map((week) => (
                                 <TouchableOpacity key={week}
                                                   style={clickedWeek === week ? styles.current_week : styles.non_current_week}
-                                                  onPress={() => setClickedWeek(week)}>
+                                                  onPress={() => onPress(week)}>
                                     <Text style={clickedWeek === week ? styles.current_week_text : styles.week_text}>
                                         {week}주차
                                     </Text>
