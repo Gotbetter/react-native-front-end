@@ -2,7 +2,7 @@ import React from 'react';
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useSelector} from "react-redux";
 import {StyleSheet, Text, View} from "react-native";
-import ContinueButton from "../../../components/room/form/ContinueButton";
+import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 
 function RoomCreateResultScreen() {
     const navigation = useNavigation();
@@ -27,7 +27,11 @@ function RoomCreateResultScreen() {
                 <Text>스터디방 규칙: {selectedRuleContents}</Text>
                 <Text style={styles.highlight}>방 코드: {roomInfo.room_code}</Text>
             </View>
-            <ContinueButton name={'확인'} onPress={onPressEnter}/>
+            <View style={styles.button_container}>
+                <NextOrCloseButton name={'확인'} onPress={onPressEnter}/>
+            </View>
+
+
         </View>
     );
 }
@@ -44,6 +48,11 @@ const styles = StyleSheet.create(
             borderWidth: 1,
             borderRadius: 18,
             padding: 12,
+        },
+        button_container: {
+            marginTop: "10%",
+            width: "30%",
+            height: "10%",
         },
         highlight: {
             fontWeight: "bold",

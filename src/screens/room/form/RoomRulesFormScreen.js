@@ -4,7 +4,7 @@ import {createRoom, fetchRules, onChangeRoomRequest, resetRoomCreateRequest, res
 import Toast from "react-native-root-toast";
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../../../components/common/Logo";
-import ContinueButton from "../../../components/room/form/ContinueButton";
+import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 import InputGroup from "../../../components/room/form/InputGroup";
 
 function RoomRulesFormScreen({navigation}) {
@@ -92,16 +92,24 @@ function RoomRulesFormScreen({navigation}) {
                         </Text>
                     </TouchableOpacity>
                 ))}
-                <ContinueButton name="계속하기" onPress={onPress}/>
+                <View style={styles.button_container}>
+                    <NextOrCloseButton name="계속하기" onPress={onPress}/>
+                </View>
+
             </View>
             {show && (
                 <Modal isVisible={true}
                        transparent>
                     <View style={styles.modal_container}>
                         <InputGroup title={'계좌정보 입력'} targetName={'account'} onChange={onChange}/>
-                        <View style={styles.modal_button_container}>
-                            <ContinueButton name={'취소'} onPress={() => setShow(false)}/>
-                            <ContinueButton name={'방 생성'} onPress={onPressCreateRoom}/>
+                        <View style={styles.modal_button_group_container}>
+                            <View style={styles.modal_button_container}>
+                                <NextOrCloseButton name={'취소'} onPress={() => setShow(false)}/>
+                            </View>
+                            <View style={styles.modal_button_container}>
+                                <NextOrCloseButton name={'방 생성'} onPress={onPressCreateRoom}/>
+                            </View>
+
                         </View>
                     </View>
                 </Modal>
@@ -130,6 +138,7 @@ const styles = StyleSheet.create(
             fontWeight: 'bold',
         },
 
+
         rule_container: {
             width: "90%",
             height: 80,
@@ -148,7 +157,11 @@ const styles = StyleSheet.create(
         rule_text: {
             fontSize: 18,
         },
-
+        button_container: {
+            marginTop: "10%",
+            width: "30%",
+            height: "10%",
+        },
         modal_container: {
             height: "100%",
             width: "100%",
@@ -162,10 +175,16 @@ const styles = StyleSheet.create(
             borderRadius: 10,
             padding: 10,
         },
-        modal_button_container: {
+        modal_button_group_container: {
             flexDirection: "row",
-            width: "90%",
-            justifyContent: "space-around",
+            justifyContent: "space-between",
+            marginTop: "10%",
+            width: "80%",
+            height: "8%"
+        },
+        modal_button_container: {
+            width: "40%",
+            height: "100%",
         },
 
 

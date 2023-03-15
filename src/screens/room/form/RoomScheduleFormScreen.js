@@ -8,7 +8,7 @@ import FormattedDate from "../../../components/common/FormattedDate";
 import {AntDesign} from "@expo/vector-icons";
 import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
-import ContinueButton from "../../../components/room/form/ContinueButton";
+import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 import Calendar from "../../../components/room/form/Calendar";
 
 function RoomScheduleFormScreen({navigation}) {
@@ -115,7 +115,10 @@ function RoomScheduleFormScreen({navigation}) {
                     <SelectGroup selected={request.week} targetName={"week"} items={getSelectItems()}
                                  onChange={onChangeWeek}/>
                 </InputGroup>
-                <ContinueButton onPress={onPressNext}/>
+                <View style={styles.button_container}>
+                    <NextOrCloseButton onPress={onPressNext}/>
+                </View>
+
             </View>
             {show && <Calendar show={show}
                                onChangeDateAndroid={onChangeDateAndroid}
@@ -139,6 +142,11 @@ const styles = StyleSheet.create(
         content_container: {
             flex: 2,
             alignItems: "center",
+        },
+        button_container: {
+            marginTop: "10%",
+            width: "30%",
+            height: "10%",
         },
         text: {
             fontSize: 18,
