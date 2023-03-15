@@ -1,7 +1,9 @@
 import React from 'react';
 import {StyleSheet, Text, View} from "react-native";
+import {useNavigation} from "@react-navigation/native";
 
-function MenuList({authority, onPress}){
+function MenuList({isRoomLeader, onPress, onPressRoomInfo}) {
+
     return (
         <View style={styles.toolList_container}>
             <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text
@@ -12,12 +14,17 @@ function MenuList({authority, onPress}){
             </View>
             <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}>
                 {
-                    authority &&
-                    (
-                        <Text style={styles.main_text} onPress={onPress}>
-                            참가 승인
-                        </Text>
-                    )
+                    isRoomLeader && isRoomLeader === true ?
+                        (
+                            <Text style={styles.main_text} onPress={onPress}>
+                                참가 승인
+                            </Text>
+                        ) :
+                        (
+                            <Text style={styles.main_text} onPress={onPressRoomInfo}>
+                                방 정보
+                            </Text>
+                        )
                 }
             </View>
             <View style={{flex: 4, alignItems: 'center', justifyContent: 'center'}}><Text
