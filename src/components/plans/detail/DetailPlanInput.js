@@ -3,8 +3,8 @@ import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native"
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 function DetailPlanInput({
-                             isAddButtonPressed,
-                             isModifyButtonPressed,
+                             addButtonPressed,
+                             modifyButtonPressed,
                              setAddButtonPressed,
                              setModifyButtonPressed,
                              onPressAddDetailPlan,
@@ -13,7 +13,7 @@ function DetailPlanInput({
                          }) {
 
     const notPressedAnyButton = () => {
-        return !(isAddButtonPressed || isModifyButtonPressed)
+        return !(addButtonPressed || modifyButtonPressed)
     }
 
     if (notPressedAnyButton()) {
@@ -21,13 +21,13 @@ function DetailPlanInput({
             setAddButtonPressed={setAddButtonPressed}
             setModifyButtonPressed={setModifyButtonPressed}
         />
-    } else if (isAddButtonPressed) {
+    } else if (addButtonPressed) {
         return <Input
             onPressButton={onPressAddDetailPlan}
             onChangeRequest={onChangeRequest}
             inputName={'추가'}
         />;
-    } else if (isModifyButtonPressed) {
+    } else if (modifyButtonPressed) {
         return <Input
             onPressButton={onPressModifyDetailPlan}
             onChangeRequest={onChangeRequest}
@@ -74,6 +74,7 @@ const styles = StyleSheet.create(
             borderColor: 'black',
             width: wp(80),
             height: hp(6),
+            marginTop: "5%",
             borderRadius: 20,
         },
         input: {
@@ -96,7 +97,7 @@ const styles = StyleSheet.create(
             alignItems: 'center',
             borderRadius: 20,
             alignSelf: 'center',
-            marginTop: hp(1),
+            marginTop: "5%",
             flexDirection: 'row',
             backgroundColor: '#DFDFDF'
         },
