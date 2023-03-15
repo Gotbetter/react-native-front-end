@@ -118,6 +118,11 @@ const room = createSlice(
             pressDislike: (state, {payload: checked}) => {
                 state.planDislikeInfo.checked = !checked;
             },
+            approvalCompleted: (state, {payload: user_id}) => {
+                const before = state.waitingParticipants;
+                const after = before.filter(participant => participant.user_id !== user_id);
+                state.waitingParticipants = after;
+            },
             onChangeRoomRequest: (state, {payload: request}) => {
                 state.roomRequest = request;
             },
@@ -176,6 +181,7 @@ const room = createSlice(
                 })
                 .addCase(createRoom.fulfilled, (state, {payload: {data, status}}) => {
                     state.status.ROOM_CREATE = status
+                    state.roomInfo = data;
                 })
                 .addCase(createRoom.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.error = message;
@@ -272,6 +278,7 @@ export const {
     storePlan,
     storePlanDislikeInfo,
     storeDetailPlans,
+    approvalCompleted,
     onChangeRoomRequest,
     onChangeDetailPlanRequest,
     resetRoomCreateRequest,

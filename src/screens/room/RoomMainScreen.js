@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import Logo from "../../components/common/Logo";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {fetchParticipants, resetRoom} from "../../module/room";
+import {approvalCompleted, fetchParticipants, resetRoom} from "../../module/room";
 import client from "../../lib/client";
 import Toast from "react-native-root-toast";
 import RoomList from "../../components/room/main/RoomList";
@@ -19,6 +19,7 @@ import {
     useRoomLeader
 } from "../../hooks/room";
 import MenuList from "../../components/room/main/MenuList";
+import RoomInfoModal from "../../components/room/main/RoomInfoModal";
 
 function RoomMainScreen() {
 
@@ -35,6 +36,7 @@ function RoomMainScreen() {
     const [curWeekLeftDay, studyWeekLeft] = useGetDayInfo();
 
     const [approvalModal, setApprovalModal] = useState(false);
+    const [roomInfoModal, setRoomInfoModal] = useState(false);
 
     useEffect(() => {
         /** 참가자 정보 불러오기 **/
@@ -47,6 +49,10 @@ function RoomMainScreen() {
         dispatch(fetchParticipants({room_id, accepted: false}))
     };
 
+    const onPressRoomInfo = () => {
+        setRoomInfoModal(true);
+    }
+
     const onPressApproval = (user_id) => {
         // todo : Plan 생성 실패할 경우 참가승인도 취소해야함
         /** 참가 승인 **/
@@ -57,7 +63,8 @@ function RoomMainScreen() {
             })
             .then(({data}) => {
                 /** 참가 승인이 성공했을 경우 해당 참가자의 주간 계획을 생성해주어야 한다. **/
-                const {participant_id} = data
+                const {participant_id} = data;
+                dispatch(approvalCompleted(user_id))
                 client.post(`/plans`,
                     {
                         participant_id
@@ -114,7 +121,9 @@ function RoomMainScreen() {
 
             <View style={{flex: 0.1}}/>
             <View style={styles.topBar}>
-                <MenuList authority={isRoomLeader} onPress={onPressApproveParticipate}/>
+                {/* 메뉴 리스트 */}
+                <MenuList isRoomLeader={isRoomLeader} onPress={onPressApproveParticipate}
+                          onPressRoomInfo={onPressRoomInfo}/>
                 <View style={{flex: 1, flexDirection: 'row',}}>
                     {
                         roomInfo && <DateInfo studyWeekLeft={studyWeekLeft} weekDayLeft={curWeekLeftDay}/>
@@ -143,12 +152,14 @@ function RoomMainScreen() {
             </View>
             <View style={{flex: 0.5}}/>
             {
-                waitingParticipants &&
-                <ParticipationApproveModal approvalModal={approvalModal}
+                waitingParticipants && roomInfo &&
+                <ParticipationApproveModal roomInfo={roomInfo}
+                                           approvalModal={approvalModal}
                                            setApprovalModal={setApprovalModal}
                                            waitingParticipants={waitingParticipants}
                                            onPressApproval={onPressApproval}/>
             }
+            <RoomInfoModal show={roomInfoModal} setShow={setRoomInfoModal}/>
         </View>
     );
 }

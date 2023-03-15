@@ -1,7 +1,7 @@
 import React from 'react';
 import {Modal, StyleSheet, Text, TextInput, View} from "react-native";
 import InputGroup from "../room/form/InputGroup";
-import ContinueButton from "../room/form/ContinueButton";
+import NextOrCloseButton from "../room/form/NextOrCloseButton";
 
 function InputModal({modalTitle, onChangeTarget, show, setShow, onPress}) {
     return (
@@ -13,8 +13,8 @@ function InputModal({modalTitle, onChangeTarget, show, setShow, onPress}) {
                 </View>
                 <TextInput style={styles.input} onChangeText={(text) => onChangeTarget(text)}/>
                 <View style={styles.modal_button_container}>
-                    <ContinueButton name={'입력'} onPress={onPress}/>
-                    <ContinueButton name={'취소'} onPress={() => setShow(false)}/>
+                    <NextOrCloseButton name={'입력'} onPress={onPress}/>
+                    <NextOrCloseButton name={'취소'} onPress={() => setShow(false)}/>
                 </View>
             </View>
         </Modal>

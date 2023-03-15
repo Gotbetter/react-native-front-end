@@ -6,7 +6,7 @@ import {StyleSheet, Text, View} from "react-native";
 import Logo from "../../../components/common/Logo";
 import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
-import ContinueButton from "../../../components/room/form/ContinueButton";
+import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 
 function RoomEntryFeeFormScreen({navigation}) {
     const SCREEN_TITLE = "스터디방 참가비를 설정하세요";
@@ -54,7 +54,10 @@ function RoomEntryFeeFormScreen({navigation}) {
                 <InputGroup title={INPUT_TITLE}>
                     <SelectGroup selected={request.entry_fee} targetName={"entry_fee"} items={getSelectItems()} onChange={onChange}/>
                 </InputGroup>
-                <ContinueButton onPress={onPress}/>
+                <View style={styles.button_container}>
+                    <NextOrCloseButton onPress={onPress}/>
+                </View>
+
             </View>
         </View>
     );
@@ -70,6 +73,11 @@ const styles = StyleSheet.create(
         content_container: {
             flex: 2,
             alignItems: "center",
+        },
+        button_container: {
+            marginTop: "10%",
+            width: "30%",
+            height: "10%",
         },
 
         screen_title: {

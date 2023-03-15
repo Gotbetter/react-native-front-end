@@ -6,7 +6,7 @@ import {StyleSheet, Text, View} from "react-native";
 import Logo from "../../../components/common/Logo";
 import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
-import ContinueButton from "../../../components/room/form/ContinueButton";
+import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 
 function RoomTitleFormScreen({navigation}) {
     const SCREEN_TITLE = "새로운 스터디방 만들기";
@@ -56,7 +56,10 @@ function RoomTitleFormScreen({navigation}) {
                 <InputGroup title={SELECT_TITLE}>
                     <SelectGroup selected={request.max_user_num} targetName={"max_user_num"} items={getSelectItems()} onChange={onChange}/>
                 </InputGroup>
-                <ContinueButton onPress={onPress}/>
+                <View style={styles.button_container}>
+                    <NextOrCloseButton onPress={onPress}/>
+                </View>
+
             </View>
         </View>
     );
@@ -74,6 +77,11 @@ const styles = StyleSheet.create(
             alignItems: "center",
         },
 
+        button_container: {
+            marginTop: "10%",
+            width: "30%",
+            height: "10%",
+        },
         screen_title: {
             alignItems: 'flex-start',
             fontSize: 22,

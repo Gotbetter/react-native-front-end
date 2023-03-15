@@ -4,7 +4,7 @@ import {createRoom, fetchRules, onChangeRoomRequest, resetRoomCreateRequest, res
 import Toast from "react-native-root-toast";
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../../../components/common/Logo";
-import ContinueButton from "../../../components/room/form/ContinueButton";
+import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 import InputGroup from "../../../components/room/form/InputGroup";
 
 function RoomRulesFormScreen({navigation}) {
@@ -28,10 +28,9 @@ function RoomRulesFormScreen({navigation}) {
 
     useEffect(() => {
         if (status === 201) {
-            Toast.show('방 생성 완료', {duration: Toast.durations.LONG});
-            dispatch(resetRoomCreateRequest());
+            navigation.navigate('room-create-result-screen',{selectedRuleContents});
+            setShow(false);
             dispatch(resetStatus('ROOM_CREATE'));
-            navigation.navigate('main');
         } else if (status === 403) {
             Toast.show('토큰 만료', {duration: Toast.durations.LONG});
         } else if (status === 400) {
@@ -93,31 +92,29 @@ function RoomRulesFormScreen({navigation}) {
                         </Text>
                     </TouchableOpacity>
                 ))}
-                <ContinueButton name="계속하기" onPress={onPress}/>
+                <View style={styles.button_container}>
+                    <NextOrCloseButton name="계속하기" onPress={onPress}/>
+                </View>
+
             </View>
             {show && (
                 <Modal isVisible={true}
                        transparent>
                     <View style={styles.modal_container}>
-                        <View style={styles.modal_subinfo}>
-                            <Text>스터디방 이름: {request.title}</Text>
-                            <Text>스터디방 인원: {request.max_user_num}</Text>
-                            <Text>스터디 시작일: {request.start_date.toLocaleDateString()}</Text>
-                            <Text>스터디 기간: {request.week}주</Text>
-                            <Text>스터디방 참가비: {request.entry_fee}</Text>
-                            <Text>스터디방 규칙: {selectedRuleContents}</Text>
-                        </View>
                         <InputGroup title={'계좌정보 입력'} targetName={'account'} onChange={onChange}/>
-                        <View style={styles.modal_button_container}>
-                            <ContinueButton name={'취소'} onPress={() => setShow(false)}/>
-                            <ContinueButton name={'방 생성'} onPress={onPressCreateRoom}/>
+                        <View style={styles.modal_button_group_container}>
+                            <View style={styles.modal_button_container}>
+                                <NextOrCloseButton name={'취소'} onPress={() => setShow(false)}/>
+                            </View>
+                            <View style={styles.modal_button_container}>
+                                <NextOrCloseButton name={'방 생성'} onPress={onPressCreateRoom}/>
+                            </View>
+
                         </View>
                     </View>
                 </Modal>
 
             )}
-
-
         </View>
     );
 }
@@ -141,6 +138,7 @@ const styles = StyleSheet.create(
             fontWeight: 'bold',
         },
 
+
         rule_container: {
             width: "90%",
             height: 80,
@@ -159,26 +157,34 @@ const styles = StyleSheet.create(
         rule_text: {
             fontSize: 18,
         },
-
+        button_container: {
+            marginTop: "10%",
+            width: "30%",
+            height: "10%",
+        },
         modal_container: {
-            height: "60%",
-            position: "absolute",
-            top: "25%", left: 0, bottom: 0, right: 0,
+            height: "100%",
+            width: "100%",
             backgroundColor: 'white',
             justifyContent: "center",
             alignItems: "center",
         },
-
         modal_subinfo: {
             width: "90%",
             borderWidth: 1,
             borderRadius: 10,
             padding: 10,
         },
-        modal_button_container: {
+        modal_button_group_container: {
             flexDirection: "row",
-            width: "90%",
-            justifyContent: "space-around",
+            justifyContent: "space-between",
+            marginTop: "10%",
+            width: "80%",
+            height: "8%"
+        },
+        modal_button_container: {
+            width: "40%",
+            height: "100%",
         },
 
 
