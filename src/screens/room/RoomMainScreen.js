@@ -96,8 +96,10 @@ function RoomMainScreen() {
     }
 
     const onPressRoomList = (room_id) => {
-        dispatch(resetRoom());
-        navigation.navigate('home', {room_id});
+        if (roomInfo.room_id !== room_id) {
+            dispatch(resetRoom());
+            navigation.navigate('home', {room_id});
+        }
     }
     const onPressPlans = (participant) => {
         navigation.navigate('my-plan', {planner: participant});
