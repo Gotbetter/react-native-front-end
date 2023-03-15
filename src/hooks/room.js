@@ -23,11 +23,14 @@ export function useFetchRoomInfo(room_id) {
 export function useFetchRoomList() {
     const dispatch = useDispatch();
     const {roomList} = useSelector(({room}) => room);
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         /** 내가 생성한 방 리스트 불러오기 **/
-        dispatch(fetchRooms());
-    }, [dispatch]);
+        if(isFocused){
+            dispatch(fetchRooms());
+        }
+    }, [dispatch, isFocused]);
 
     return roomList;
 }
