@@ -12,9 +12,13 @@ function InputModal({modalTitle, onChangeTarget, show, setShow, onPress}) {
                     <Text style={styles.subInfo_text}>{modalTitle}</Text>
                 </View>
                 <TextInput style={styles.input} onChangeText={(text) => onChangeTarget(text)}/>
-                <View style={styles.modal_button_container}>
-                    <NextOrCloseButton name={'입력'} onPress={onPress}/>
-                    <NextOrCloseButton name={'취소'} onPress={() => setShow(false)}/>
+                <View style={styles.modal_button_group_container}>
+                    <View style={styles.modal_button}>
+                        <NextOrCloseButton name={'입력'} onPress={onPress}/>
+                    </View>
+                    <View style={styles.modal_button}>
+                        <NextOrCloseButton name={'취소'} onPress={() => setShow(false)}/>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -43,18 +47,25 @@ const styles = StyleSheet.create(
             borderWidth: 1,
             width: "90%",
             height: "10%",
-            marginTop: 10,
+            marginTop: "5%",
             padding: 10,
         },
         subInfo_text: {
             fontWeight: "bold",
             fontSize: 18,
         },
-        modal_button_container: {
+        modal_button_group_container: {
+            marginTop: "10%",
             flexDirection: "row",
             width: "90%",
+            height: "6%",
             justifyContent: "space-around",
         },
+        modal_button: {
+            width: "30%",
+            height: "100%",
+        },
+
     }
 );
 
