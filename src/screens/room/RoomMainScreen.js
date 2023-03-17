@@ -1,4 +1,4 @@
-import {StyleSheet, View,} from "react-native";
+import {ScrollView, StyleSheet, View,} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import Logo from "../../components/common/Logo";
@@ -139,7 +139,10 @@ function RoomMainScreen() {
             <View style={{flex: 0.1}}/>
             <View style={styles.myRoomContainer}>
                 {
-                    roomList && <RoomList rooms={roomList} curRoomId={room_id} onPress={onPressRoomList}/>
+                    roomList &&
+                    <ScrollView contentContainerStyle={styles.scroll_container} horizontal={true}>
+                        <RoomList rooms={roomList} curRoomId={room_id} onPress={onPressRoomList}/>
+                    </ScrollView>
                 }
             </View>
             <View style={{flex: 0.1}}/>
@@ -201,12 +204,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     myRoomContainer: {
-        // flex: 1.0 - 0.1 - 0.1
-        flex: 0.8,
         backgroundColor: '#D9D9D9',
         borderRadius: 20,
+        height: "6%",
         width: '95%',
-        flexDirection: 'row',
+        justifyContent: "center",
         alignSelf: 'center',
     },
     topBar: {
@@ -217,6 +219,10 @@ const styles = StyleSheet.create({
         width: '95%',
         alignSelf: 'center',
     },
+    scroll_container: {
+        height: "100%",
+        flexDirection: "row",
+    }
 
 });
 
