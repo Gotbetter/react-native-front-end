@@ -21,6 +21,7 @@ import {
 import MenuList from "../../components/room/main/MenuList";
 import RoomInfoModal from "../../components/room/main/RoomInfoModal";
 import RankModal from "../../components/room/main/RankModal";
+import RefundInfo from "../../components/room/main/RefundInfo";
 
 function RoomMainScreen() {
 
@@ -29,6 +30,7 @@ function RoomMainScreen() {
     const navigation = useNavigation();
 
     const {participants, waitingParticipants} = useSelector(({room}) => room);
+    const {user} = useSelector(({auth}) => auth);
 
     const roomInfo = useFetchRoomInfo(room_id);
     const roomList = useFetchRoomList();
@@ -46,6 +48,21 @@ function RoomMainScreen() {
 
     }, [room_id]);
 
+    const getMyParticipantId = () => {
+        const {user_id} = user;
+        let result;
+        participants.forEach((participant) => {
+            if (participant.user_id === user_id) {
+                result = participant.participant_id;
+            }
+        });
+        return result;
+    }
+
+    const isRoomEnd = () => {
+        const {week, current_week} = roomInfo;
+        return current_week >= week;
+    };
     const onPressApproveParticipate = () => {
         setApprovalModal(true);
         dispatch(fetchParticipants({room_id, accepted: false}))
@@ -135,7 +152,9 @@ function RoomMainScreen() {
                           onPressRoomInfo={onPressRoomInfo}/>
                 <View style={{flex: 1, flexDirection: 'row',}}>
                     {
-                        roomInfo && <DateInfo studyWeekLeft={studyWeekLeft} weekDayLeft={curWeekLeftDay}/>
+                        roomInfo && participants && isRoomEnd() === false ?
+                            <DateInfo studyWeekLeft={studyWeekLeft} weekDayLeft={curWeekLeftDay}/>
+                            : <RefundInfo roomInfo={roomInfo} participantId={getMyParticipantId()}/>
                     }
                 </View>
 
