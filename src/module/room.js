@@ -26,6 +26,7 @@ const initialState = {
     planDislikeInfo: null,
     detailPlans: [],
     rank: [],
+    refund: null,
     status: {
         ROOM_CREATE: null,
     },
@@ -48,6 +49,7 @@ export const fetchParticipants = createAsyncThunk("room/FETCH_PARTICIPANTS",
 );
 export const fetchRules = createThunk("room/FETCH_RULES", roomApi.fetchRules);
 export const fetchRank = createThunk("room/FETCH_RANK", roomApi.fetchRank);
+export const fetchRefund = createThunk("room/FETCH_REFUND", roomApi.fetchRefund);
 export const fetchDislikeInfo = createThunk("plan/FETCH_DISLIKE_INFO", planApi.fetchPlanDislike);
 export const fetchDetailPlan = createThunk("plan/FETCH_DETAIL_PLAN", planApi.fetchDetailPlan);
 export const createRoom = createAsyncThunk(
@@ -256,7 +258,7 @@ const room = createSlice(
                     } : detailPlan);
                     state.detailPlans = next;
                 })
-                .addCase(doDetailPlanDislike.rejected, (state, {payload:{message}}) => {
+                .addCase(doDetailPlanDislike.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 })
                 .addCase(cancelDetailPlanDislike.fulfilled, (state, {payload: {data}}) => {
@@ -267,13 +269,18 @@ const room = createSlice(
                     } : detailPlan);
                     state.detailPlans = next;
                 })
-                .addCase(cancelDetailPlanDislike.rejected, (state, {payload:{message}}) => {
+                .addCase(cancelDetailPlanDislike.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 })
                 .addCase(fetchRank.fulfilled, (state, {payload: {data}}) => {
                     state.rank = data;
                 })
-
+                .addCase(fetchRefund.fulfilled, (state, {payload: {data}}) => {
+                    state.refund = data;
+                })
+                .addCase(fetchRefund.rejected, (state, {payload: {message}}) => {
+                    state.refund = null;
+                })
 
         }
     }
