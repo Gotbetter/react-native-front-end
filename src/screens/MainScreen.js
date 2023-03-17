@@ -3,10 +3,12 @@ import {useDispatch} from "react-redux";
 import {useFetchRoomList} from "../hooks/room";
 import {fetchUser, logout} from "../module/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {BackHandler, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {BackHandler, Button, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../components/common/Logo";
 import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
 import {resetPlanAndDetailPlan, resetRoom, resetRoomCreateRequest} from "../module/room";
+import {widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 function MainScreen({navigation}) {
 
@@ -56,77 +58,115 @@ function MainScreen({navigation}) {
             .catch(err => err);
     };
 
+    const roomListToDoubleRow = (roomList) => {
+
+        let result = []
+        for (let i = 0; i < roomList.length / 2; i++) {
+            result = [...result, roomList.slice(2 * i, 2 * i + 2)];
+        }
+
+        return result;
+    }
+
 
     return (
-        <View style={styles.container}>
+        <View style={styles.base_container}>
+            <View style={styles.logo_container}>
+                <Logo/>
+                <Button title={'로그아웃'} onPress={() => onPressLogout()}/>
 
-            <View style={{flex: 4}}>
-                <View style={{flex: 1}}/>
-                <View style={{flex: 2}}>
-                    <Logo/>
-                    <Button title={'로그아웃'} onPress={() => onPressLogout()}/>
-                </View>
-                <View style={{flex: 1}}/>
             </View>
-
             <View style={styles.button_container}>
-                <View style={{flex: 0.5}}/>
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('room-create-title-form')}>
                     <Text style={styles.button_text}>방 만들기</Text>
                 </TouchableOpacity>
-                <View style={{flex: 1}}/>
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('join')}>
                     <Text style={styles.button_text}>참여하기</Text>
                 </TouchableOpacity>
-                <View style={{flex: 0.5}}/>
             </View>
-
-            <View style={{flex: 3, alignItems: 'center'}}>
-                <View style={{flex: 1}}/>
-                <View style={styles.rooms_container}>
-                    <View style={{flex: 0.5}}/>
-                    <View style={{flex: 4.5, flexDirection: 'row',}}>
-                        {roomList && (
-                            roomList.map((room) => (
-                                <View key={room.room_id} style={{flex: 1, alignItems: 'center'}}>
-                                    <View style={{flex: 1}}/>
-                                    <TouchableOpacity style={styles.room}
-                                                      onPress={() => navigation.navigate('home', {room_id: room.room_id})}>
-                                        <Text style={styles.button_text}>{room.title}</Text>
-                                    </TouchableOpacity>
-                                    <View style={{flex: 1}}/>
-                                </View>
-                            ))
-                        )}
-                    </View>
-                    <View style={{flex: 0.5}}/>
+            <View style={styles.rooms_outer}>
+                <View style={styles.title_container}>
+                    <Text style={styles.title_text}>방 목록</Text>
                 </View>
-                <View style={{flex: 1}}/>
+                <ScrollView contentContainerStyle={styles.scroll_container} horizontal={true}>
+                    {
+                        roomListToDoubleRow(roomList).map((room) => (
+                            <View>
+                                {
+                                    room[0] &&
+                                    <TouchableOpacity style={styles.room} key={room.room_id}
+                                                      onPress={() => navigation.navigate('home', {room_id: room[0].room_id})}>
+                                        <Text style={styles.button_text}>{room[0].title}</Text>
+
+                                    </TouchableOpacity>
+
+                                }
+                                {
+                                    room[1] &&
+                                    <TouchableOpacity style={styles.room} key={room.room_id}
+                                          onPress={() => navigation.navigate('home', {room_id: room[1].room_id})}>
+                                        <Text style={styles.button_text}>{room[1].title}</Text>
+                                    </TouchableOpacity>
+                                }
+
+                            </View>
+                        ))
+                    }
+                </ScrollView>
             </View>
 
-            <View style={{flex: 2}}/>
+
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
-    container: {
+    base_container: {
         flex: 1,
         backgroundColor: 'white',
+        alignItems: "center",
     },
-    logo_image: {
-        flex: 1,
-        alignSelf: 'center',
-        width: '80%',
+    logo_container: {
+        width: "100%",
+        height: "30%",
     },
-    button_container: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
+    title_container: {
+        paddingLeft: 12,
+        height: "10%",
+        justifyContent: "center",
+    },
+    title_text: {
+        fontWeight: "bold",
+        fontSize: "24%",
+    },
+    rooms_outer: {
+        marginTop: "10%",
+        width: "100%",
+        height: "45%",
+    },
+    scroll_container: {
+        height: "100%",
+        flexDirection: "row",
+    },
+    room: {
+        backgroundColor: '#FFFFFF',
+        width: wp(30),
+        height: hp(16),
+        borderRadius: 20,
+        borderWidth: 5,
+        margin: 16,
+        borderColor: '#BFBFBF',
         justifyContent: 'center',
     },
+    button_container: {
+        width: "100%",
+        height: "10%",
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+    },
     button: {
-        flex: 4,
+        width: "40%",
         height: '80%',
         alignItems: 'center',
         justifyContent: 'center',
@@ -140,23 +180,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
     },
-    rooms_container: {
-        flex: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#DBDBDB',
-        borderRadius: 20,
-        width: '90%',
-    },
-    room: {
-        flex: 8,
-        backgroundColor: '#FFFFFF',
-        width: '90%',
-        borderRadius: 20,
-        borderWidth: 5,
-        borderColor: '#BFBFBF',
-        justifyContent: 'center'
-    }
+
 });
 
 export default MainScreen;
