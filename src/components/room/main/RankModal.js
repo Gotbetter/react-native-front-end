@@ -14,7 +14,6 @@ function RankModal({room_id, show, setShow}) {
         }
     }, [show]);
 
-    console.log(rankList);
 
     return (
         <Modal

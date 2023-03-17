@@ -45,3 +45,6 @@ export const fetchParticipants = ({room_id, accepted}) =>
 
 export const fetchRank = (room_id) =>
     client.get(`/rooms/${room_id}/rank`,);
+
+export const fetchRefund = (participant_id) =>
+    client.get(`/participants/${participant_id}/refund`);
