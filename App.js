@@ -24,13 +24,12 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
 
-    const [isLogin, setIsLogin] = useState(null);
+    const [isLogin, setIsLogin] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     async function checkLogin() {
         const token = await AsyncStorage.getItem("access_token");
         if (token == null) {
-
             setIsLoading(false);
             setIsLogin(false);
         } else {
@@ -41,7 +40,7 @@ export default function App() {
 
     useEffect(() => {
         checkLogin();
-    }, [isLoading, isLogin]);
+    }, []);
 
     if(isLoading){
         return <></>;
@@ -50,8 +49,6 @@ export default function App() {
             <Provider store={store}>
                 <RootSiblingParent>
                     <NavigationContainer>
-                        {
-
                             <Stack.Navigator initialRouteName={isLogin === false ? 'login' : 'main'} screenOptions={{headerShown: false}}>
                                 <Stack.Screen name='login' component={LoginScreen}/>
                                 <Stack.Screen name='register' component={RegisterScreen}/>
@@ -68,11 +65,7 @@ export default function App() {
                                 <Stack.Screen name='home' component={RoomMainScreen}/>
                                 <Stack.Screen name='my-plan' component={MyPlanScreen}/>
                             </Stack.Navigator>
-                        }
-
                     </NavigationContainer>
-
-
                 </RootSiblingParent>
             </Provider>
         );
