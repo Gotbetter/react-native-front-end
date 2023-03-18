@@ -3,12 +3,9 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 
 function NextOrCloseButton({name, onPress}) {
     return (
-
         <TouchableOpacity style={styles.continue_button} onPress={onPress}>
             <Text style={styles.button_text}>{name || "계속하기"}</Text>
         </TouchableOpacity>
-
-
     );
 }
 
@@ -24,7 +21,7 @@ const styles = StyleSheet.create(
             alignItems: "center",
         },
         button_text: {
-            fontSize: "25%",
+            fontSize: 24,
             color: "white",
         }
     }
