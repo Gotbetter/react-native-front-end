@@ -73,7 +73,9 @@ function MainScreen({navigation}) {
         <View style={styles.base_container}>
             <View style={styles.logo_container}>
                 <Logo/>
-                <Button title={'로그아웃'} onPress={() => onPressLogout()}/>
+                <TouchableOpacity style={styles.logout_container} onPress={() => onPressLogout()}>
+                    <Text style={styles.logout_text}>로그아웃</Text>
+                </TouchableOpacity>
 
             </View>
             <View style={styles.button_container}>
@@ -180,6 +182,21 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
     },
+    logout_container: {
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: '#DBDBDB',
+        width: "20%",
+        height: "16%",
+        alignSelf: "center",
+        justifyContent: "center",
+        alignItems: "center",
+
+    },
+    logout_text: {
+        fontSize: 16,
+    },
+
 
 });
 
