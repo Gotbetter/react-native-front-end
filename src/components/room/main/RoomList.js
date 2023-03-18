@@ -6,9 +6,8 @@ function RoomList({rooms, curRoomId, onPress}) {
 
     return (
         rooms.map(room => (
-            <View>
+            <View key={room.room_id}>
                 <TouchableOpacity
-                    key={room.room_id}
                     style={room.room_id === curRoomId ? styles.current_room : styles.room}
                     onPress={() => onPress(room.room_id)}>
                     <Text
