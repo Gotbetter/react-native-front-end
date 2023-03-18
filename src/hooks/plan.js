@@ -7,7 +7,7 @@ export function useWeekSelector() {
 
     const {roomInfo} = useSelector(({room}) => room);
     const [weekList, setWeekList] = useState([]);
-    const [clickedWeek, setClickedWeek] = useState(1); // 현재 클릭한 week
+    const [clickedWeek, setClickedWeek] = useState(roomInfo.current_week); // 현재 클릭한 week
 
 
     useEffect(() => {

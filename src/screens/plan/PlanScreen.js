@@ -28,6 +28,7 @@ import {
     undoCompleteDetailPlan,
 } from "../../module/room";
 import InputModal from "../../components/common/InputModal";
+import {useFetchRoomInfo} from "../../hooks/room";
 
 
 export default function PlanScreen() {
@@ -43,6 +44,7 @@ export default function PlanScreen() {
         participants: room.participants
     }));
 
+    const {current_week} = useFetchRoomInfo();
     const [weekList, clickedWeek, setClickedWeek] = useWeekSelector()
     const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, clickedWeek);
     const isMyPlan = usePlanner(planner);
@@ -84,7 +86,8 @@ export default function PlanScreen() {
     }
 
     const onPressWeekList = (week) => {
-        if (plan.week >= week) {
+
+        if (current_week >= week) {
             setClickedWeek(week);
         }
     }
