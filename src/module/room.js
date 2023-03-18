@@ -242,6 +242,7 @@ const room = createSlice(
                     const prev = state.detailPlans;
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
+                        approve_comment: "",
                         complete: data.complete,
                         checked: data.checked
                     } : detailPlan);

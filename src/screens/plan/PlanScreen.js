@@ -64,10 +64,14 @@ export default function PlanScreen() {
 
     /** 세부계획 완료 체크 박스 **/
     const onPressCheckBox = (complete, detailPlanId) => {
-        setOpenApproveCommentModal(true);
+        const {plan_id} = plan;
+        if (doUnCheck(complete)) {
+            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id: detailPlanId}));
+        } else {
+            setOpenApproveCommentModal(true);
+        }
         setIsCompleted(complete);
         setCompletedDetailPlanId(detailPlanId);
-
     };
 
     const onPressEnter = () => {
