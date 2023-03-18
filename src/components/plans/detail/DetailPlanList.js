@@ -139,12 +139,12 @@ const styles = StyleSheet.create(
         content_text: {
             color: '#000000',
             textAlign: "left",
-            fontSize: "20%",
+            fontSize: 20,
             fontWeight: "bold",
             marginBottom: "5%",
         },
         additional_info_text: {
-            fontSize: "16%",
+            fontSize: 18,
         },
         detail_dislike_button: {
             flex: 1,
