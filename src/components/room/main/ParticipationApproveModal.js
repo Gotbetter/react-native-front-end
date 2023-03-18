@@ -98,18 +98,17 @@ const styles = StyleSheet.create(
             alignItems: "center",
         },
         approval_button_text: {
-            fontSize: "16%",
+            fontSize: 18,
             fontWeight: "bold",
             color: "blue",
-
         },
         title: {
             color: '#000000',
             fontWeight: "bold",
-            fontSize: "25%",
+            fontSize: 18,
         },
         modal_text: {
-            fontSize: "18%",
+            fontSize: 18,
         },
 
     }

@@ -16,6 +16,7 @@ function RoomInfoModal({show, setShow}) {
             visible={show}
         >
             <View style={styles.container}>
+                <View style={styles.subInfo_container}>
                     <RoomSubInfo
                         title={roomInfo.title}
                         account={roomInfo.account}
@@ -23,7 +24,12 @@ function RoomInfoModal({show, setShow}) {
                         entryFee={roomInfo.entry_fee}
                         roomCode={roomInfo.room_code}
                     />
-                <NextOrCloseButton name='나가기' onPress={() => setShow(!show)}/>
+                </View>
+
+                <View style={styles.button_container}>
+                    <NextOrCloseButton name='나가기' onPress={() => setShow(!show)}/>
+                </View>
+
             </View>
 
         </Modal>
@@ -35,10 +41,22 @@ const styles = StyleSheet.create(
         container: {
             width: "100%",
             height: "100%",
-            backgroundColor: "white",
             justifyContent: "center",
             alignItems: "center",
+            backgroundColor: '#EDEDED',
         },
+        subInfo_container: {
+            width: "80%",
+            height: "30%",
+            borderRadius: 16,
+            backgroundColor: "white",
+        },
+        button_container: {
+            marginTop: "12%",
+            width: "40%",
+            height: "8%",
+        },
+
     }
 );
 export default RoomInfoModal;

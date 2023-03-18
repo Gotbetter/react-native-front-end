@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     },
     title_text: {
         fontWeight: "bold",
-        fontSize: "24%",
+        fontSize: 24,
     },
     rooms_outer: {
         marginTop: "10%",
