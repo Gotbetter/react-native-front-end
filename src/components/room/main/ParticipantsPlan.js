@@ -12,7 +12,7 @@ function ParticipantsPlan({participants, onPressPlans}) {
                 {
                     participants.map((participant, i) => (
 
-                            <TouchableOpacity style={styles.user} key={participant.participant_id}
+                            <TouchableOpacity key={participant.participant_id} style={styles.user} key={participant.participant_id}
                                               onPress={() => onPressPlans(participant)}>
                                 <Text style={styles.button_text}>{participant.username}</Text>
                             </TouchableOpacity>

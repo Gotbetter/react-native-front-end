@@ -91,10 +91,10 @@ function MainScreen({navigation}) {
                 <ScrollView contentContainerStyle={styles.scroll_container} horizontal={true}>
                     {
                         roomListToDoubleRow(roomList).map((room) => (
-                            <View>
+                            <View key={room[0].room_id}>
                                 {
                                     room[0] &&
-                                    <TouchableOpacity style={styles.room} key={room.room_id}
+                                    <TouchableOpacity style={styles.room}
                                                       onPress={() => navigation.navigate('home', {room_id: room[0].room_id})}>
                                         <Text style={styles.button_text}>{room[0].title}</Text>
 
@@ -103,7 +103,7 @@ function MainScreen({navigation}) {
                                 }
                                 {
                                     room[1] &&
-                                    <TouchableOpacity style={styles.room} key={room.room_id}
+                                    <TouchableOpacity style={styles.room}
                                           onPress={() => navigation.navigate('home', {room_id: room[1].room_id})}>
                                         <Text style={styles.button_text}>{room[1].title}</Text>
                                     </TouchableOpacity>
