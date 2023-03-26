@@ -60,8 +60,14 @@ function RoomMainScreen() {
     }
 
     const isRoomEnd = () => {
-        const {week, current_week} = roomInfo;
-        return current_week >= week;
+        const {week: totalWeek, current_week} = roomInfo;
+
+        if (current_week >= totalWeek + 1) {
+            return true
+        }
+
+        return false;
+
     };
     const onPressApproveParticipate = () => {
         setApprovalModal(true);
