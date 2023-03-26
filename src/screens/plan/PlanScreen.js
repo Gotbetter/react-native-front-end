@@ -146,6 +146,20 @@ export default function PlanScreen() {
         }
     }
 
+    /** 수정 버튼 관련 상태 변수 설정**/
+    const onPressModifyButton = (detailPlanId) => {
+        setModifyDetailPlanId(detailPlanId);
+        setIsAddButtonPressed(false);
+        setIsModifyButtonPressed(true);
+    }
+
+    /** 추가하기 버튼 관련 상태 변수 설정 **/
+    const onPressAddButton = () => {
+        setIsAddButtonPressed(true);
+        setIsModifyButtonPressed(false);
+    }
+
+
     const cancelDislike = (isChecked) => {
         return isChecked === true;
     }
@@ -175,9 +189,7 @@ export default function PlanScreen() {
                             planDislikeInfo={planDislikeInfo}
                             isMyPlan={isMyPlan}
                             detailPlans={detailPlans}
-                            setAddButtonPressed={setIsAddButtonPressed}
-                            setModifyButtonPressed={setIsModifyButtonPressed}
-                            onPressModifyButton={setModifyDetailPlanId}
+                            onPressModifyButton={onPressModifyButton}
                             onPressCheckBox={onPressCheckBox}
                             onPressDetailPlanDislike={onPressDetailPlanDislike}
                         />
@@ -190,8 +202,7 @@ export default function PlanScreen() {
                                         <DetailPlanInput
                                             addButtonPressed={isAddButtonPressed}
                                             modifyButtonPressed={isModifyButtonPressed}
-                                            setAddButtonPressed={setIsAddButtonPressed}
-                                            setModifyButtonPressed={setIsModifyButtonPressed}
+                                            onPressAddButton={onPressAddButton}
                                             onPressModifyDetailPlan={onPressModifyDetailPlan}
                                             onPressAddDetailPlan={onPressAddDetailPlan}
                                             onChangeRequest={onChangeText}

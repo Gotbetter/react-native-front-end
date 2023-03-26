@@ -14,8 +14,6 @@ function DetailPlanList({
                             detailPlans,
                             onPressCheckBox,
                             onPressModifyButton,
-                            setAddButtonPressed,
-                            setModifyButtonPressed,
                             onPressDetailPlanDislike,
 
                         }) {
@@ -44,9 +42,7 @@ function DetailPlanList({
                                               onPress={onPressDetailPlanDislike}/>
                             :
                             <ModifyFileAddButton detailPlanId={detailPlan.detail_plan_id}
-                                                 onPressModifyButton={onPressModifyButton}
-                                                 setAddButtonPressed={setAddButtonPressed}
-                                                 setModifyButtonPressed={setModifyButtonPressed}/>
+                                                 onPressModifyButton={onPressModifyButton}/>
                     }
 
                 </View>
@@ -78,14 +74,10 @@ const CheckBox = ({detailPlanId, complete, onPressCheckBox}) => {
     );
 };
 
-const ModifyFileAddButton = ({detailPlanId, onPressModifyButton, setAddButtonPressed, setModifyButtonPressed}) => {
+const ModifyFileAddButton = ({detailPlanId, onPressModifyButton}) => {
     return (
         <View style={styles.button_group_container}>
-            <TouchableOpacity style={styles.fix_button} onPress={() => {
-                onPressModifyButton(detailPlanId);
-                setAddButtonPressed(false);
-                setModifyButtonPressed(true);
-            }}>
+            <TouchableOpacity style={styles.fix_button} onPress={() => onPressModifyButton(detailPlanId)}>
                 <Text>수정</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.add_file_button}>
