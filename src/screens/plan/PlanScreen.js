@@ -14,6 +14,9 @@ import DetailPlanInput from "../../components/plans/detail/DetailPlanInput";
 import DetailPlanList from "../../components/plans/detail/DetailPlanList";
 import {useFetchPlanAndDetailPlans, usePlanner, useWeekSelector} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
+
+import InputModal from "../../components/common/InputModal";
+import {useFetchRoomInfo} from "../../hooks/room";
 import {
     cancelDetailPlanDislike,
     cancelPlanDislike,
@@ -23,12 +26,9 @@ import {
     doPlanDislike,
     modifyDetailPlan,
     onChangeDetailPlanRequest,
-    pressDislike,
     resetDetailPlanRequest,
-    undoCompleteDetailPlan,
-} from "../../module/room";
-import InputModal from "../../components/common/InputModal";
-import {useFetchRoomInfo} from "../../hooks/room";
+    undoCompleteDetailPlan
+} from "../../module/plan";
 
 
 export default function PlanScreen() {

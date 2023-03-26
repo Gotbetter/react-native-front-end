@@ -1,6 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import {fetchPlanAndDetailPlan} from "../module/room";
+import {fetchPlanAndDetailPlan} from "../module/plan";
+
 
 
 export function useWeekSelector() {
@@ -52,7 +53,7 @@ export function useFetchPlanAndDetailPlans(participant_id, clickedWeek) {
 
     const dispatch = useDispatch();
 
-    const {plan, detailPlans, planDislikeInfo} = useSelector(({room}) => room);
+    const {plan, detailPlans, planDislikeInfo} = useSelector(({plan}) => plan);
 
     useEffect(() => {
         dispatch(fetchPlanAndDetailPlan({participant_id, week: clickedWeek}));
