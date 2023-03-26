@@ -5,10 +5,11 @@ import {fetchUser} from "../module/auth";
 import {BackHandler, ScrollView, StyleSheet, Text, View} from "react-native";
 import Logo from "../components/common/Logo";
 import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
-import {resetPlanAndDetailPlan, resetRoom, resetRoomCreateRequest} from "../module/room";
+import {resetRoom, resetRoomCreateRequest} from "../module/room";
 import MainNavButton from "../components/main/MainNavButton";
 import LogoutButton from "../components/main/LogoutButton";
 import RoomItem from "../components/main/RoomItem";
+import {resetPlanAndDetailPlan} from "../module/plan";
 
 function MainScreen() {
 
