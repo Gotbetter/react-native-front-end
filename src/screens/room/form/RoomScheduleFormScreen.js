@@ -24,8 +24,6 @@ function RoomScheduleFormScreen({navigation}) {
     }));
 
     const [show, setShow] = useState(false);
-    const [date, setDate] = useState(new Date());
-
 
     const getSelectItems = useCallback(() => {
 
@@ -45,14 +43,7 @@ function RoomScheduleFormScreen({navigation}) {
         dispatch(onChangeRoomRequest(next));
     };
 
-    const onChangeDateIOS = (e, selectedDate) => {
-        const {type} = e;
-        if (type === 'set') {
-            setDate(selectedDate);
-        }
-    };
-
-    const onConfirm = () => {
+    const onConfirm = (date) => {
         const next = {
             ...request,
             "start_date": date,
@@ -63,22 +54,6 @@ function RoomScheduleFormScreen({navigation}) {
 
     const onCancel = () => {
         setShow(false);
-    }
-
-    const onChangeDateAndroid = (e, selectedDate) => {
-        const {type} = e;
-
-        if (type === 'set') {
-            const next = {
-                ...request,
-                "start_date": selectedDate,
-            };
-            dispatch(onChangeRoomRequest(next));
-            setDate(selectedDate);
-            setShow(false);
-        } else if (type === 'dismiss') {
-            setShow(false);
-        }
     }
 
     const onPressNext = () => {
@@ -120,13 +95,11 @@ function RoomScheduleFormScreen({navigation}) {
                 </View>
 
             </View>
-            {show && <Calendar show={show}
-                               onChangeDateAndroid={onChangeDateAndroid}
-                               onChangeDateIOS={onChangeDateIOS}
-                               onConfirm={onConfirm}
-                               onCancel={onCancel}
-                               date={date}
-            />}
+            <Calendar
+                show={show}
+                onConfirm={onConfirm}
+                onCancel={onCancel}
+            />
         </View>
     );
 }
