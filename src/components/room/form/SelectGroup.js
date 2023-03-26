@@ -1,22 +1,20 @@
 import React from 'react';
 import {StyleSheet, Text, View} from "react-native";
-import RNPickerSelect from "react-native-picker-select";
-import {AntDesign} from "@expo/vector-icons";
+import {Picker} from "@react-native-picker/picker";
 
 function SelectGroup({selected, targetName, items, onChange}) {
 
     return (
         <View style={styles.picker_container}>
-            <RNPickerSelect
-                useNativeAndroidPickerStyle={false}
-                onValueChange={(value) => onChange(targetName, value)}
-                placeholder={{}}
-                style={{
-                    inputIOS: styles.picker,
-                    inputAndroid: styles.picker,
-                }}
-                items={items}
-            />
+            <Picker
+                selectedValue={selected}
+                onValueChange={(value) => onChange(targetName, value)}>
+                {
+                    items.map(item => (
+                        <Picker.Item key={item.key} label={item.label} value={item.value} />
+                    ))
+                }
+            </Picker>
         </View>
     )
 }

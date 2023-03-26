@@ -1,40 +1,20 @@
 import React from 'react';
-import RNDateTimePicker from "@react-native-community/datetimepicker";
+import RNDateTimePicker, {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {Button, Platform, View} from "react-native";
 
 
-function Calendar({onChangeDateAndroid, onChangeDateIOS, date, onConfirm, onCancel,onChange}) {
+function Calendar({show, onConfirm, onCancel}) {
 
-    if (Platform.OS === 'ios') {
-        return (
-            <View>
-                <Button title={'confirm'} onPress={onConfirm}/>
-                <Button title={'cancel'} onPress={onCancel}/>
-                <RNDateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    is24Hour={true}
-                    display={"spinner"}
-                    onChange={onChangeDateIOS}
-                >
-                </RNDateTimePicker>
-            </View>
-        );
-    } else if(Platform.OS === 'android'){
-        return (
-            <View>
-                <RNDateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    is24Hour={true}
-                    display={"default"}
-                    onChange={onChangeDateAndroid}
-                >
-                </RNDateTimePicker>
-            </View>
-        )
-    }
-
+    return (
+        <View>
+            <DateTimePickerModal
+                mode="date"
+                onConfirm={onConfirm}
+                onCancel={onCancel}
+                isVisible={show}/>
+        </View>
+    )
 }
 
 export default Calendar;
