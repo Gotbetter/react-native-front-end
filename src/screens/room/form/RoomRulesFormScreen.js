@@ -17,7 +17,7 @@ function RoomRulesFormScreen({navigation}) {
         request: room.roomRequest,
     }));
 
-    const [selectedRule, setSelectedRule] = useState(null);
+    const [selectedRule, setSelectedRule] = useState(1);
     const [selectedRuleContents, setSelectedRuleContents] = useState("");
     const [show, setShow] = useState(false);
 
@@ -85,8 +85,7 @@ function RoomRulesFormScreen({navigation}) {
                 {rules && rules.map(rule => (
                     <TouchableOpacity
                         key={rule.rule_id}
-                        style={[styles.rule_container, rule.rule_id === selectedRule && styles.rule_highlight]}
-                        onPress={() => onSelectRule(rule.rule_id, rule.contents)}>
+                        style={[styles.rule_container, rule.rule_id === selectedRule && styles.rule_highlight]}>
                         <Text suppressHighlighting={true} style={styles.rule_text}>
                             {rule.contents}
                         </Text>
