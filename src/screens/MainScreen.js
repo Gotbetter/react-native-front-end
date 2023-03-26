@@ -1,16 +1,16 @@
 import React, {useCallback, useEffect} from 'react';
 import {useDispatch} from "react-redux";
 import {useFetchRoomList} from "../hooks/room";
-import {fetchUser, logout} from "../module/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {BackHandler, Button, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {fetchUser} from "../module/auth";
+import {BackHandler, ScrollView, StyleSheet, Text, View} from "react-native";
 import Logo from "../components/common/Logo";
 import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
 import {resetPlanAndDetailPlan, resetRoom, resetRoomCreateRequest} from "../module/room";
-import {widthPercentageToDP as wp,} from 'react-native-responsive-screen';
-import {heightPercentageToDP as hp} from "react-native-responsive-screen";
+import MainNavButton from "../components/main/MainNavButton";
+import LogoutButton from "../components/main/LogoutButton";
+import RoomItem from "../components/main/RoomItem";
 
-function MainScreen({navigation}) {
+function MainScreen() {
 
     const dispatch = useDispatch();
     const curScreen = useRoute();
@@ -47,19 +47,8 @@ function MainScreen({navigation}) {
         }
     }, [isFocused]);
 
-    const onPressLogout = () => {
-        AsyncStorage.getAllKeys()
-            .then(keys => AsyncStorage.multiRemove(keys))
-            .catch(err => err)
-            .then(() => {
-                dispatch(logout());
-                navigation.navigate('login');
-            })
-            .catch(err => err);
-    };
 
     const roomListToDoubleRow = (roomList) => {
-
         let result = []
         for (let i = 0; i < roomList.length / 2; i++) {
             result = [...result, roomList.slice(2 * i, 2 * i + 2)];
@@ -73,18 +62,11 @@ function MainScreen({navigation}) {
         <View style={styles.base_container}>
             <View style={styles.logo_container}>
                 <Logo/>
-                <TouchableOpacity style={styles.logout_container} onPress={() => onPressLogout()}>
-                    <Text style={styles.logout_text}>로그아웃</Text>
-                </TouchableOpacity>
-
+                <LogoutButton/>
             </View>
             <View style={styles.button_container}>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('room-create-title-form')}>
-                    <Text style={styles.button_text}>방 만들기</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('join')}>
-                    <Text style={styles.button_text}>참여하기</Text>
-                </TouchableOpacity>
+                <MainNavButton name="방만들기" path="room-create-title-form"/>
+                <MainNavButton name="참여하기" path="join"/>
             </View>
             <View style={styles.rooms_outer}>
                 <View style={styles.title_container}>
@@ -96,28 +78,17 @@ function MainScreen({navigation}) {
                             <View key={room[0].room_id}>
                                 {
                                     room[0] &&
-                                    <TouchableOpacity style={styles.room}
-                                                      onPress={() => navigation.navigate('home', {room_id: room[0].room_id})}>
-                                        <Text style={styles.button_text}>{room[0].title}</Text>
-
-                                    </TouchableOpacity>
-
+                                    <RoomItem room_id={room[0].room_id} title={room[0].title}/>
                                 }
                                 {
                                     room[1] &&
-                                    <TouchableOpacity style={styles.room}
-                                          onPress={() => navigation.navigate('home', {room_id: room[1].room_id})}>
-                                        <Text style={styles.button_text}>{room[1].title}</Text>
-                                    </TouchableOpacity>
+                                    <RoomItem room_id={room[1].room_id} title={room[1].title}/>
                                 }
-
                             </View>
                         ))
                     }
                 </ScrollView>
             </View>
-
-
         </View>
     )
 }
@@ -150,16 +121,7 @@ const styles = StyleSheet.create({
         height: "100%",
         flexDirection: "row",
     },
-    room: {
-        backgroundColor: '#FFFFFF',
-        width: wp(30),
-        height: hp(16),
-        borderRadius: 20,
-        borderWidth: 5,
-        margin: 16,
-        borderColor: '#BFBFBF',
-        justifyContent: 'center',
-    },
+
     button_container: {
         width: "100%",
         height: "10%",
@@ -167,35 +129,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
     },
-    button: {
-        width: "40%",
-        height: '80%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'white',
-        borderRadius: 20,
-        borderWidth: 5,
-        borderColor: '#DBDBDB'
-    },
-    button_text: {
-        color: '#000000',
-        textAlign: 'center',
-        fontSize: 20,
-    },
-    logout_container: {
-        borderRadius: 16,
-        borderWidth: 2,
-        borderColor: '#DBDBDB',
-        width: "20%",
-        height: "16%",
-        alignSelf: "center",
-        justifyContent: "center",
-        alignItems: "center",
 
-    },
-    logout_text: {
-        fontSize: 16,
-    },
 
 
 });
