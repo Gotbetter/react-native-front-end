@@ -40,8 +40,8 @@ export default function PlanScreen() {
     const [isModifyButtonPressed, setIsModifyButtonPressed] = useState(false);
     const [modifyDetailPlanId, setModifyDetailPlanId] = useState(null);
 
-    const {request, participants} = useSelector(({room}) => ({
-        request: room.detailPlanRequest,
+    const {request, participants} = useSelector(({room, plan}) => ({
+        request: plan.detailPlanRequest,
         participants: room.participants
     }));
 
