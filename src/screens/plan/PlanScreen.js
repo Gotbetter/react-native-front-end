@@ -171,7 +171,7 @@ export default function PlanScreen() {
                     {
                         detailPlans && planDislikeInfo &&
                         <DetailPlanList
-                            participantsCount={participants.length}
+                            participantsCount={participants.length - 1}
                             planDislikeInfo={planDislikeInfo}
                             isMyPlan={isMyPlan}
                             detailPlans={detailPlans}
@@ -207,7 +207,7 @@ export default function PlanScreen() {
                 {
                     isMyPlan && isMyPlan === true ?
                         planDislikeInfo && participants &&
-                        <DislikeEvaluationCount participantsCount={participants.length} planDislikeInfo={planDislikeInfo}/>
+                        <DislikeEvaluationCount participantsCount={participants.length - 1} planDislikeInfo={planDislikeInfo}/>
                         :
                         planDislikeInfo &&
                         <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
