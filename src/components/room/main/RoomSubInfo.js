@@ -6,7 +6,7 @@ function RoomSubInfo({title, account, totalEntryFee, entryFee, roomCode}) {
         <View style={styles.info}>
             <Text style={styles.title}>방 정보</Text>
             <Text style={styles.text}>스터디방 이름: {title}</Text>
-            <Text style={styles.text}>상납 게좌: {account}</Text>
+            <Text style={styles.text}>상납 계좌: {account}</Text>
             <Text style={styles.text}>전체 모인 금액: {totalEntryFee}원</Text>
             <Text style={styles.text}>입장료: {entryFee}원</Text>
             <Text style={styles.text}>방 코드: {roomCode}</Text>
