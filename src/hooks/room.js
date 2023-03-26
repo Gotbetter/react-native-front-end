@@ -67,7 +67,8 @@ export function useGetDayInfo() {
             const {week, current_week} = roomInfo;
             const thisDate = new Date();
             setCurWeekLeftDay(7 - thisDate.getDay());
-            setStudyWeekLeft(week - current_week);
+            /** current_week default 값이 1이므로 week + 1 필요 **/
+            setStudyWeekLeft(week + 1 - current_week);
         }
     }, [roomInfo]);
 
