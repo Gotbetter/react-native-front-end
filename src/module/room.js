@@ -52,7 +52,7 @@ export const createRoom = createAsyncThunk(
         try {
             /** 방 생성 **/
             const createdRoomInfo = await roomApi.createRoom(args);
-            const {data:{participant_id: leaderParticipantId}} = createdRoomInfo;
+            const {data: {participant_id: leaderParticipantId}} = createdRoomInfo;
             /** 리더의 plan 생성 **/
             await planApi.createPlan(leaderParticipantId);
 
@@ -67,11 +67,15 @@ const room = createSlice(
         name: 'room',
         initialState,
         reducers: {
-
             approvalCompleted: (state, {payload: user_id}) => {
                 const before = state.waitingParticipants;
                 const after = before.filter(participant => participant.user_id !== user_id);
                 state.waitingParticipants = after;
+            },
+            addParticipant: (state, {payload: participant}) => {
+                const participants = state.participants;
+                participants.push(participant);
+                state.participants = participants;
             },
             onChangeRoomRequest: (state, {payload: request}) => {
                 state.roomRequest = request;
@@ -150,6 +154,7 @@ const room = createSlice(
 
 export const {
     approvalCompleted,
+    addParticipant,
     onChangeRoomRequest,
     resetRoomCreateRequest,
     resetRoom,
