@@ -15,6 +15,7 @@ import client from "../../../lib/client";
 
 import Toast from "react-native-root-toast";
 import Logo from "../../../components/common/Logo";
+import PreventRollUpView from "../../../components/common/PreventRollUpView";
 
 export default function JoinRoomScreen({navigation}) {
 
@@ -61,78 +62,82 @@ export default function JoinRoomScreen({navigation}) {
 
 
     return (
-        <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
-            <View style={styles.container}>
+        <PreventRollUpView>
+            <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
 
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={open}
-                    onRequestClose={() => {
-                        setOpen(!open);
-                    }}>
-                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                        <View style={{
-                            backgroundColor: '#EDEDED',
-                            width: '90%',
-                            height: '30%',
-                            borderRadius: 30,
-                            borderWidth: 5,
-                            borderColor: '#DBDBDB'
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={open}
+                        onRequestClose={() => {
+                            setOpen(!open);
                         }}>
+                        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                             <View style={{
-                                flex: 4,
-                                backgroundColor: 'white',
-                                borderTopLeftRadius: 30,
-                                borderTopRightRadius: 30,
-                                justifyContent: 'center',
+                                backgroundColor: '#EDEDED',
+                                width: '90%',
+                                height: '30%',
+                                borderRadius: 30,
+                                borderWidth: 5,
+                                borderColor: '#DBDBDB'
                             }}>
-                                <Text style={styles.modal_text}>
-                                    방장에게 승인 요청을 신청하였습니다. {account}로 {entryFee}원을 송금해주세요.
-                                </Text>
+                                <View style={{
+                                    flex: 4,
+                                    backgroundColor: 'white',
+                                    borderTopLeftRadius: 30,
+                                    borderTopRightRadius: 30,
+                                    justifyContent: 'center',
+                                }}>
+                                    <Text style={styles.modal_text}>
+                                        방장에게 승인 요청을 신청하였습니다. {account}로 {entryFee}원을 송금해주세요.
+                                    </Text>
+                                </View>
+                                <TouchableOpacity onPress={() => setOpen(false)} style={{flex: 1, alignItems: 'center'}}>
+                                    <Text style={styles.modal_text}>
+                                        닫기
+                                    </Text>
+                                </TouchableOpacity>
                             </View>
-                            <TouchableOpacity onPress={() => setOpen(false)} style={{flex: 1, alignItems: 'center'}}>
-                                <Text style={styles.modal_text}>
-                                    닫기
-                                </Text>
-                            </TouchableOpacity>
                         </View>
+                    </Modal>
+
+
+                    <View style={{flex: 4}}>
+                        <View style={{flex: 1}}/>
+                        <View style={{flex: 2}}>
+                            <Logo/>
+                        </View>
+                        <View style={{flex: 1}}/>
                     </View>
-                </Modal>
-
-
-                <View style={{flex: 4}}>
-                    <View style={{flex: 1}}/>
-                    <View style={{flex: 2}}>
-                        <Logo/>
+                    <View style={{flex: 3, alignItems: 'center', justifyContent: 'center',}}>
+                        <View style={{flex: 1}}/>
+                        <TextInput
+                            placeholder='참여코드'
+                            value={request}
+                            onChangeText={(text) => onChangeText(text)}
+                            style={styles.text_input}
+                        />
+                        <View style={{flex: 2}}/>
+                        <TouchableOpacity style={styles.join_button} onPress={() => onClickParticipate()}>
+                            <Text style={styles.join_button_text}>참여하기</Text>
+                        </TouchableOpacity>
+                        <View style={{flex: 2}}/>
                     </View>
-                    <View style={{flex: 1}}/>
-                </View>
-                <View style={{flex: 3, alignItems: 'center', justifyContent: 'center',}}>
-                    <View style={{flex: 1}}/>
-                    <TextInput
-                        placeholder='참여코드'
-                        value={request}
-                        onChangeText={(text) => onChangeText(text)}
-                        style={styles.text_input}
-                    />
-                    <View style={{flex: 2}}/>
-                    <TouchableOpacity style={styles.join_button} onPress={() => onClickParticipate()}>
-                        <Text style={styles.join_button_text}>참여하기</Text>
-                    </TouchableOpacity>
-                    <View style={{flex: 2}}/>
-                </View>
 
-                <View style={{flex: 3}}/>
+                    <View style={{flex: 3}}/>
 
-            </View>
-        </TouchableWithoutFeedback>
+                </View>
+            </TouchableWithoutFeedback>
+        </PreventRollUpView>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: "100%",
+        width: "100%",
         backgroundColor: 'white',
     },
     logo_image: {

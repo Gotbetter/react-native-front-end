@@ -59,15 +59,19 @@ function RoomScheduleFormScreen({navigation}) {
     const onPressNext = () => {
         const {start_date, week} = request;
 
-        const cmpStartDate = start_date.toLocaleDateString();
-        const cmpTODAY = TODAY.toLocaleDateString();
-
         if (start_date == null || week == null) {
             Toast.show('모든 정보를 입력하세요', {duration: Toast.durations.LONG});
-        } else if (cmpStartDate < cmpTODAY) {
-            Toast.show('올바른 날짜를 선택하세요', {duration: Toast.durations.LONG});
         } else {
-            navigation.navigate('room-create-entry-fee-form');
+
+            const cmpStartDate = start_date.toLocaleDateString();
+            const cmpTODAY = TODAY.toLocaleDateString();
+
+            if (cmpStartDate < cmpTODAY) {
+                Toast.show('올바른 날짜를 선택하세요', {duration: Toast.durations.LONG});
+            } else {
+                navigation.navigate('room-create-entry-fee-form');
+            }
+
         }
 
     }

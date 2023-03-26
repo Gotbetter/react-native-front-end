@@ -1,13 +1,4 @@
-import {
-    Image,
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
-} from "react-native";
+import {StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
 import {useEffect, useState,} from "react";
 import Toast from "react-native-root-toast";
 
@@ -15,9 +6,13 @@ import Toast from "react-native-root-toast";
 import {useDispatch, useSelector} from "react-redux";
 import {login, resetLoginStatus} from "../../module/auth";
 import Logo from "../../components/common/Logo";
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 
 function LoginScreen({navigation}) {
+
+
+
 
     const dispatch = useDispatch();
     const {status} = useSelector(({auth}) => ({
@@ -79,7 +74,7 @@ function LoginScreen({navigation}) {
     }
 
     return (
-        <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
+        <PreventRollUpView>
             <View style={styles.container}>
 
                 <View style={{flex: 3}}>
@@ -88,8 +83,6 @@ function LoginScreen({navigation}) {
                         <Logo/>
                     </View>
                 </View>
-
-
                 <View style={styles.login_container}>
                     <View style={{flex: 1}}/>
                     <TextInput value={auth_id} style={styles.text_input} placeholder='아이디' placeholderTextColor='black'
@@ -119,7 +112,8 @@ function LoginScreen({navigation}) {
                 <View style={{flex: 2}}/>
 
             </View>
-        </TouchableWithoutFeedback>
+        </PreventRollUpView>
+
     );
 }
 

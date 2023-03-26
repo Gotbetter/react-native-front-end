@@ -29,6 +29,7 @@ import {
     resetDetailPlanRequest,
     undoCompleteDetailPlan
 } from "../../module/plan";
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 
 export default function PlanScreen() {
@@ -165,78 +166,82 @@ export default function PlanScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <PreventRollUpView>
+            <View style={styles.container}>
 
-            <View style={{flex: 0.5}}/>
-            <Logo/>
-            <View style={{flex: 0.1}}/>
+                <View style={{flex: 0.5}}/>
+                <Logo/>
+                <View style={{flex: 0.1}}/>
 
-            <WeekList
-                plannerName={planner.username}
-                weekList={weekList}
-                clickedWeek={clickedWeek}
-                onPress={onPressWeekList}
-            />
+                <WeekList
+                    plannerName={planner.username}
+                    weekList={weekList}
+                    clickedWeek={clickedWeek}
+                    onPress={onPressWeekList}
+                />
 
-            <View style={{flex: 0.1}}/>
+                <View style={{flex: 0.1}}/>
 
-            <View style={styles.detail_plans_container}>
-                <ScrollView style={{flex: 1,}}>
-                    {
-                        detailPlans && planDislikeInfo &&
-                        <DetailPlanList
-                            participantsCount={participants.length - 1}
-                            planDislikeInfo={planDislikeInfo}
-                            isMyPlan={isMyPlan}
-                            detailPlans={detailPlans}
-                            onPressModifyButton={onPressModifyButton}
-                            onPressCheckBox={onPressCheckBox}
-                            onPressDetailPlanDislike={onPressDetailPlanDislike}
-                        />
-                    }
+                <View style={styles.detail_plans_container}>
+                    <ScrollView style={{flex: 1,}}>
+                        {
+                            detailPlans && planDislikeInfo &&
+                            <DetailPlanList
+                                participantsCount={participants.length - 1}
+                                planDislikeInfo={planDislikeInfo}
+                                isMyPlan={isMyPlan}
+                                detailPlans={detailPlans}
+                                onPressModifyButton={onPressModifyButton}
+                                onPressCheckBox={onPressCheckBox}
+                                onPressDetailPlanDislike={onPressDetailPlanDislike}
+                            />
+                        }
+                        {
+                            isMyPlan && isMyPlan === true ?
+                                (
+                                    plan && plan.three_days_passed === false ?
+                                        (
+                                            <DetailPlanInput
+                                                addButtonPressed={isAddButtonPressed}
+                                                modifyButtonPressed={isModifyButtonPressed}
+                                                onPressAddButton={onPressAddButton}
+                                                onPressModifyDetailPlan={onPressModifyDetailPlan}
+                                                onPressAddDetailPlan={onPressAddDetailPlan}
+                                                onChangeRequest={onChangeText}
+                                            />
+                                        ) : null
+                                )
+                                : null
+                        }
+                    </ScrollView>
+                </View>
+                <View style={{flex: 0.1}}/>
+                <View style={{flex: 1, flexDirection: 'row',}}>
                     {
                         isMyPlan && isMyPlan === true ?
-                            (
-                                plan && plan.three_days_passed === false ?
-                                    (
-                                        <DetailPlanInput
-                                            addButtonPressed={isAddButtonPressed}
-                                            modifyButtonPressed={isModifyButtonPressed}
-                                            onPressAddButton={onPressAddButton}
-                                            onPressModifyDetailPlan={onPressModifyDetailPlan}
-                                            onPressAddDetailPlan={onPressAddDetailPlan}
-                                            onChangeRequest={onChangeText}
-                                        />
-                                    ) : null
-                            )
-                            : null
+                            planDislikeInfo && participants &&
+                            <DislikeEvaluationCount participantsCount={participants.length - 1} planDislikeInfo={planDislikeInfo}/>
+                            :
+                            planDislikeInfo &&
+                            <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
                     }
-                </ScrollView>
-            </View>
-            <View style={{flex: 0.1}}/>
-            <View style={{flex: 1, flexDirection: 'row',}}>
-                {
-                    isMyPlan && isMyPlan === true ?
-                        planDislikeInfo && participants &&
-                        <DislikeEvaluationCount participantsCount={participants.length - 1} planDislikeInfo={planDislikeInfo}/>
-                        :
-                        planDislikeInfo &&
-                        <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
-                }
-            </View>
-            <View style={{flex: 0.5}}/>
+                </View>
+                <View style={{flex: 0.5}}/>
 
-            <InputModal modalTitle={'Memo'} inputTitle={'메모 입력'} target={approveComment}
-                        onChangeTarget={setApproveComment} show={openApproveCommentModal}
-                        setShow={setOpenApproveCommentModal}
-                        onPress={onPressEnter}/>
-        </View>
+                <InputModal modalTitle={'Memo'} inputTitle={'메모 입력'} target={approveComment}
+                            onChangeTarget={setApproveComment} show={openApproveCommentModal}
+                            setShow={setOpenApproveCommentModal}
+                            onPress={onPressEnter}/>
+            </View>
+        </PreventRollUpView>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height: "100%",
+        width: "100%",
         backgroundColor: 'white',
     },
     detail_plans_container: {
