@@ -7,6 +7,7 @@ import Logo from "../../../components/common/Logo";
 import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
 import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
+import PreventRollUpView from "../../../components/common/PreventRollUpView";
 
 function RoomTitleFormScreen({navigation}) {
     const SCREEN_TITLE = "새로운 스터디방 만들기";
@@ -48,27 +49,32 @@ function RoomTitleFormScreen({navigation}) {
     }, [request]);
 
     return (
-        <View style={styles.container}>
-            <Logo/>
-            <View style={styles.content_container}>
-                <Text style={styles.screen_title}>{SCREEN_TITLE}</Text>
-                <InputGroup title={INPUT_TITLE} targetName={"title"} onChange={onChange}/>
-                <InputGroup title={SELECT_TITLE}>
-                    <SelectGroup selected={request.max_user_num} targetName={"max_user_num"} items={getSelectItems()} onChange={onChange}/>
-                </InputGroup>
-                <View style={styles.button_container}>
-                    <NextOrCloseButton onPress={onPress}/>
-                </View>
+        <PreventRollUpView>
+            <View style={styles.container}>
+                <Logo/>
+                <View style={styles.content_container}>
+                    <Text style={styles.screen_title}>{SCREEN_TITLE}</Text>
+                    <InputGroup title={INPUT_TITLE} targetName={"title"} onChange={onChange}/>
+                    <InputGroup title={SELECT_TITLE}>
+                        <SelectGroup selected={request.max_user_num} targetName={"max_user_num"}
+                                     items={getSelectItems()} onChange={onChange}/>
+                    </InputGroup>
+                    <View style={styles.button_container}>
+                        <NextOrCloseButton onPress={onPress}/>
+                    </View>
 
+                </View>
             </View>
-        </View>
+        </PreventRollUpView>
+
     );
 }
 
 const styles = StyleSheet.create(
     {
         container: {
-            flex: 1,
+            height: "100%",
+            width: "100%",
             backgroundColor: 'white',
         },
 
