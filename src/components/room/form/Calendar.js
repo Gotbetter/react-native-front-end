@@ -1,7 +1,6 @@
 import React from 'react';
-import RNDateTimePicker, {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import {Button, Platform, View} from "react-native";
+import {View} from "react-native";
 
 
 function Calendar({show, onConfirm, onCancel}) {
