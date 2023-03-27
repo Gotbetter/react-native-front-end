@@ -37,7 +37,7 @@ function RegisterScreen({navigation}) {
     useEffect(() => {
         if (status.DUPLICATE_CHECKED === 409) {
             Toast.show("중복된 아이디 입니다.",
-                {duration: Toast.durations.LONG});
+                {duration: Toast.durations.SHORT});
             const resetId = {
                 ...request,
                 "auth_id": '',
@@ -46,7 +46,7 @@ function RegisterScreen({navigation}) {
             dispatch(resetDuplicate());
         } else if (status.DUPLICATE_CHECKED === 200) {
             Toast.show("사용 가능한 아이디 입니다.",
-                {duration: Toast.durations.LONG});
+                {duration: Toast.durations.SHORT});
         }
 
     }, [dispatch, status.DUPLICATE_CHECKED]);
@@ -57,6 +57,10 @@ function RegisterScreen({navigation}) {
                 {duration: Toast.durations.LONG});
             dispatch(resetRegister());
             navigation.navigate('login');
+        } else if (status.REGISTER === 409) {
+            Toast.show("중복된 이메일은 불가능합니다.",
+                {duration: Toast.durations.SHORT});
+            dispatch(resetRegister())
         } else if (status.REGISTER === 500) {
             Toast.show("서버 문제로 인한 실패.",
                 {duration: Toast.durations.LONG});
@@ -107,14 +111,14 @@ function RegisterScreen({navigation}) {
 
         if (flag === false) {
             Toast.show("모든 정보를 입력하세요",
-                {duration: Toast.durations.LONG});
+                {duration: Toast.durations.SHORT});
         } else {
             // 중복확인 체크
             if (status.DUPLICATE_CHECKED === 200) {
                 dispatch(register(request));
             } else {
                 Toast.show("아이디 중복확인을 하세요",
-                    {duration: Toast.durations.LONG});
+                    {duration: Toast.durations.SHORT});
             }
         }
     }
