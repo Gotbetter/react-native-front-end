@@ -11,6 +11,8 @@ function RoomList({rooms, curRoomId, onPress}) {
                     style={room.room_id === curRoomId ? styles.current_room : styles.room}
                     onPress={() => onPress(room.room_id)}>
                     <Text
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
                         style={room.room_id === curRoomId ? styles.current_button_text : styles.button_text}>
                         {room.title}
                     </Text>
