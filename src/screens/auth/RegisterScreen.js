@@ -13,6 +13,7 @@ import {useEffect, useState,} from "react";
 import {checkDuplicate, register, resetDuplicate, resetRegister} from "../../module/auth";
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 
 function RegisterScreen({navigation}) {
@@ -36,7 +37,7 @@ function RegisterScreen({navigation}) {
     useEffect(() => {
         if (status.DUPLICATE_CHECKED === 409) {
             Toast.show("중복된 아이디 입니다.",
-                {duration: Toast.durations.LONG});
+                {duration: Toast.durations.SHORT});
             const resetId = {
                 ...request,
                 "auth_id": '',
@@ -45,7 +46,7 @@ function RegisterScreen({navigation}) {
             dispatch(resetDuplicate());
         } else if (status.DUPLICATE_CHECKED === 200) {
             Toast.show("사용 가능한 아이디 입니다.",
-                {duration: Toast.durations.LONG});
+                {duration: Toast.durations.SHORT});
         }
 
     }, [dispatch, status.DUPLICATE_CHECKED]);
@@ -56,6 +57,10 @@ function RegisterScreen({navigation}) {
                 {duration: Toast.durations.LONG});
             dispatch(resetRegister());
             navigation.navigate('login');
+        } else if (status.REGISTER === 409) {
+            Toast.show("중복된 이메일은 불가능합니다.",
+                {duration: Toast.durations.SHORT});
+            dispatch(resetRegister())
         } else if (status.REGISTER === 500) {
             Toast.show("서버 문제로 인한 실패.",
                 {duration: Toast.durations.LONG});
@@ -106,72 +111,75 @@ function RegisterScreen({navigation}) {
 
         if (flag === false) {
             Toast.show("모든 정보를 입력하세요",
-                {duration: Toast.durations.LONG});
+                {duration: Toast.durations.SHORT});
         } else {
             // 중복확인 체크
             if (status.DUPLICATE_CHECKED === 200) {
                 dispatch(register(request));
             } else {
                 Toast.show("아이디 중복확인을 하세요",
-                    {duration: Toast.durations.LONG});
+                    {duration: Toast.durations.SHORT});
             }
         }
     }
 
     return (
-        <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
-            <View style={styles.container}>
+        <PreventRollUpView>
+            <TouchableWithoutFeedback style={{flex: 1}} onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
 
-                <View style={{flex: 3}}>
-                    <View style={{flex: 1}}/>
-                    <View style={{flex: 1}}>
-                        <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
-                               style={styles.logo_image}/>
+                    <View style={{flex: 3}}>
+                        <View style={{flex: 1}}/>
+                        <View style={{flex: 1}}>
+                            <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
+                                   style={styles.logo_image}/>
+                        </View>
+                        <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Text style={{fontSize: 30, textAlign: 'center'}}>회원가입</Text>
+                        </View>
                     </View>
-                    <View style={{flex: 1, justifyContent: 'center'}}>
-                        <Text style={{fontSize: 30, textAlign: 'center'}}>회원가입</Text>
+
+
+                    <View style={styles.signup_container}>
+                        <View style={{flex: 1}}/>
+                        <View style={{flex: 2, flexDirection: 'row', width: '90%',}}>
+                            <TextInput value={auth_id} style={styles.input_id_text_input}
+                                       placeholder='아이디' placeholderTextColor='black'
+                                       onChange={e => onChange("auth_id", e)}/>
+                            <TouchableOpacity style={styles.duplication_check_button}>
+                                <Text style={{textAlign: 'center', fontSize: 15,}}
+                                      onPress={() => checkDuplicateId()}>중복확인</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flex: 1}}/>
+                        <TextInput value={password} style={styles.text_input}
+                                   placeholder='비밀번호' placeholderTextColor='black' secureTextEntry={true}
+                                   onChange={e => onChange("password", e)}/>
+                        <View style={{flex: 1}}/>
+                        <TextInput value={passwordConfirm} style={styles.text_input} placeholder='비밀번호 재확인'
+                                   placeholderTextColor='black' secureTextEntry={true}
+                                   onChangeText={setPasswordConfirm} onBlur={conFirmPassword}/>
+                        <View style={{flex: 1}}/>
+                        <TextInput value={username} style={styles.text_input}
+                                   placeholder='닉네임' placeholderTextColor='black'
+                                   onChange={e => onChange("username", e)}/>
+                        <View style={{flex: 1}}/>
+                        <TextInput value={email} style={styles.text_input}
+                                   placeholder='이메일' placeholderTextColor='black'
+                                   onChange={e => onChange("email", e)}/>
+                        <View style={{flex: 1}}/>
                     </View>
-                </View>
 
-
-                <View style={styles.signup_container}>
-                    <View style={{flex: 1}}/>
-                    <View style={{flex: 2, flexDirection: 'row', width: '90%',}}>
-                        <TextInput value={auth_id} style={styles.input_id_text_input}
-                                   placeholder='아이디' placeholderTextColor='black'
-                                   onChange={e => onChange("auth_id", e)}/>
-                        <TouchableOpacity style={styles.duplication_check_button}>
-                            <Text style={{textAlign: 'center', fontSize: 15,}}
-                                  onPress={() => checkDuplicateId()}>중복확인</Text>
+                    <View style={{flex: 2, alignItems: 'center'}}>
+                        <TouchableOpacity style={styles.signup_button} onPress={onPressRegister}>
+                            <Text style={styles.signup_button_text}>회원가입</Text>
                         </TouchableOpacity>
+                        <View style={{flex: 2}}/>
                     </View>
-                    <View style={{flex: 1}}/>
-                    <TextInput value={password} style={styles.text_input}
-                               placeholder='비밀번호' placeholderTextColor='black' secureTextEntry={true}
-                               onChange={e => onChange("password", e)}/>
-                    <View style={{flex: 1}}/>
-                    <TextInput value={passwordConfirm} style={styles.text_input} placeholder='비밀번호 재확인'
-                               placeholderTextColor='black' secureTextEntry={true}
-                               onChangeText={setPasswordConfirm} onBlur={conFirmPassword}/>
-                    <View style={{flex: 1}}/>
-                    <TextInput value={username} style={styles.text_input}
-                               placeholder='닉네임' placeholderTextColor='black'
-                               onChange={e => onChange("username", e)}/>
-                    <View style={{flex: 1}}/>
-                    <TextInput value={email} style={styles.text_input}
-                               placeholder='이메일' placeholderTextColor='black'
-                               onChange={e => onChange("email", e)}/>
-                    <View style={{flex: 1}}/>
                 </View>
+            </TouchableWithoutFeedback>
+        </PreventRollUpView>
 
-                <View style={{flex: 2, alignItems: 'center'}}>
-                    <TouchableOpacity style={styles.signup_button} onPress={onPressRegister}>
-                        <Text style={styles.signup_button_text}>회원가입</Text>
-                    </TouchableOpacity>
-                    <View style={{flex: 2}}/>
-                </View>
-            </View>
-        </TouchableWithoutFeedback>
     );
 }
 

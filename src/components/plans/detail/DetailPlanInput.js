@@ -5,8 +5,7 @@ import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-nativ
 function DetailPlanInput({
                              addButtonPressed,
                              modifyButtonPressed,
-                             setAddButtonPressed,
-                             setModifyButtonPressed,
+                             onPressAddButton,
                              onPressAddDetailPlan,
                              onPressModifyDetailPlan,
                              onChangeRequest
@@ -17,10 +16,7 @@ function DetailPlanInput({
     }
 
     if (notPressedAnyButton()) {
-        return <AddButton
-            setAddButtonPressed={setAddButtonPressed}
-            setModifyButtonPressed={setModifyButtonPressed}
-        />
+        return <AddButton onPress={onPressAddButton}/>
     } else if (addButtonPressed) {
         return <Input
             onPressButton={onPressAddDetailPlan}
@@ -38,13 +34,10 @@ function DetailPlanInput({
 }
 
 
-const AddButton = ({setAddButtonPressed, setModifyButtonPressed}) => {
+const AddButton = ({onPress}) => {
     return (
         <TouchableOpacity key={10000} style={styles.add_plan}
-                          onPress={() => {
-                              setAddButtonPressed(true);
-                              setModifyButtonPressed(false);
-                          }}
+                          onPress={onPress}
         >
             <Text style={styles.detail_plan_text}>추가하기</Text>
         </TouchableOpacity>
@@ -73,7 +66,7 @@ const styles = StyleSheet.create(
             borderWidth: 1,
             borderColor: 'black',
             width: wp(80),
-            height: hp(6),
+            height: hp(7),
             marginTop: "5%",
             borderRadius: 20,
         },

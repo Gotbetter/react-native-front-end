@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import Logo from "../../components/common/Logo";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {approvalCompleted, fetchParticipants, resetRoom} from "../../module/room";
+import {addParticipant, approvalCompleted, fetchParticipants, resetRoom} from "../../module/room";
 import client from "../../lib/client";
 import Toast from "react-native-root-toast";
 import RoomList from "../../components/room/main/RoomList";
@@ -60,8 +60,14 @@ function RoomMainScreen() {
     }
 
     const isRoomEnd = () => {
-        const {week, current_week} = roomInfo;
-        return current_week >= week;
+        const {week: totalWeek, current_week} = roomInfo;
+
+        if (current_week >= totalWeek + 1) {
+            return true
+        }
+
+        return false;
+
     };
     const onPressApproveParticipate = () => {
         setApprovalModal(true);
@@ -86,8 +92,10 @@ function RoomMainScreen() {
             })
             .then(({data}) => {
                 /** 참가 승인이 성공했을 경우 해당 참가자의 주간 계획을 생성해주어야 한다. **/
+                console.log(data);
                 const {participant_id} = data;
-                dispatch(approvalCompleted(user_id))
+                dispatch(approvalCompleted(user_id));
+                dispatch(addParticipant(data));
                 client.post(`/plans`,
                     {
                         participant_id

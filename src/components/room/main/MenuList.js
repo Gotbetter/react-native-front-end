@@ -9,9 +9,6 @@ function MenuList({isRoomLeader, onPress, onPressRank, onPressRoomInfo}) {
             <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}>
                 <Text style={styles.main_text} onPress={onPressRank}>랭킹</Text>
             </View>
-            <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}><Text
-                style={styles.main_text}>룰</Text>
-            </View>
             <View style={{flex: 2, alignItems: 'center', justifyContent: 'center'}}>
                 {
                     isRoomLeader && isRoomLeader === true ?
@@ -26,9 +23,6 @@ function MenuList({isRoomLeader, onPress, onPressRank, onPressRoomInfo}) {
                             </Text>
                         )
                 }
-            </View>
-            <View style={{flex: 4, alignItems: 'center', justifyContent: 'center'}}><Text
-                style={styles.main_text}>환급 비용 계산</Text>
             </View>
         </View>
     );

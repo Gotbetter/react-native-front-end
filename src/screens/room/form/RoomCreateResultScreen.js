@@ -48,6 +48,8 @@ const styles = StyleSheet.create(
             borderWidth: 1,
             borderRadius: 18,
             padding: 12,
+            width: "80%",
+            height: "30%",
         },
         button_container: {
             marginTop: "10%",
