@@ -25,7 +25,7 @@ import {
     doDetailPlanDislike,
     doPlanDislike,
     modifyDetailPlan,
-    onChangeDetailPlanRequest,
+    onChangeDetailPlanRequest, pressDislike,
     resetDetailPlanRequest,
     undoCompleteDetailPlan
 } from "../../module/plan";
@@ -185,8 +185,9 @@ export default function PlanScreen() {
                 <View style={styles.detail_plans_container}>
                     <ScrollView style={{flex: 1,}}>
                         {
-                            detailPlans && planDislikeInfo &&
+                            detailPlans && planDislikeInfo && plan &&
                             <DetailPlanList
+                                plan={plan}
                                 participantsCount={participants.length - 1}
                                 planDislikeInfo={planDislikeInfo}
                                 isMyPlan={isMyPlan}
