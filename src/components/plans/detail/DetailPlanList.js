@@ -8,6 +8,7 @@ import Icon from "react-native-vector-icons/Entypo";
 import InputModal from "../../common/InputModal";
 
 function DetailPlanList({
+                            plan,
                             planDislikeInfo,
                             participantsCount,
                             isMyPlan,
@@ -17,6 +18,7 @@ function DetailPlanList({
                             onPressDetailPlanDislike,
 
                         }) {
+
 
 
     return (
@@ -47,10 +49,12 @@ function DetailPlanList({
 
                 </View>
                 <View style={styles.dislike_count_container}>
-                    <Text>싫어요 수: {planDislikeInfo.dislike_count} / {participantsCount}</Text>
+                {
+                    plan.three_days_passed && (
+                            <Text>싫어요 수: {planDislikeInfo.dislike_count} / {participantsCount}</Text>
+                    )
+                }
                 </View>
-
-
             </View>
 
         ))
