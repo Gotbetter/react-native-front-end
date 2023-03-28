@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
@@ -7,9 +7,9 @@ function RoomItem({room_id, title}) {
 
     const navigation = useNavigation();
 
-    const onPress = useCallback(() => {
+    const onPress = () => {
         navigation.navigate('home', {room_id});
-    }, [room_id]);
+    };
 
     return (
         <TouchableOpacity style={styles.room}
