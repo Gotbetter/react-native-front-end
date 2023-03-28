@@ -25,7 +25,7 @@ import {
     doDetailPlanDislike,
     doPlanDislike,
     modifyDetailPlan,
-    onChangeDetailPlanRequest,
+    onChangeDetailPlanRequest, pressDislike,
     resetDetailPlanRequest,
     undoCompleteDetailPlan
 } from "../../module/plan";
