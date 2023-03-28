@@ -7,9 +7,9 @@ function RoomItem({room_id, title}) {
 
     const navigation = useNavigation();
 
-    const onPress = () => {
+    const onPress = useCallback(() => {
         navigation.navigate('home', {room_id});
-    };
+    }, [room_id]);
 
     return (
         <TouchableOpacity style={styles.room}
