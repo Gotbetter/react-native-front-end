@@ -18,14 +18,14 @@ import {useDispatch, useSelector} from "react-redux";
 import InputModal from "../../components/common/InputModal";
 import {useFetchRoomInfo} from "../../hooks/room";
 import {
-    cancelDetailPlanDislike,
+    cancelDetailPlanDislike, cancelDislikeDetailPlan,
     cancelPlanDislike,
     completeDetailPlan,
-    createDetailPlan,
+    createDetailPlan, dislikeDetailPlan,
     doDetailPlanDislike,
     doPlanDislike,
     modifyDetailPlan,
-    onChangeDetailPlanRequest, pressDislike,
+    onChangeDetailPlanRequest,
     resetDetailPlanRequest,
     undoCompleteDetailPlan
 } from "../../module/plan";
@@ -134,16 +134,18 @@ export default function PlanScreen() {
         } else {
             dispatch(doPlanDislike(plan.plan_id));
         }
-        dispatch(pressDislike(checked));
+
     };
 
     /** 세부계획 싫어요 버튼 **/
     const onPressDetailPlanDislike = (detail_plan_id, isChecked) => {
 
         if (cancelDislike(isChecked)) {
-            dispatch(cancelDetailPlanDislike(detail_plan_id))
+            dispatch(cancelDetailPlanDislike(detail_plan_id));
+            dispatch(cancelDislikeDetailPlan(detail_plan_id));
         } else {
-            dispatch(doDetailPlanDislike(detail_plan_id))
+            dispatch(doDetailPlanDislike(detail_plan_id));
+            dispatch(dislikeDetailPlan(detail_plan_id));
         }
     }
 

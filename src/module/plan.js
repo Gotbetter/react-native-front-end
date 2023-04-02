@@ -37,7 +37,7 @@ export const fetchPlanAndDetailPlan = createAsyncThunk(
 
     });
 export const doPlanDislike = createThunk("plan/DISLIKE", planApi.doPlanDislike);
-export const cancelPlanDislike = createThunk("plan/DISLIKE_CANCEL",planApi.cancelPlanDislike);
+export const cancelPlanDislike = createThunk("plan/DISLIKE_CANCEL", planApi.cancelPlanDislike);
 export const createDetailPlan = createThunk("plan/CREATE_DETAIL_PLAN", planApi.createDetailPlan);
 export const modifyDetailPlan = createThunk("plan/MODIFY_DETAIL_PLAN", planApi.updateDetailPlan);
 export const completeDetailPlan = createThunk("plan/COMPLETE_DETAIL_PLAN", planApi.completeDetailPlan);
@@ -71,6 +71,25 @@ const plan = createSlice(
                 state.plan = null;
                 state.detailPlans = [];
             },
+            /** api response 수정 전까지만 사용 **/
+            dislikeDetailPlan: (state, {payload: detail_plan_id}) => {
+                const prev = state.detailPlans;
+                const next = prev.map(detailPlan => detailPlan.detail_plan_id === detail_plan_id ? {
+                    ...detailPlan,
+                    detail_plan_dislike_count: detailPlan.detail_plan_dislike_count + 1,
+                    detail_plan_dislike_checked: !detailPlan.detail_plan_dislike_checked,
+                } : detailPlan);
+                state.detailPlans = next;
+            },
+            cancelDislikeDetailPlan: (state, {payload: detail_plan_id}) => {
+                const prev = state.detailPlans;
+                const next = prev.map(detailPlan => detailPlan.detail_plan_id === detail_plan_id ? {
+                    ...detailPlan,
+                    detail_plan_dislike_count: detailPlan.detail_plan_dislike_count - 1,
+                    detail_plan_dislike_checked: !detailPlan.detail_plan_dislike_checked,
+                } : detailPlan);
+                state.detailPlans = next;
+            }
         },
         extraReducers: (builder) => {
             builder
@@ -87,8 +106,14 @@ const plan = createSlice(
                     } : detailPlan);
                     state.detailPlans = next;
                 })
+                .addCase(doPlanDislike.fulfilled, (state) => {
+                    state.planDislikeInfo.checked = true;
+                })
                 .addCase(doPlanDislike.rejected, (state, {payload: {message}}) => {
                     state.error = message;
+                })
+                .addCase(cancelPlanDislike.fulfilled, (state) => {
+                    state.planDislikeInfo.checked = false;
                 })
                 .addCase(fetchDislikeInfo.fulfilled, (state, {payload: {data}}) => {
                     state.planDislikeInfo = data;
@@ -132,7 +157,6 @@ const plan = createSlice(
                     const prev = state.detailPlans;
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
-                        detail_plan_dislike_checked: data.detail_plan_dislike_checked
                     } : detailPlan);
                     state.detailPlans = next;
                 })
@@ -143,7 +167,6 @@ const plan = createSlice(
                     const prev = state.detailPlans;
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
-                        detail_plan_dislike_checked: data.detail_plan_dislike_checked
                     } : detailPlan);
                     state.detailPlans = next;
                 })
@@ -161,7 +184,9 @@ export const {
     resetPlanAndDetailPlan,
     pressDislike,
     onChangeDetailPlanRequest,
-    resetDetailPlanRequest
+    resetDetailPlanRequest,
+    dislikeDetailPlan,
+    cancelDislikeDetailPlan
 } = plan.actions;
 
 export default plan.reducer;

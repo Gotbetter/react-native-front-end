@@ -11,9 +11,6 @@ import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 function LoginScreen({navigation}) {
 
-
-
-
     const dispatch = useDispatch();
     const {status} = useSelector(({auth}) => ({
         status: auth.status.LOGIN
@@ -32,9 +29,7 @@ function LoginScreen({navigation}) {
             dispatch(resetLoginStatus());
         }
 
-
-    }, [status]);
-
+    }, [dispatch, status]);
     const [request, setRequest] = useState({
         auth_id: '',
         password: '',
