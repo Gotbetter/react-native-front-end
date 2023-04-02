@@ -2,12 +2,12 @@
   "expo": {
     "name": "gotbetter",
     "slug": "gotbetter",
-    "version": "1.0.0",
+    "version": "0.1.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/main_app_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,12 +22,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/main_app_logo.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "versionCode": 3,
+      "package": "com.jjinyeok.gotbetter"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0887a427-c7cc-4a3f-8998-0fcbd852b499"
+      }
     }
   }
 }
