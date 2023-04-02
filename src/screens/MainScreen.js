@@ -1,23 +1,26 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch} from "react-redux";
 import {useFetchRoomList} from "../hooks/room";
-import {fetchUser} from "../module/auth";
+import {fetchUser, logout} from "../module/auth";
 import {BackHandler, ScrollView, StyleSheet, Text, View} from "react-native";
-import Logo from "../components/common/Logo";
-import {useFocusEffect, useIsFocused, useRoute} from "@react-navigation/native";
+import {useFocusEffect, useIsFocused, useNavigation, useRoute} from "@react-navigation/native";
 import {resetRoom, resetRoomCreateRequest} from "../module/room";
-import MainNavButton from "../components/main/MainNavButton";
-import LogoutButton from "../components/main/LogoutButton";
 import RoomItem from "../components/main/RoomItem";
 import {resetPlanAndDetailPlan} from "../module/plan";
+import Header from "../components/common/Header";
+import Footer from "../components/common/Footer";
+import MenuModal from "../components/main/MenuModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function MainScreen() {
 
     const dispatch = useDispatch();
+    const navigation = useNavigation();
     const curScreen = useRoute();
     const isFocused = useIsFocused();
 
     const roomList = useFetchRoomList();
+    const [showMenu, setShowMenu] = useState(false);
 
     /** Android 로그인 화면으로 뒤로가기 금지하기 **/
     useFocusEffect(useCallback(() => {
@@ -48,90 +51,68 @@ function MainScreen() {
         }
     }, [isFocused]);
 
-
-    const roomListToDoubleRow = (roomList) => {
-        let result = []
-        for (let i = 0; i < roomList.length / 2; i++) {
-            result = [...result, roomList.slice(2 * i, 2 * i + 2)];
-        }
-
-        return result;
+    const onPressLogout = () => {
+        AsyncStorage.getAllKeys()
+            .then(keys => AsyncStorage.multiRemove(keys))
+            .catch(err => err)
+            .then(() => {
+                dispatch(logout());
+                setShowMenu(false);
+                navigation.navigate('login');
+            })
+            .catch(err => err);
+    };
+    const onPressMenu = () => {
+        setShowMenu(true);
     }
 
-
+    const onPressClose = () => {
+        setShowMenu(false);
+    }
     return (
-        <View style={styles.base_container}>
-            <View style={styles.logo_container}>
-                <Logo/>
-                <LogoutButton/>
-            </View>
-            <View style={styles.button_container}>
-                <MainNavButton name="방만들기" path="room-create-title-form"/>
-                <MainNavButton name="참여하기" path="join"/>
-            </View>
-            <View style={styles.rooms_outer}>
-                <View style={styles.title_container}>
-                    <Text style={styles.title_text}>방 목록</Text>
+        <View style={styles.container}>
+            <Header onPress={onPressMenu}/>
+            <View style={styles.room_list_container}>
+                <View style={styles.room_list_title}>
+                    <Text style={styles.room_list_title_text}>스터디 룸</Text>
                 </View>
-                <ScrollView contentContainerStyle={styles.scroll_container} horizontal={true}>
+                <ScrollView style={styles.room_list} contentContainerStyle={{alignItems: "center"}}>
                     {
-                        roomListToDoubleRow(roomList).map((room) => (
-                            <View key={room[0].room_id}>
-                                {
-                                    room[0] &&
-                                    <RoomItem room_id={room[0].room_id} title={room[0].title}/>
-                                }
-                                {
-                                    room[1] &&
-                                    <RoomItem room_id={room[1].room_id} title={room[1].title}/>
-                                }
+                        roomList && roomList.map((room) => (
+                            <View key={room.room_id}>
+                                <RoomItem room_id={room.room_id} title={room.title}/>
                             </View>
                         ))
                     }
                 </ScrollView>
             </View>
+            <Footer/>
+            <MenuModal show={showMenu} onPressClose={onPressClose} onPressLogout={onPressLogout}/>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    base_container: {
-        flex: 1,
+    container: {
+        width: "100%",
+        height: "100%",
         backgroundColor: 'white',
         alignItems: "center",
     },
-    logo_container: {
+    room_list_container: {
+        padding: 16,
         width: "100%",
-        height: "30%",
+        height: "80%",
     },
-    title_container: {
-        paddingLeft: 12,
-        height: "10%",
-        justifyContent: "center",
-    },
-    title_text: {
-        fontWeight: "bold",
-        fontSize: 24,
-    },
-    rooms_outer: {
-        marginTop: "10%",
+    room_list_title: {},
+    room_list: {
         width: "100%",
-        height: "45%",
-    },
-    scroll_container: {
         height: "100%",
-        flexDirection: "row",
+
     },
-
-    button_container: {
-        width: "100%",
-        height: "10%",
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
+    room_list_title_text: {
+        fontSize: 20,
     },
-
-
 
 });
 
