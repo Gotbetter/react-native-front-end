@@ -1,4 +1,4 @@
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from "./src/screens/auth/LoginScreen";
 import RegisterScreen from "./src/screens/auth/RegisterScreen";
@@ -24,53 +24,52 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
 
-    const [isLogin, setIsLogin] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLogin, setIsLogin] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(null);
 
     async function checkLogin() {
         const token = await AsyncStorage.getItem("access_token");
         if (token == null) {
-            setIsLoading(false);
             setIsLogin(false);
+
         } else {
-            setIsLoading(false);
             setIsLogin(true);
         }
+        setIsLoaded(true);
     }
 
     useEffect(() => {
         checkLogin();
     }, []);
 
-    if(isLoading){
-        return <></>;
-    } else {
-        return (
-            <Provider store={store}>
-                <RootSiblingParent>
-                    <NavigationContainer>
-                            <Stack.Navigator initialRouteName={isLogin === false ? 'login' : 'main'} screenOptions={{headerShown: false}}>
-                                <Stack.Screen name='login' component={LoginScreen}/>
-                                <Stack.Screen name='register' component={RegisterScreen}/>
-                                <Stack.Screen name='main'
-                                              component={MainScreen}
-                                              options={{gestureEnabled: false}
-                                              }/>
-                                <Stack.Screen name='room-create-title-form' component={RoomTitleFormScreen}/>
-                                <Stack.Screen name='room-create-schedule-form' component={RoomScheduleFormScreen}/>
-                                <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>
-                                <Stack.Screen name='room-create-rules-form' component={RoomRulesFormScreen}/>
-                                <Stack.Screen name='room-create-result-screen' component={RoomCreateResultScreen}/>
-                                <Stack.Screen name='join' component={JoinRoomScreen}/>
-                                <Stack.Screen name='home' component={RoomMainScreen}/>
-                                <Stack.Screen name='my-plan' component={MyPlanScreen}/>
-                            </Stack.Navigator>
-                    </NavigationContainer>
-                </RootSiblingParent>
-            </Provider>
-        );
-    }
+    return (
+        isLoaded && <Provider store={store}>
+            <RootSiblingParent>
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName={isLogin === false ? 'login' : 'main'}
+                                     screenOptions={{headerShown: false}}>
+                        <Stack.Screen name='login' component={LoginScreen}/>
+                        <Stack.Screen name='register' component={RegisterScreen}/>
+                        <Stack.Screen name='main'
+                                      component={MainScreen}
+                                      options={{gestureEnabled: false}
+                                      }/>
+                        <Stack.Screen name='room-create-title-form' component={RoomTitleFormScreen}/>
+                        <Stack.Screen name='room-create-schedule-form' component={RoomScheduleFormScreen}/>
+                        <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>
+                        <Stack.Screen name='room-create-rules-form' component={RoomRulesFormScreen}/>
+                        <Stack.Screen name='room-create-result-screen' component={RoomCreateResultScreen}/>
+                        <Stack.Screen name='join' component={JoinRoomScreen}/>
+                        <Stack.Screen name='home' component={RoomMainScreen}/>
+                        <Stack.Screen name='my-plan' component={MyPlanScreen}/>
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </RootSiblingParent>
+        </Provider>
 
 
+    );
 };
+
+
 
