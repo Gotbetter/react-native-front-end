@@ -51,7 +51,7 @@ function DetailPlanList({
                 <View style={styles.dislike_count_container}>
                 {
                     plan.three_days_passed && (
-                            <Text>싫어요 수: {planDislikeInfo.dislike_count} / {participantsCount}</Text>
+                            <Text>싫어요 수: {detailPlan.detail_plan_dislike_count} / {participantsCount}</Text>
                     )
                 }
                 </View>
