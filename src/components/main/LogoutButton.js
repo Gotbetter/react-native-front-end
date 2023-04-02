@@ -1,26 +1,7 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {logout} from "../../module/auth";
-import {useDispatch} from "react-redux";
-import {useNavigation} from "@react-navigation/native";
 
-function LogoutButton() {
-
-    const dispatch = useDispatch();
-    const navigation = useNavigation();
-
-    const onPress = useCallback(() => {
-        AsyncStorage.getAllKeys()
-            .then(keys => AsyncStorage.multiRemove(keys))
-            .catch(err => err)
-            .then(() => {
-                dispatch(logout());
-                navigation.navigate('login');
-            })
-            .catch(err => err);
-    });
-
+function LogoutButton({onPress}) {
 
     return (
         <TouchableOpacity style={styles.button} onPress={onPress}>
@@ -33,7 +14,7 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 16,
         borderWidth: 2,
-        borderColor: '#DBDBDB',
+        borderCol우or: '#DBDBDB',
         width: "20%",
         height: "16%",
         alignSelf: "center",
