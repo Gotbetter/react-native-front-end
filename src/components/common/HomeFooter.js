@@ -4,13 +4,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import {useNavigation} from "@react-navigation/native";
 
-function Footer() {
+function HomeFooter() {
     const navigation = useNavigation();
     return (
         <View style={styles.container}>
             <Ionicons name="add-outline" size={40} onPress={() => navigation.navigate('room-create-title-form')}/>
             <FontAwesome5 name="search-plus" size={35} onPress={() => navigation.navigate('join')}/>
-        </View>
+        </View> 
     );
 }
 
@@ -27,4 +27,4 @@ const styles = StyleSheet.create(
 
     }
 );
-export default Footer;
+export default HomeFooter;

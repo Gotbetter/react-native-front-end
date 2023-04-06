@@ -8,7 +8,7 @@ import {resetRoom, resetRoomCreateRequest} from "../module/room";
 import RoomItem from "../components/main/RoomItem";
 import {resetPlanAndDetailPlan} from "../module/plan";
 import Header from "../components/common/Header";
-import Footer from "../components/common/Footer";
+import HomeFooter from "../components/common/HomeFooter";
 import MenuModal from "../components/main/MenuModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -86,7 +86,7 @@ function MainScreen() {
                     }
                 </ScrollView>
             </View>
-            <Footer/>
+            <HomeFooter/>
             <MenuModal show={showMenu} onPressClose={onPressClose} onPressLogout={onPressLogout}/>
         </View>
     )

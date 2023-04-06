@@ -1,27 +1,17 @@
-import {ScrollView, StyleSheet, View,} from "react-native";
-import React, {useEffect, useState} from "react";
+import {ScrollView, StyleSheet, Text, View,} from "react-native";
+import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import Logo from "../../components/common/Logo";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {addParticipant, approvalCompleted, fetchParticipants, resetRoom} from "../../module/room";
+import {addParticipant, approvalCompleted, fetchParticipants} from "../../module/room";
 import client from "../../lib/client";
 import Toast from "react-native-root-toast";
-import RoomList from "../../components/room/main/RoomList";
-import DateInfo from "../../components/room/main/DateInfo";
+import {useFetchMyCurrentWeekDetailPlan, useFetchRoomInfo, useGetDayInfo, useRoomLeader} from "../../hooks/room";
+import {BASE_BACKGROUND} from "../../const/color";
+import Header from "../../components/common/Header";
+import RoomFooter from "../../components/room/main/RoomFooter";
+import WeekInfo from "../../components/room/main/WeekInfo";
+import ParticipantsGroup from "../../components/room/main/ParticipantsGroup";
 import CurrentWeekDetailPlan from "../../components/room/main/CurrentWeekDetailPlan";
-import ParticipantsPlan from "../../components/room/main/ParticipantsPlan";
-import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
-import {
-    useFetchMyCurrentWeekDetailPlan,
-    useFetchRoomInfo,
-    useFetchRoomList,
-    useGetDayInfo,
-    useRoomLeader
-} from "../../hooks/room";
-import MenuList from "../../components/room/main/MenuList";
-import RoomInfoModal from "../../components/room/main/RoomInfoModal";
-import RankModal from "../../components/room/main/RankModal";
-import RefundInfo from "../../components/room/main/RefundInfo";
 
 function RoomMainScreen() {
 
@@ -33,14 +23,9 @@ function RoomMainScreen() {
     const {user} = useSelector(({auth}) => auth);
 
     const roomInfo = useFetchRoomInfo(room_id);
-    const roomList = useFetchRoomList();
     const isRoomLeader = useRoomLeader();
     const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
     const [curWeekLeftDay, studyWeekLeft] = useGetDayInfo();
-
-    const [approvalModal, setApprovalModal] = useState(false);
-    const [roomInfoModal, setRoomInfoModal] = useState(false);
-    const [rankModal, setRankModal] = useState(false);
 
     useEffect(() => {
         /** 참가자 정보 불러오기 **/
@@ -57,29 +42,6 @@ function RoomMainScreen() {
             }
         });
         return result;
-    }
-
-    const isRoomEnd = () => {
-        const {week: totalWeek, current_week} = roomInfo;
-
-        if (current_week >= totalWeek + 1) {
-            return true
-        }
-
-        return false;
-
-    };
-    const onPressApproveParticipate = () => {
-        setApprovalModal(true);
-        dispatch(fetchParticipants({room_id, accepted: false}))
-    };
-
-    const onPressRank = () => {
-        setRankModal(true);
-    }
-
-    const onPressRoomInfo = () => {
-        setRoomInfoModal(true);
     }
 
     const onPressApproval = (user_id) => {
@@ -125,112 +87,60 @@ function RoomMainScreen() {
                 }
             });
     }
-
-    const onPressRoomList = (room_id) => {
-        if (roomInfo.room_id !== room_id) {
-            dispatch(resetRoom());
-            navigation.navigate('home', {room_id});
-        }
-    }
     const onPressPlans = (participant) => {
         navigation.navigate('my-plan', {planner: participant});
     }
 
     return (
         <View style={styles.container}>
-            <View style={{flex: 1}}/>
-
-            <View style={{flex: 1}}>
-                <Logo/>
+            <Header/>
+            <View style={styles.scroll_wrapper}>
+                <ScrollView contentContainerStyle={styles.content_scroll_container}>
+                    <View style={styles.title_container}>
+                        {/*roomTitle*/}
+                        <Text style={styles.title_text}>공부하셨어?(베타테스터용)</Text>
+                    </View>
+                    <View style={styles.content_container}>
+                        <WeekInfo totalWeek={4} currentWeek={3}/>
+                        <ParticipantsGroup participants={null}/>
+                        <CurrentWeekDetailPlan dateToFix={2} dateToEnd={4} detailPlans={null}/>
+                    </View>
+                </ScrollView>
             </View>
-
-            <View style={{flex: 0.1}}/>
-            <View style={styles.myRoomContainer}>
-                {
-                    roomList &&
-                    <ScrollView contentContainerStyle={styles.scroll_container} horizontal={true}>
-                        <RoomList rooms={roomList} curRoomId={room_id} onPress={onPressRoomList}/>
-                    </ScrollView>
-                }
-            </View>
-            <View style={{flex: 0.1}}/>
-
-            <View style={{flex: 0.1}}/>
-            <View style={styles.topBar}>
-                {/* 메뉴 리스트 */}
-                <MenuList isRoomLeader={isRoomLeader} onPress={onPressApproveParticipate}
-                          onPressRank={onPressRank}
-                          onPressRoomInfo={onPressRoomInfo}/>
-                <View style={{flex: 1, flexDirection: 'row',}}>
-                    {
-                        roomInfo && participants && isRoomEnd() === false ?
-                            <DateInfo studyWeekLeft={studyWeekLeft} weekDayLeft={curWeekLeftDay}/>
-                            : <RefundInfo roomInfo={roomInfo} participantId={getMyParticipantId()}/>
-                    }
-                </View>
-
-            </View>
-            <View style={{flex: 0.1}}/>
-
-            <View style={{flex: 0.25}}/>
-            <View style={{flex: 4.75, width: '95%', alignSelf: 'center', flexDirection: 'row'}}>
-
-                <View style={{flex: 1, borderRadius: 20}}>
-                    {
-                        detailPlans && <CurrentWeekDetailPlan detailPlans={detailPlans}/>
-                    }
-                </View>
-
-                <View style={{flex: 0.05, backgroundColor: 'white'}}/>
-
-                <View style={{flex: 1, backgroundColor: 'tomato', borderRadius: 20}}>
-                    {
-                        participants && <ParticipantsPlan participants={participants} onPressPlans={onPressPlans}/>
-                    }
-                </View>
-            </View>
-            <View style={{flex: 0.5}}/>
-            {
-                waitingParticipants && roomInfo &&
-                <ParticipationApproveModal roomInfo={roomInfo}
-                                           approvalModal={approvalModal}
-                                           setApprovalModal={setApprovalModal}
-                                           waitingParticipants={waitingParticipants}
-                                           onPressApproval={onPressApproval}/>
-            }
-            <RoomInfoModal show={roomInfoModal} setShow={setRoomInfoModal}/>
-            {
-                roomInfo && <RankModal room_id={roomInfo.room_id} show={rankModal} setShow={setRankModal}/>
-            }
+            <RoomFooter isReader={true}/>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    myRoomContainer: {
-        backgroundColor: '#D9D9D9',
-        borderRadius: 20,
-        height: "6%",
-        width: '95%',
-        justifyContent: "center",
-        alignSelf: 'center',
-    },
-    topBar: {
-        // flex: 1.5 - 0.1 - 0.1
-        flex: 1.3,
-        backgroundColor: '#000000',
-        borderRadius: 20,
-        width: '95%',
-        alignSelf: 'center',
-    },
-    scroll_container: {
+        width: "100%",
         height: "100%",
-        flexDirection: "row",
-    }
+        backgroundColor: BASE_BACKGROUND,
+    },
+    scroll_wrapper: {
+        width: "100%",
+        height: "80%",
+        borderColor: "black"
+    },
+    content_scroll_container: {
+        width: "100%",
+        alignSelf: "center",
+        padding: 12,
+
+    },
+    content_container: {
+        alignSelf: "center",
+        width: "90%",
+    },
+
+    title_container: {
+        width: "100%",
+    },
+    title_text: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
 
 });
 

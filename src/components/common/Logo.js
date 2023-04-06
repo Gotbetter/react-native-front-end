@@ -12,9 +12,7 @@ function Logo() {
 const styles = StyleSheet.create(
     {
         logo_image: {
-            alignSelf: "center",
             width: wp(40),
-            height: hp(12),
         },
     }
 );
