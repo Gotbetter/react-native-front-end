@@ -51,6 +51,15 @@ const styles = StyleSheet.create({
         width: wp(30),
         padding: 12,
         backgroundColor: BRIGHT_BACKGROUND,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     content_title_text: {
         fontSize: 18,

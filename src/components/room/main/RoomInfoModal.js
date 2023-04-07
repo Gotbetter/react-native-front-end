@@ -3,33 +3,54 @@ import {useFetchRoomInfo} from "../../../hooks/room";
 import {Modal, View, Text, StyleSheet} from "react-native";
 import NextOrCloseButton from "../form/NextOrCloseButton";
 import RoomSubInfo from "./RoomSubInfo";
+import ModalHeader from "./ModalHeader";
 
-function RoomInfoModal({show, setShow}) {
+function RoomInfoModal({show, onPressClose}) {
 
-    const roomInfo = useFetchRoomInfo();
+    const items = [
+        {
+            title: "방 이름",
+            data: "dnd"
+        },
+        {
+            title: "방 코드",
+            data: "JIEKnk2"
+        },
+        {
+            title: "계좌번호",
+            data: "신한 1111-2222-333"
+        },
+        {
+            title: "시작 일",
+            data: "2023-02-03"
+        },
+        {
+            title: "방 최대 인원",
+            data: "6"
+        },
+        {
+            title: "현재 인원",
+            data: "3"
+        },
+    ]
+
 
     return (
-        roomInfo &&
         <Modal
             animationType="slide"
-            transparent={true}
             visible={show}
+            onRequestClose={onPressClose}
         >
             <View style={styles.container}>
-                <View style={styles.subInfo_container}>
-                    <RoomSubInfo
-                        title={roomInfo.title}
-                        account={roomInfo.account}
-                        totalEntryFee={roomInfo.total_entry_fee}
-                        entryFee={roomInfo.entry_fee}
-                        roomCode={roomInfo.room_code}
-                    />
-                </View>
-
-                <View style={styles.button_container}>
-                    <NextOrCloseButton name='나가기' onPress={() => setShow(!show)}/>
-                </View>
-
+                <ModalHeader title="방 정보" onPress={onPressClose}/>
+                {
+                    items.map((item, index) => (
+                        <View key={index} style={styles.info_container}>
+                            <Text style={styles.title_text} ellipsizeMode="tail" numberOfLines={1}>{item.title}</Text>
+                            <Text style={styles.content_text}>{item.data}</Text>
+                        </View>
+                    ))
+                }
             </View>
 
         </Modal>
@@ -41,21 +62,22 @@ const styles = StyleSheet.create(
         container: {
             width: "100%",
             height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
             backgroundColor: '#EDEDED',
         },
-        subInfo_container: {
-            width: "80%",
-            height: "30%",
-            borderRadius: 16,
-            backgroundColor: "white",
+        info_container: {
+            padding: 12,
+            borderBottomWidth: 1,
+            width: "100%",
         },
-        button_container: {
-            marginTop: "12%",
-            width: "40%",
-            height: "8%",
+        title_text:{
+            fontSize: 20,
+            fontWeight: "bold",
+            marginBottom: "2%",
+
         },
+        content_text:{
+            fontSize: 18
+        }
 
     }
 );

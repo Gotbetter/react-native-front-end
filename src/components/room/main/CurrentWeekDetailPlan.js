@@ -85,6 +85,15 @@ const styles = StyleSheet.create(
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "#F3F3F3",
+
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
         },
         current_week_detail_plan_container: {
             marginTop: "6%",
@@ -92,6 +101,15 @@ const styles = StyleSheet.create(
             borderRadius: 16,
             minHeight: hp(20),
             padding: 32,
+
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
         },
         detail_plan_text_container: {
             marginBottom: 10,

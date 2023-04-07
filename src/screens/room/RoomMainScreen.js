@@ -1,17 +1,20 @@
 import {ScrollView, StyleSheet, Text, View,} from "react-native";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {addParticipant, approvalCompleted, fetchParticipants} from "../../module/room";
 import client from "../../lib/client";
 import Toast from "react-native-root-toast";
-import {useFetchMyCurrentWeekDetailPlan, useFetchRoomInfo, useGetDayInfo, useRoomLeader} from "../../hooks/room";
 import {BASE_BACKGROUND} from "../../const/color";
 import Header from "../../components/common/Header";
 import RoomFooter from "../../components/room/main/RoomFooter";
 import WeekInfo from "../../components/room/main/WeekInfo";
 import ParticipantsGroup from "../../components/room/main/ParticipantsGroup";
 import CurrentWeekDetailPlan from "../../components/room/main/CurrentWeekDetailPlan";
+import RankModal from "../../components/room/main/RankModal";
+import RoomInfoModal from "../../components/room/main/RoomInfoModal";
+import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
+import HelpModal from "../../components/room/main/HelpModal";
 
 function RoomMainScreen() {
 
@@ -22,10 +25,43 @@ function RoomMainScreen() {
     const {participants, waitingParticipants} = useSelector(({room}) => room);
     const {user} = useSelector(({auth}) => auth);
 
-    const roomInfo = useFetchRoomInfo(room_id);
-    const isRoomLeader = useRoomLeader();
-    const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
-    const [curWeekLeftDay, studyWeekLeft] = useGetDayInfo();
+    /**
+     * Modal 관련 state
+     * 방 정보
+     * 랭킹
+     * 도움말
+     * 초대 (방장 한테 만 보임)
+     */
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const [showRankModal, setShowRankModal] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+
+    /**
+     *
+     */
+    const rank = [
+        {
+            name: "구름용",
+            rank: 1,
+            refund: 20000
+        },
+        {
+            name: "구름용",
+            rank: 2,
+            refund: 10000
+        },
+        {
+            name: "구름용",
+            rank: 3,
+            refund: 10000
+        },
+        {
+            name: "구름용",
+            rank: 4,
+            refund: 5000
+        },
+    ];
 
     useEffect(() => {
         /** 참가자 정보 불러오기 **/
@@ -107,7 +143,19 @@ function RoomMainScreen() {
                     </View>
                 </ScrollView>
             </View>
-            <RoomFooter isReader={true}/>
+            <RoomFooter isReader={true}
+                        showHelp={() => setShowHelpModal(true)}
+                        showInfo={() => setShowInfoModal(true)}
+                        showInvite={() => setShowInviteModal(true)}
+                        showRank={() => setShowRankModal(true)}
+            />
+
+            {/* Footer Modal */}
+            <HelpModal show={showHelpModal} onPressClose={() => setShowHelpModal(false)}/>
+            <RoomInfoModal show={showInfoModal} onPressClose={() => setShowInfoModal(false)}/>
+            <RankModal rank={rank} show={showRankModal} onPressClose={() => setShowRankModal(false)}/>
+            <ParticipationApproveModal show={showInviteModal} onPressClose={() => setShowInviteModal(false)}/>
+
         </View>
     );
 }
@@ -127,7 +175,6 @@ const styles = StyleSheet.create({
         width: "100%",
         alignSelf: "center",
         padding: 12,
-
     },
     content_container: {
         alignSelf: "center",
