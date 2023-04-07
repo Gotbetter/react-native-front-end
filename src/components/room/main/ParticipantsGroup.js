@@ -33,6 +33,15 @@ const styles = StyleSheet.create(
             alignItems: "center",
             borderRadius: 12,
             backgroundColor: MIDDLE_BACKGROUND,
+
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
         },
 
         content_title_text: {
