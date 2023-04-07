@@ -31,7 +31,7 @@ function RankModal({show, rank, onPressClose}) {
                     {
                         oneToThird.length !== 0 ?
                             (
-                                <View style={styles.one_to_third_container}>
+                                <View style={[styles.one_to_third_container, styles.shadow]}>
                                     {
                                         oneToThird.map((rank, index) => (
                                             <View style={styles.rank_group}>
@@ -47,7 +47,7 @@ function RankModal({show, rank, onPressClose}) {
                     {
                         fourToEnd.length !== 0 ?
                             (
-                                <View style={styles.four_to_end_container}>
+                                <View style={[styles.four_to_end_container, styles.shadow]}>
                                     {
                                         fourToEnd.map(rank => (
                                             <View style={styles.rank_group}>
@@ -68,13 +68,21 @@ function RankModal({show, rank, onPressClose}) {
 
 const styles = StyleSheet.create(
     {
+        shadow: {
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+        },
         container: {
             width: "100%",
             height: "100%",
             backgroundColor: "#EDEDED",
             alignItems: "center",
-
-
         },
         rank_container: {
             justifyContent: "center",
@@ -90,15 +98,6 @@ const styles = StyleSheet.create(
             borderRadius: 12,
             padding: 12,
 
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-
         },
         four_to_end_container: {
             width: "80%",
@@ -108,15 +107,6 @@ const styles = StyleSheet.create(
             borderRadius: 12,
             padding: 12,
             marginTop: "10%",
-
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
         },
         blank: {
 
