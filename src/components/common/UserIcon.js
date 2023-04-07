@@ -14,12 +14,11 @@ function UserIcon({img, name, color}) {
 const styles = StyleSheet.create(
     {
         user_icon_container: {
+
             justifyContent: "center",
             alignItems: "center",
             width: wp(25),
             height: hp(10),
-            marginTop: "10%",
-
         },
         user_image: {
             backgroundColor: "white",
@@ -39,7 +38,6 @@ const styles = StyleSheet.create(
         },
         user_name: {
             fontWeight: "bold",
-            color: "#ffffff",
         },
     }
 );
