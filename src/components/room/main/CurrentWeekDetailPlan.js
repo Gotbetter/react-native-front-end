@@ -1,23 +1,49 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, ScrollView, StyleSheet, Text, View} from "react-native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {DARK_BACKGROUND} from "../../../const/color";
 
 
-function CurrentWeekDetailPlan({dateToFix, dateToEnd, detailPlans}) {
+function CurrentWeekDetailPlan({roomInfo, detailPlans}) {
 
-    const dateInfoItems = [
-        {
-            id: "plan_fix",
-            title: "계획 고정까지",
-            data: `D-${dateToFix}`
-        },
-        {
-            id: "plan_end",
-            title: "이번 계획 종료까지",
-            data: `D-${dateToEnd}`
-        }
-    ]
+    const [dateInfoItems, setDateInfoItems] = useState([]);
+
+    useEffect(() => {
+
+        /** 시작 일 **/
+        const startDate = new Date(roomInfo.start_date);
+        const curWeek = roomInfo.current_week;
+
+        const threeDayPassedDate = new Date(roomInfo.start_date);
+        const endDate = new Date(roomInfo.start_date);
+
+        /** 3일 기준 날짜로 변경 **/
+        threeDayPassedDate.setDate(startDate.getDate() + (7 * (curWeek - 1)) + 3);
+        /** 이번 계획 끝나는 요일 계산 **/
+        endDate.setDate(startDate.getDate() + (7 * curWeek));
+        const curDate = new Date();
+
+        /** 계획 고정까지 남은 시간 계산 **/
+        const dateToFix = Math.floor((threeDayPassedDate.getTime() - curDate.getTime()) / (1000*60*60*24));
+        /** 이번 계획 종료일 까지 남은 시간 **/
+        const dateToEnd = Math.floor((endDate.getTime() - curDate.getTime()) / (1000*60*60*24));
+
+        const next = [
+            {
+                id: "plan_fix",
+                title: "계획 고정까지",
+                data: dateToFix <= 0 ? "마감됨" : `D-${dateToFix}`,
+            },
+            {
+                id: "plan_end",
+                title: "이번 계획 종료까지",
+                data: dateToEnd <= 0 ? "D-Day" : `D-${dateToEnd}`,
+            }
+        ];
+
+        setDateInfoItems(next);
+    }, [roomInfo]);
+
 
     return (
         <View style={styles.container}>
@@ -37,24 +63,13 @@ function CurrentWeekDetailPlan({dateToFix, dateToEnd, detailPlans}) {
             <View style={styles.current_week_detail_plan_container}>
                 <ScrollView horizontal={true} style={{width: "100%"}}>
                     <FlatList
-                        data={[
-                            {key: 'Tokyo'},
-                            {key: 'Delhi fjsd lkfjlsdkfjsdklfjsdklfj sdfjsdklfjsdkldjskldjskldjl'},
-                            {key: 'Shanghai'},
-                            {key: 'Sao Paolo'},
-                            {key: 'Mexico City'},
-                            {key: 'Cairo'},
-                            {key: 'Dhaka'},
-                            {key: 'Mumbai'},
-                            {key: 'Beijing'},
-                            {key: 'Osaka'},
-                        ]}
+                        data={detailPlans}
                         renderItem={({item}) => {
                             return (
                                 <View style={styles.detail_plan_text_container}>
                                     <Text style={styles.detail_plan_text}
                                           ellipsizeMode="tail"
-                                          numberOfLines={2}>{`\u2022 ${item.key}`}</Text>
+                                          numberOfLines={2}>{`\u2022 ${item.content}`}</Text>
                                 </View>
                             );
                         }}
