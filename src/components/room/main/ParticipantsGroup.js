@@ -1,10 +1,14 @@
 import React from 'react';
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {MIDDLE_BACKGROUND} from "../../../const/color";
 import UserIcon from "../../common/UserIcon";
 import {heightPercentageToDP} from "react-native-responsive-screen";
+import {useNavigation} from "@react-navigation/native";
 
-function ParticipantsGroup({participants}) {
+function ParticipantsGroup({onPress, participants}) {
+
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
             <View>
@@ -12,9 +16,12 @@ function ParticipantsGroup({participants}) {
             </View>
             <View style={styles.participants_container}>
                 {/* profile + name container*/}
-                <View style={{marginBottom: "10%"}}>
-                    <UserIcon name="구름용" img={null} color="#ffffff"/>
-                </View>
+                <TouchableOpacity onPress={()=>navigation.navigate('my-plan')}>
+                    <View style={{marginBottom: "10%"}}>
+                        <UserIcon name="구름용" img={null} color="#ffffff"/>
+                    </View>
+                </TouchableOpacity>
+
             </View>
         </View>
     );

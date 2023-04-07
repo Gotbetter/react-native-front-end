@@ -123,8 +123,8 @@ function RoomMainScreen() {
                 }
             });
     }
-    const onPressPlans = (participant) => {
-        navigation.navigate('my-plan', {planner: participant});
+    const onPressPlans = () => {
+        navigation.navigate('my-plan');
     }
 
     return (
@@ -138,7 +138,7 @@ function RoomMainScreen() {
                     </View>
                     <View style={styles.content_container}>
                         <WeekInfo totalWeek={4} currentWeek={3}/>
-                        <ParticipantsGroup participants={null}/>
+                        <ParticipantsGroup onPress={onPressPlans} participants={null}/>
                         <CurrentWeekDetailPlan dateToFix={2} dateToEnd={4} detailPlans={null}/>
                     </View>
                 </ScrollView>
