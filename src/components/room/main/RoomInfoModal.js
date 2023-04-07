@@ -5,32 +5,38 @@ import NextOrCloseButton from "../form/NextOrCloseButton";
 import RoomSubInfo from "./RoomSubInfo";
 import ModalHeader from "./ModalHeader";
 
-function RoomInfoModal({show, onPressClose}) {
+function RoomInfoModal({roomInfo, show, onPressClose}) {
 
     const items = [
         {
+            id: "Title",
             title: "방 이름",
-            data: "dnd"
+            data: roomInfo.title,
         },
         {
+            id: "RoomCode",
             title: "방 코드",
-            data: "JIEKnk2"
+            data: roomInfo.room_code
         },
         {
+            id: "Account",
             title: "계좌번호",
-            data: "신한 1111-2222-333"
+            data: roomInfo.account
         },
         {
+            id: "StartDate",
             title: "시작 일",
-            data: "2023-02-03"
+            data: roomInfo.start_date
         },
         {
+            id: "MaxUserCount",
             title: "방 최대 인원",
-            data: "6"
+            data: roomInfo.max_user_num,
         },
         {
+            id: "Current_user_num",
             title: "현재 인원",
-            data: "3"
+            data: roomInfo.current_user_num,
         },
     ]
 
@@ -44,8 +50,8 @@ function RoomInfoModal({show, onPressClose}) {
             <View style={styles.container}>
                 <ModalHeader title="방 정보" onPress={onPressClose}/>
                 {
-                    items.map((item, index) => (
-                        <View key={index} style={styles.info_container}>
+                    items.map((item) => (
+                        <View key={item.id} style={styles.info_container}>
                             <Text style={styles.title_text} ellipsizeMode="tail" numberOfLines={1}>{item.title}</Text>
                             <Text style={styles.content_text}>{item.data}</Text>
                         </View>

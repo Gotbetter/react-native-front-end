@@ -2,9 +2,7 @@ import {ScrollView, StyleSheet, Text, View,} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {addParticipant, approvalCompleted, fetchParticipants} from "../../module/room";
-import client from "../../lib/client";
-import Toast from "react-native-root-toast";
+import {approveEntrance, fetchParticipants, fetchRank, fetchRoom} from "../../module/room";
 import {BASE_BACKGROUND} from "../../const/color";
 import Header from "../../components/common/Header";
 import RoomFooter from "../../components/room/main/RoomFooter";
@@ -15,6 +13,7 @@ import RankModal from "../../components/room/main/RankModal";
 import RoomInfoModal from "../../components/room/main/RoomInfoModal";
 import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
 import HelpModal from "../../components/room/main/HelpModal";
+import {useFetchMyCurrentWeekDetailPlan} from "../../hooks/room";
 
 function RoomMainScreen() {
 
@@ -22,8 +21,8 @@ function RoomMainScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
-    const {participants, waitingParticipants} = useSelector(({room}) => room);
-    const {user} = useSelector(({auth}) => auth);
+    /** 이 방의 방장인지 확인 **/
+    const [isLeader, setIsLeader] = useState(null);
 
     /**
      * Modal 관련 state
@@ -37,124 +36,100 @@ function RoomMainScreen() {
     const [showHelpModal, setShowHelpModal] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
 
-    /**
-     *
-     */
-    const rank = [
-        {
-            name: "구름용",
-            rank: 1,
-            refund: 20000
-        },
-        {
-            name: "구름용",
-            rank: 2,
-            refund: 10000
-        },
-        {
-            name: "구름용",
-            rank: 3,
-            refund: 10000
-        },
-        {
-            name: "구름용",
-            rank: 4,
-            refund: 5000
-        },
-    ];
+    const {roomInfo, participants, waitingParticipants, rank} = useSelector(({room}) => room);
+    const {user} = useSelector(({auth}) => (auth));
+    const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
 
     useEffect(() => {
+        /** 방 점보 불러오기 **/
+        dispatch(fetchRoom({room_id}));
         /** 참가자 정보 불러오기 **/
         dispatch(fetchParticipants({room_id, accepted: true}));
-
+        /** 랭킹 불러오기 **/
+        dispatch(fetchRank(room_id));
     }, [room_id]);
 
-    const getMyParticipantId = () => {
-        const {user_id} = user;
-        let result;
-        participants.forEach((participant) => {
-            if (participant.user_id === user_id) {
-                result = participant.participant_id;
+    useEffect(() => {
+
+        /** 랭킹 불러오기 **/
+        if (showRankModal) {
+            dispatch(fetchRank(room_id));
+        }
+        /** 참가 요청 대기자 정보 불러오기 **/
+        if (showInviteModal) {
+            dispatch(fetchParticipants({room_id, accepted: false}));
+        }
+    }, [showRankModal, showInviteModal]);
+
+    useEffect(() => {
+        /** 내가 현재 입장한 방의 방장이라면 true 리턴, 아니라면 false 리턴 **/
+        participants.map((participant) => {
+            if (participant.user_id === user.user_id) {
+                setIsLeader(participant.authority);
             }
         });
-        return result;
-    }
+    }, [dispatch, isLeader, user, participants]);
 
-    const onPressApproval = (user_id) => {
-        // todo : Plan 생성 실패할 경우 참가승인도 취소해야함
-        /** 참가 승인 **/
-        client.patch(`/participants`,
-            {
-                user_id,
-                room_id,
-            })
-            .then(({data}) => {
-                /** 참가 승인이 성공했을 경우 해당 참가자의 주간 계획을 생성해주어야 한다. **/
-                console.log(data);
-                const {participant_id} = data;
-                dispatch(approvalCompleted(user_id));
-                dispatch(addParticipant(data));
-                client.post(`/plans`,
-                    {
-                        participant_id
-                    })
-                    .then(({data}) => {
-                        console.log('계획 생성 완료');
-                    })
-                    .catch(({message, config, response: {status}}) => {
-                        console.log('계획생성 실패');
-                        console.log(message, config);
-                        if (status === 403) {
-                            console.log('forbidden');
-                        } else if (status === 404) {
-                            console.log('존재하지 않는 사용자');
-                        } else if (status === 409) {
-                            console.log('이미 생성됨');
-                        }
-                    });
-            })
-            .catch(({message, config, response: {status}}) => {
-                console.log(config);
-                console.log(message, status)
-                if (status === 403) {
-                    Toast.show("forbidden", {duration: Toast.durations.SHORT})
-                } else if (status === 404) {
-                    Toast.show("해당 사용자 못찾음", {duration: Toast.durations.SHORT})
-                }
-            });
-    }
-    const onPressPlans = () => {
-        navigation.navigate('my-plan');
-    }
+    /** 초대 버튼 눌렀을 때 **/
+    const onPressInvite = (user_id) => {
+        dispatch(approveEntrance({user_id, room_id}));
+    };
 
     return (
         <View style={styles.container}>
             <Header/>
+
+            {/* main content */}
             <View style={styles.scroll_wrapper}>
                 <ScrollView contentContainerStyle={styles.content_scroll_container}>
                     <View style={styles.title_container}>
                         {/*roomTitle*/}
-                        <Text style={styles.title_text}>공부하셨어?(베타테스터용)</Text>
+                        {
+                            roomInfo && <Text style={styles.title_text}>{roomInfo.title}</Text>
+                        }
                     </View>
                     <View style={styles.content_container}>
-                        <WeekInfo totalWeek={4} currentWeek={3}/>
-                        <ParticipantsGroup onPress={onPressPlans} participants={null}/>
-                        <CurrentWeekDetailPlan dateToFix={2} dateToEnd={4} detailPlans={null}/>
+                        {
+                            roomInfo && <WeekInfo totalWeek={roomInfo.week} currentWeek={roomInfo.current_week}/>
+                        }
+                        {
+                            participants && <ParticipantsGroup
+                                onPress={(participant_id) => navigation.navigate('my-plan', {planner: participant_id})}
+                                participants={participants}/>
+                        }
+                        {
+                            roomInfo && detailPlans &&
+                            <CurrentWeekDetailPlan roomInfo={roomInfo} detailPlans={detailPlans}/>
+                        }
                     </View>
                 </ScrollView>
             </View>
-            <RoomFooter isReader={true}
-                        showHelp={() => setShowHelpModal(true)}
-                        showInfo={() => setShowInfoModal(true)}
-                        showInvite={() => setShowInviteModal(true)}
-                        showRank={() => setShowRankModal(true)}
-            />
+            {
+                <RoomFooter isLeader={isLeader}
+                            showHelp={() => setShowHelpModal(true)}
+                            showInfo={() => setShowInfoModal(true)}
+                            showInvite={() => setShowInviteModal(true)}
+                            showRank={() => setShowRankModal(true)}
+                />
+            }
+
 
             {/* Footer Modal */}
             <HelpModal show={showHelpModal} onPressClose={() => setShowHelpModal(false)}/>
-            <RoomInfoModal show={showInfoModal} onPressClose={() => setShowInfoModal(false)}/>
-            <RankModal rank={rank} show={showRankModal} onPressClose={() => setShowRankModal(false)}/>
-            <ParticipationApproveModal show={showInviteModal} onPressClose={() => setShowInviteModal(false)}/>
+            {
+                roomInfo &&
+                <RoomInfoModal roomInfo={roomInfo} show={showInfoModal} onPressClose={() => setShowInfoModal(false)}/>
+            }
+            {
+                rank && <RankModal rank={rank} show={showRankModal} onPressClose={() => setShowRankModal(false)}/>
+            }
+
+            {
+                waitingParticipants &&
+                <ParticipationApproveModal waitingParticipants={waitingParticipants} show={showInviteModal}
+                                           onPressClose={() => setShowInviteModal(false)}
+                                           onConfirm={onPressInvite}/>
+            }
 
         </View>
     );

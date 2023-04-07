@@ -4,7 +4,7 @@ import {AntDesign} from "@expo/vector-icons";
 import LogoutButton from "./LogoutButton";
 
 function MenuModal({show, onPressClose, onPressLogout}) {
-    console.log('menu ', show);
+
     return (
         <Modal
             animationType="slide"

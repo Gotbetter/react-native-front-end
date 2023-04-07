@@ -2,6 +2,7 @@ import * as roomApi from "../lib/room";
 import * as planApi from "../lib/plans";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {createThunk} from "./utils";
+import thunk from "redux-thunk";
 
 
 const initialState = {
@@ -47,7 +48,7 @@ export const fetchRules = createThunk("room/FETCH_RULES", roomApi.fetchRules);
 export const fetchRank = createThunk("room/FETCH_RANK", roomApi.fetchRank);
 export const fetchRefund = createThunk("room/FETCH_REFUND", roomApi.fetchRefund);
 export const createRoom = createAsyncThunk(
-    "plan/CREATE_ROOM",
+    "room/CREATE_ROOM",
     async (args, thunkApi) => {
         try {
             /** 방 생성 **/
@@ -62,6 +63,28 @@ export const createRoom = createAsyncThunk(
         }
     }
 );
+export const approveEntrance = createAsyncThunk(
+    "room/APPROVE_ENTRANCE",
+    async (args, thunkApi) => {
+        /** 참가 승인 **/
+        try {
+            const {data} = await roomApi.approveEntrance(args);
+            const {participant_id} = data;
+            thunkApi.dispatch(approvalCompleted(args.user_id));
+            thunkApi.dispatch(addParticipant(data));
+
+            try {
+                const {data} = await planApi.createPlan(participant_id);
+            } catch (e) {
+                console.log(e);
+            }
+        } catch (e){
+            console.log(e);
+        }
+
+    }
+);
+
 const room = createSlice(
     {
         name: 'room',
@@ -95,6 +118,8 @@ const room = createSlice(
             resetRoom: (state) => {
                 state.roomInfo = null;
                 state.participants = [];
+                state.rank = [];
+                state.waitingParticipants = [];
             },
             resetStatus: (state, action) => {
                 state.status = {
@@ -130,7 +155,6 @@ const room = createSlice(
                 .addCase(createRoom.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.error = message;
                 })
-
                 .addCase(fetchParticipants.fulfilled, (state, {payload: {data, accepted}}) => {
                     if (accepted) {
                         state.participants = data;
@@ -147,7 +171,12 @@ const room = createSlice(
                 .addCase(fetchRefund.rejected, (state, {payload: {message}}) => {
                     state.refund = null;
                 })
+                .addCase(approveEntrance.fulfilled, (state) => {
 
+                })
+                .addCase(approveEntrance.rejected, ({payload: {message}}) => {
+
+                });
         }
     }
 );

@@ -11,10 +11,8 @@ export const fetchRoom = ({room_id, query}) =>
             },
         }
     );
-
 export const fetchRules = () =>
     client.get(`/rules`);
-
 export const createRoom = (request) => {
 
     const {title, max_user_num, start_date, week, current_week, entry_fee, rule_id, account} = request;
@@ -32,7 +30,6 @@ export const createRoom = (request) => {
         },
     );
 };
-
 export const fetchParticipants = ({room_id, accepted}) =>
     client.get(
         `/participants/${room_id}`,
@@ -42,9 +39,13 @@ export const fetchParticipants = ({room_id, accepted}) =>
             },
         }
     );
-
 export const fetchRank = (room_id) =>
     client.get(`/rooms/${room_id}/rank`,);
-
 export const fetchRefund = (participant_id) =>
     client.get(`/participants/${participant_id}/refund`);
+export const approveEntrance = ({user_id, room_id}) =>
+    client.patch(`/participants`,
+        {
+            user_id,
+            room_id,
+        });
