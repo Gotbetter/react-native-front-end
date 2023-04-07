@@ -4,25 +4,8 @@ import ModalHeader from "./ModalHeader";
 import UserIcon from "../../common/UserIcon";
 import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
-function ParticipationApproveModal({show, onPressClose}) {
 
-    const participants = [
-        {
-            name: "구름용",
-        },
-        {
-            name: "최인혁",
-        },
-        {
-
-            name: "최진혁",
-        },
-        {
-            name: "최진혁",
-        },
-
-    ]
-
+function ParticipationApproveModal({waitingParticipants, show, onPressClose, onConfirm}) {
 
     return (
         <Modal
@@ -34,10 +17,10 @@ function ParticipationApproveModal({show, onPressClose}) {
                 <View style={styles.invite_container}>
                     <ScrollView contentContainerStyle={styles.scroll_wrapper}>
                         {
-                            participants.map((participant, index) => (
-                                <View key={index} style={[styles.participant_container, styles.shadow]}>
-                                    <UserIcon name={participant.name}/>
-                                    <Text style={styles.invite_text}>초대</Text>
+                            waitingParticipants.map((participant) => (
+                                <View key={participant.user_id} style={[styles.participant_container, styles.shadow]}>
+                                    <UserIcon name={participant.username}/>
+                                    <Text style={styles.invite_text} onPress={() => onConfirm(participant.user_id)}>초대</Text>
                                 </View>
                             ))
                         }
