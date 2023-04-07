@@ -14,7 +14,7 @@ function ParticipantsGroup({onPress, participants}) {
             <View>
                 <Text style={styles.content_title_text}>참가자</Text>
             </View>
-            <View style={styles.participants_container}>
+            <View style={[styles.participants_container, styles.shadow]}>
                 {/* profile + name container*/}
                 <TouchableOpacity onPress={()=>navigation.navigate('my-plan')}>
                     <View style={{marginBottom: "10%"}}>
@@ -29,11 +29,20 @@ function ParticipantsGroup({onPress, participants}) {
 
 const styles = StyleSheet.create(
     {
+        shadow: {
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+        },
         container: {
             width: "100%",
             marginTop: "10%",
         },
-
         participants_container: {
             marginTop: "6%",
             width: "100%",
@@ -45,15 +54,6 @@ const styles = StyleSheet.create(
             borderRadius: 12,
             borderWidth: 1,
             backgroundColor: MIDDLE_BACKGROUND,
-
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
         },
 
         content_title_text: {

@@ -25,7 +25,7 @@ function WeekInfo({totalWeek, currentWeek}) {
                 items.map(item => (
                     <View key={item.id}>
                         <Text style={styles.content_title_text}>{item.title}</Text>
-                        <View style={styles.week}>
+                        <View style={[styles.week, styles.shadow]}>
                             <Text style={styles.content_title_text}>{item.week} 주차</Text>
                         </View>
                     </View>
@@ -36,6 +36,16 @@ function WeekInfo({totalWeek, currentWeek}) {
 }
 
 const styles = StyleSheet.create({
+    shadow: {
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     container: {
         marginTop: "8%",
         width: "100%",
@@ -51,15 +61,6 @@ const styles = StyleSheet.create({
         width: wp(30),
         padding: 12,
         backgroundColor: BRIGHT_BACKGROUND,
-
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
     content_title_text: {
         fontSize: 18,

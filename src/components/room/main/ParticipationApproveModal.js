@@ -35,7 +35,7 @@ function ParticipationApproveModal({show, onPressClose}) {
                     <ScrollView contentContainerStyle={styles.scroll_wrapper}>
                         {
                             participants.map((participant, index) => (
-                                <View key={index} style={styles.participant_container}>
+                                <View key={index} style={[styles.participant_container, styles.shadow]}>
                                     <UserIcon name={participant.name}/>
                                     <Text style={styles.invite_text}>초대</Text>
                                 </View>
@@ -50,6 +50,16 @@ function ParticipationApproveModal({show, onPressClose}) {
 
 const styles = StyleSheet.create(
     {
+        shadow: {
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+        },
         modal_container: {
             width: '100%',
             height: '100%',
@@ -76,14 +86,6 @@ const styles = StyleSheet.create(
             borderRadius: 12,
             borderWidth: 1,
 
-            shadowColor: "#000",
-            shadowOffset: {
-                width: 0,
-                height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
         },
         invite_text: {
             fontSize: 24,
