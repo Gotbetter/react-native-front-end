@@ -5,15 +5,15 @@ import CheckIcon from "react-native-vector-icons/Fontisto";
 import {DislikeEvaluationCount} from "../plan/DislikeEvaluationCount";
 
 
-function DetailPlanList({detailPlans, onPressModify}) {
+function DetailPlanList({detailPlans, onPressModify, participantsCount}) {
     return (
         <View style={styles.container}>
             {
                 detailPlans.map(detailPlan => (
-                    <View key={detailPlan.id} style={styles.group_container}>
+                    <View key={detailPlan.detail_plan_id} style={styles.group_container}>
                         <View style={[styles.memo, styles.shadow]}>
                             <Text style={styles.title_text}>Memo</Text>
-                            <Text style={styles.text}>{detailPlan.comment}</Text>
+                            <Text style={styles.text}>{detailPlan.approve_comment}</Text>
                         </View>
                         <View style={[styles.detail_plan_container, styles.shadow]}>
                             <View style={styles.detail_plan_group}>
@@ -21,13 +21,13 @@ function DetailPlanList({detailPlans, onPressModify}) {
                                     <CheckIcon name="checkbox-passive" size={wp(5)}/>
                                 </TouchableOpacity>
                                 <View style={styles.detail_plan_text_container}>
-                                    <Text>{detailPlan.detailPlan}</Text>
+                                    <Text>{detailPlan.content}</Text>
                                 </View>
-                                <DislikeEvaluationCount/>
+                                <DislikeEvaluationCount dislikeCount={detailPlan.detail_plan_dislike_count} participantCount={participantsCount}/>
                             </View>
                         </View>
                         <View style={styles.option_container}>
-                            <TouchableOpacity onPress={onPressModify}>
+                            <TouchableOpacity onPress={() => onPressModify(detailPlan.detail_plan_id)}>
                                 <Text>수정</Text>
                             </TouchableOpacity>
                             <TouchableOpacity>

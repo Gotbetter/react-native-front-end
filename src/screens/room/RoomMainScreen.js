@@ -23,6 +23,7 @@ function RoomMainScreen() {
 
     /** 이 방의 방장인지 확인 **/
     const [isLeader, setIsLeader] = useState(null);
+    const [myParticipantId, setMyParticipantId] = useState(null);
 
     /**
      * Modal 관련 state
@@ -37,7 +38,7 @@ function RoomMainScreen() {
     const [showInviteModal, setShowInviteModal] = useState(false);
 
     const {roomInfo, participants, waitingParticipants, rank} = useSelector(({room}) => room);
-    const {user} = useSelector(({auth}) => (auth));
+    const {user: myUserInfo} = useSelector(({auth}) => (auth));
     const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
 
     useEffect(() => {
@@ -64,11 +65,12 @@ function RoomMainScreen() {
     useEffect(() => {
         /** 내가 현재 입장한 방의 방장이라면 true 리턴, 아니라면 false 리턴 **/
         participants.map((participant) => {
-            if (participant.user_id === user.user_id) {
+            if (participant.user_id === myUserInfo.user_id) {
                 setIsLeader(participant.authority);
+                setMyParticipantId(participant.participant_id);
             }
         });
-    }, [dispatch, isLeader, user, participants]);
+    }, [dispatch, isLeader, myUserInfo, participants]);
 
     /** 초대 버튼 눌렀을 때 **/
     const onPressInvite = (user_id) => {
@@ -93,8 +95,14 @@ function RoomMainScreen() {
                             roomInfo && <WeekInfo totalWeek={roomInfo.week} currentWeek={roomInfo.current_week}/>
                         }
                         {
-                            participants && <ParticipantsGroup
-                                onPress={(participant_id) => navigation.navigate('my-plan', {planner: participant_id})}
+                            participants && myParticipantId && <ParticipantsGroup
+                                onPress={(participant_id, username) => navigation.navigate('my-plan', {
+                                    planner: {
+                                        participant_id,
+                                        username
+                                    }, roomInfo
+                                })}
+                                myParticipantId={myParticipantId}
                                 participants={participants}/>
                         }
                         {

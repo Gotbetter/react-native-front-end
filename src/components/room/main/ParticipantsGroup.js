@@ -5,7 +5,7 @@ import UserIcon from "../../common/UserIcon";
 import {heightPercentageToDP} from "react-native-responsive-screen";
 import {useNavigation} from "@react-navigation/native";
 
-function ParticipantsGroup({participants, onPress}) {
+function ParticipantsGroup({participants, myParticipantId,onPress}) {
 
     return (
         <View style={styles.container}>
@@ -13,13 +13,12 @@ function ParticipantsGroup({participants, onPress}) {
                 <Text style={styles.content_title_text}>참가자</Text>
             </View>
             <View style={[styles.participants_container, styles.shadow]}>
-                {/* profile + name container*/}
                 {
                     participants.map(participant => (
                         <TouchableOpacity key={participant.participant_id}
-                                          onPress={() => onPress(participant.participant_id)}>
+                                          onPress={() => onPress(participant.participant_id, participant.username)}>
                             <View style={{marginBottom: "10%"}}>
-                                <UserIcon name={participant.username} img={null} color="#ffffff"/>
+                                <UserIcon name={participant.username} img={null} color={participant.participant_id === myParticipantId ? "#ffffff" : "#262A2D"}/>
                             </View>
                         </TouchableOpacity>
                     ))
