@@ -3,35 +3,38 @@ import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-
 import {heightPercentageToDP, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import PreventRollUpView from "../../common/PreventRollUpView";
 
-function InputModal({title, show, onCancel, onConfirm, onPress}) {
+function InputModal({title, show, onCancel, onChangeText, onConfirm, content}) {
     return (
 
-            <Modal visible={show}
-                   transparent={true}
-                   animationType="slide"
-                   onRequestClose={onCancel}>
-                <PreventRollUpView>
+        <Modal visible={show}
+               transparent={true}
+               animationType="slide"
+               onRequestClose={onCancel}>
+            <PreventRollUpView>
                 <View style={styles.container}>
                     <View style={styles.input_container}>
                         <Text style={styles.text}>{title}</Text>
                         <View style={[styles.week, styles.shadow]}>
                             <Text>1주차</Text>
                         </View>
-                        <TextInput style={[styles.input, styles.shadow]} multiline={true} placeholder="세부 계획을 입력해 주세요"/>
+                        <TextInput style={[styles.input, styles.shadow]}
+                                   value={content}
+                                   multiline={true} placeholder="세부 계획을 입력해 주세요"
+                                   onChangeText={onChangeText}/>
 
                         <View style={styles.button_container}>
                             <TouchableOpacity style={[styles.cancel_button_text, styles.shadow]} onPress={onCancel}>
                                 <Text>취소</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.confirm_button_text, styles.shadow]}>
+                            <TouchableOpacity style={[styles.confirm_button_text, styles.shadow]} onPress={onConfirm}>
                                 <Text>확인</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
                 </View>
-                </PreventRollUpView>
-            </Modal>
+            </PreventRollUpView>
+        </Modal>
 
 
     );

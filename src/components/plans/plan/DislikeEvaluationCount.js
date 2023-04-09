@@ -3,12 +3,11 @@ import Icon from "react-native-vector-icons/Entypo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 
-export function DislikeEvaluationCount() {
+export function DislikeEvaluationCount({dislikeCount, participantCount}) {
     return (
 
         <View style={styles.dislike_container}>
-            <Icon name="thumbs-down" style={styles.thumb} size={hp(4)}/>
-            <Text style={styles.dislike_text}>{2} / {4}</Text>
+            <Text style={styles.dislike_text}>{dislikeCount} / {participantCount}</Text>
         </View>
 
     );
@@ -17,12 +16,11 @@ export function DislikeEvaluationCount() {
 const styles = StyleSheet.create(
     {
         dislike_container: {
-            justifyContent: 'space-between',
+            width: "10%",
+            marginLeft: "2%",
+            justifyContent: 'center',
             alignItems: 'center',
             flexDirection: "row",
-        },
-        thumb: {
-            marginRight: "4%",
         },
         dislike_text: {
             color: '#000000',

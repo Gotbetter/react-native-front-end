@@ -1,15 +1,14 @@
 import {StyleSheet, TouchableOpacity, View} from "react-native";
-import Icon from "react-native-vector-icons/Entypo";
-import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import Entypo from "react-native-vector-icons/Entypo";
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 
-function DislikeEvaluation({}) {
+function DislikeEvaluation({isMyPlan, onPress, checked, size, style}) {
 
     return (
-        <View style={styles.dislike_button}>
-            <TouchableOpacity>
-                <Entypo name="thumbs-down" size={hp(6)}/>
+        <View style={[styles.dislike_button, style]}>
+            <TouchableOpacity onPress={onPress} disabled={isMyPlan}>
+                <Entypo name="thumbs-down" size={size} color={checked === true ? "red" : "black"}/>
             </TouchableOpacity>
         </View>
     );
@@ -19,9 +18,10 @@ function DislikeEvaluation({}) {
 const styles = StyleSheet.create(
     {
         dislike_button: {
+
             justifyContent: "center",
             alignItems: "center",
-            width: "30%",
+            width: "10%",
         },
         checked: {
             backgroundColor: 'red',

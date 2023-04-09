@@ -1,39 +1,76 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {heightPercentageToDP, widthPercentageToDP as wp} from "react-native-responsive-screen";
-import CheckIcon from "react-native-vector-icons/Fontisto";
 import {DislikeEvaluationCount} from "../plan/DislikeEvaluationCount";
+import DislikeEvaluation from "../plan/DislikeEvaluation";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import DetailPlanCheckBox from "./DetailPlanCheckBox";
 
 
-function DetailPlanList({detailPlans, onPressModify}) {
+function DetailPlanList({
+                            isMyPlan,
+                            isWeekPassed,
+                            threeDaysPassed,
+                            detailPlans,
+                            onPressModify,
+                            participantsCount,
+                            onPressDetailPlanDislike,
+                            onPressDetailPlanCheckBox
+                        }) {
+
     return (
         <View style={styles.container}>
             {
                 detailPlans.map(detailPlan => (
-                    <View key={detailPlan.id} style={styles.group_container}>
+                    <View key={detailPlan.detail_plan_id} style={styles.group_container}>
                         <View style={[styles.memo, styles.shadow]}>
-                            <Text style={styles.title_text}>Memo</Text>
-                            <Text style={styles.text}>{detailPlan.comment}</Text>
+                            <Text style={styles.title_text}>Complete Memo</Text>
+                            <Text style={styles.text}>{detailPlan.approve_comment}</Text>
                         </View>
                         <View style={[styles.detail_plan_container, styles.shadow]}>
                             <View style={styles.detail_plan_group}>
-                                <TouchableOpacity>
-                                    <CheckIcon name="checkbox-passive" size={wp(5)}/>
-                                </TouchableOpacity>
+                                {
+                                    (isWeekPassed === false) && isMyPlan === true ?
+                                        <DetailPlanCheckBox
+                                            onPress={onPressDetailPlanCheckBox}
+                                            comment={detailPlan.approve_comment}
+                                            checked={detailPlan.complete}
+                                            detailPlanId={detailPlan.detail_plan_id}/> :
+                                        <View style={{width: "10%"}}/>
+
+                                }
+
                                 <View style={styles.detail_plan_text_container}>
-                                    <Text>{detailPlan.detailPlan}</Text>
+                                    <Text>{detailPlan.content}</Text>
                                 </View>
-                                <DislikeEvaluationCount/>
+                                {
+                                    threeDaysPassed === true ?
+                                        <DislikeEvaluation
+                                            onPress={() => onPressDetailPlanDislike(detailPlan.detail_plan_id, detailPlan.detail_plan_dislike_checked)}
+                                            isMyPlan={isMyPlan}
+                                            size={hp(5)}/> : <View style={{width: "10%", marginRight: "5%"}}/>
+                                }
+                                {
+                                    threeDaysPassed === true ?
+                                        <DislikeEvaluationCount dislikeCount={detailPlan.detail_plan_dislike_count}
+                                                                participantCount={participantsCount}/> :
+                                        <View style={{width: "10%", marginLeft: "2%"}}/>
+
+                                }
                             </View>
                         </View>
-                        <View style={styles.option_container}>
-                            <TouchableOpacity onPress={onPressModify}>
-                                <Text>수정</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Text>사진 추가</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {
+                            threeDaysPassed === false && isMyPlan === true ?
+                                <View style={styles.option_container}>
+                                    <TouchableOpacity onPress={() => onPressModify(detailPlan.detail_plan_id)}>
+                                        <Text>수정</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <Text>사진 추가</Text>
+                                    </TouchableOpacity>
+                                </View> : null
+                        }
+
+
                     </View>
                 ))
             }
@@ -76,8 +113,7 @@ const styles = StyleSheet.create(
             flexDirection: "row",
             backgroundColor: "#F3F3F3",
             borderRadius: 12,
-            minHeight: heightPercentageToDP(18),
-
+            minHeight: hp(18),
 
 
         },
@@ -89,8 +125,7 @@ const styles = StyleSheet.create(
 
         },
         detail_plan_text_container: {
-            marginRight: "3%",
-            marginLeft: "3%",
+
             width: "60%",
 
         },
@@ -104,10 +139,11 @@ const styles = StyleSheet.create(
         title_text: {
             color: "#ffffff",
             fontWeight: "bold",
-            marginRight: "3%",
+            width: "40%",
         },
 
         text: {
+            width: "60%",
             color: "#ffffff",
         },
     }

@@ -126,6 +126,8 @@ const plan = createSlice(
                 })
                 .addCase(fetchPlanAndDetailPlan.rejected, (state, {payload: {message}}) => {
                     state.error = message;
+                    state.plan = null;
+                    state.detailPlans = null;
                 })
                 .addCase(completeDetailPlan.fulfilled, (state, {payload: {data}}) => {
                     const prev = state.detailPlans;
