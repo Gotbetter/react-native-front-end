@@ -6,6 +6,8 @@ import {Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Logo from "../../../components/common/Logo";
 import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 import InputGroup from "../../../components/room/form/InputGroup";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import LogoTemplate from "../../../components/common/LogoTemplate";
 
 function RoomRulesFormScreen({navigation}) {
     const SCREEN_TITLE = "룰을 선택하세요";
@@ -79,7 +81,9 @@ function RoomRulesFormScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Logo/>
+            <LogoTemplate>
+                <Logo size={wp(70)}/>
+            </LogoTemplate>
             <View style={styles.content_container}>
                 <Text style={styles.screen_title}>{SCREEN_TITLE}</Text>
                 {rules && rules.map(rule => (

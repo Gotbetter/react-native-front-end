@@ -9,13 +9,15 @@ import {
     View
 } from "react-native";
 
-import {useState} from 'react';
+import React, {useState} from 'react';
 
 import client from "../../../lib/client";
 
 import Toast from "react-native-root-toast";
 import Logo from "../../../components/common/Logo";
 import PreventRollUpView from "../../../components/common/PreventRollUpView";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import LogoTemplate from "../../../components/common/LogoTemplate";
 
 export default function JoinRoomScreen({navigation}) {
 
@@ -93,7 +95,8 @@ export default function JoinRoomScreen({navigation}) {
                                         방장에게 승인 요청을 신청하였습니다. {account}로 {entryFee}원을 송금해주세요.
                                     </Text>
                                 </View>
-                                <TouchableOpacity onPress={() => setOpen(false)} style={{flex: 1, alignItems: 'center'}}>
+                                <TouchableOpacity onPress={() => setOpen(false)}
+                                                  style={{flex: 1, alignItems: 'center'}}>
                                     <Text style={styles.modal_text}>
                                         닫기
                                     </Text>
@@ -105,9 +108,11 @@ export default function JoinRoomScreen({navigation}) {
 
                     <View style={{flex: 4}}>
                         <View style={{flex: 1}}/>
-                        <View style={{flex: 2}}>
-                            <Logo/>
-                        </View>
+
+                        <LogoTemplate>
+                            <Logo size={wp(70)}/>
+                        </LogoTemplate>
+
                         <View style={{flex: 1}}/>
                     </View>
                     <View style={{flex: 3, alignItems: 'center', justifyContent: 'center',}}>

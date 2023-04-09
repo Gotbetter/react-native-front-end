@@ -7,6 +7,8 @@ import Logo from "../../../components/common/Logo";
 import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
 import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import LogoTemplate from "../../../components/common/LogoTemplate";
 
 function RoomEntryFeeFormScreen({navigation}) {
     const SCREEN_TITLE = "스터디방 참가비를 설정하세요";
@@ -48,7 +50,9 @@ function RoomEntryFeeFormScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Logo/>
+            <LogoTemplate>
+                <Logo size={wp(70)}/>
+            </LogoTemplate>
             <View style={styles.content_container}>
                 <Text style={styles.screen_title}>{SCREEN_TITLE}</Text>
                 <InputGroup title={INPUT_TITLE}>
