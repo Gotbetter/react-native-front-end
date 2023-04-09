@@ -3,7 +3,7 @@ import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-
 import {heightPercentageToDP, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import PreventRollUpView from "../../common/PreventRollUpView";
 
-function InputModal({title, show, onCancel, onChangeText, onConfirm, onPress}) {
+function InputModal({title, show, onCancel, onChangeText, onConfirm, content}) {
     return (
 
         <Modal visible={show}
@@ -18,6 +18,7 @@ function InputModal({title, show, onCancel, onChangeText, onConfirm, onPress}) {
                             <Text>1주차</Text>
                         </View>
                         <TextInput style={[styles.input, styles.shadow]}
+                                   value={content}
                                    multiline={true} placeholder="세부 계획을 입력해 주세요"
                                    onChangeText={onChangeText}/>
 

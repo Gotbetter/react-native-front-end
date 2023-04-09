@@ -40,7 +40,8 @@ function PlanScreen({}) {
     /** 세부 계획 생성/삭제 request **/
     const [content, setContent] = useState("");
     /** 수정 할 세부계획 id **/
-    const [modifyTarget, setModifyTarget] = useState();
+    const [modifyTargetId, setModifyTargetId] = useState(-1);
+
 
     useEffect(() => {
 
@@ -87,13 +88,18 @@ function PlanScreen({}) {
     };
     /** 세부 계획 수정 버튼 선택 **/
     const onPressModify = (detail_plan_id) => {
-        setModifyTarget(detail_plan_id);
+
+        setModifyTargetId(detail_plan_id);
+        let targetIndex = detailPlans.findIndex(detailPlan => detailPlan.detail_plan_id === detail_plan_id);
+        setContent(detailPlans[targetIndex].content);
+
         setShowInputModal(true);
         setAddPressed(false);
         setModifyPressed(true);
     };
     /** 세부 계획 추가 버튼 선택 **/
     const onPressAdd = () => {
+        setContent("");
         setShowInputModal(true);
         setAddPressed(true);
         setModifyPressed(false);
@@ -104,13 +110,14 @@ function PlanScreen({}) {
         if (addPressed) {
             dispatch(createDetailPlan({plan_id, content}));
             setAddPressed(false);
-        } else if (modifyPressed) {
-            dispatch(modifyDetailPlan({plan_id, detail_plan_id: modifyTarget, content}));
+        } else if (modifyPressed && modifyTargetId !== -1) {
+            dispatch(modifyDetailPlan({plan_id, detail_plan_id: modifyTargetId, content}));
             setModifyPressed(false);
+            setModifyTargetId(-1);
         }
         setContent("");
         setShowInputModal(false);
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -136,9 +143,12 @@ function PlanScreen({}) {
             <View style={styles.plan_dislike_container}>
                 <Text>계획 평가</Text>
                 <DislikeEvaluation/>
-                <Text>{planDislikeInfo.dislike_count}/{participants.length-1}</Text>
+                {
+                    planDislikeInfo && <Text>{planDislikeInfo.dislike_count}/{participants.length - 1}</Text>
+                }
             </View>
             <InputModal show={showInputModal}
+                        content={content}
                         title={addPressed ? "세부계획 추가하기" : modifyPressed ? "세부계획 수정하기" : ""}
                         onCancel={() => setShowInputModal(false)}
                         onConfirm={onConfirm}
