@@ -6,41 +6,69 @@ import WeekList from "../../components/plans/plan/WeekList";
 import DislikeEvaluation from "../../components/plans/plan/DislikeEvaluation";
 import DetailPlanList from "../../components/plans/detail/DetailPlanList";
 import {widthPercentageToDP as wp} from "react-native-responsive-screen";
-import DetailPlanInput from "../../components/plans/detail/DetailPlanInput";
+import DetailPlanInputButton from "../../components/plans/detail/DetailPlanInput";
 import InputModal from "../../components/plans/detail/InputModal";
 import {useRoute} from "@react-navigation/native";
 import {useFetchPlanAndDetailPlans, usePlanner} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
-import {createDetailPlan, modifyDetailPlan} from "../../module/plan";
+import {
+    cancelDislikeDetailPlan,
+    cancelPlanDislike, completeDetailPlan,
+    createDetailPlan, doDetailPlanDislike,
+    doPlanDislike,
+    modifyDetailPlan, undoCompleteDetailPlan
+} from "../../module/plan";
+import DislikeCount from "../../components/plans/common/DislikeCount";
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 
 function PlanScreen({}) {
 
     const {params: {planner, roomInfo}} = useRoute();
     const dispatch = useDispatch();
-
     const {participants} = useSelector(({room}) => room);
 
-    /** 세부 계획 추가 버튼 누르면 true **/
+    /**
+     * 버튼 클릭 관련 state
+     * 세부 계획 추가 버튼
+     * 수정 버튼
+     * 세부 게획 체크 박스
+     */
     const [addPressed, setAddPressed] = useState(false);
-    /** 수정 버튼 누르면 true **/
     const [modifyPressed, setModifyPressed] = useState(false);
-    /** 클릭한 주차(기본 값 현재 주차)**/
+    const [checkBoxPressed, setCheckBoxPressed] = useState(false);
+
+    /**
+     * weekList 관련 state
+     * 출력될 주차를 담을 배열
+     * 누른 주차 정보
+     * 다음 주차 버튼을 누른 횟수
+     */
+    const [weekList, setWeekList] = useState(null);
     const [pressedWeek, setPressedWeek] = useState(roomInfo.current_week < roomInfo.week ? roomInfo.current_week : roomInfo.week);
+    const [weekOffset, setWeekOffset] = useState(roomInfo.current_week < roomInfo.week ? Math.floor((roomInfo.current_week) / 5) : Math.floor((roomInfo.week) / 5));
+
+    /**
+     * 세부 계획 관련 state
+     * 세부 계획 생성/삭제 request
+     * 세부 계획 완료 메세지
+     * 수정할 세부계획 id
+     */
+    const [content, setContent] = useState("");
+    const [approveComment, setApproveComment] = useState("");
+    const [modifyTargetId, setModifyTargetId] = useState(-1);
+    const [completeTargetId, setCompleteTargetId] = useState(-1);
+
     /** 세부 계획 입력 모달 **/
     const [showInputModal, setShowInputModal] = useState(false);
-    /** 주차 리스트 **/
-    const [weekList, setWeekList] = useState(null);
-    const [weekOffset, setWeekOffset] = useState(roomInfo.current_week < roomInfo.week ? Math.floor((roomInfo.current_week) / 5) : Math.floor((roomInfo.week) / 5));
-    /** 나의 계획인지 확인 **/
-    const isMyPlan = usePlanner(planner.participant_id);
-    /** 계획, 세부계획 정보 불러오기 **/
-    const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, pressedWeek);
 
-    /** 세부 계획 생성/삭제 request **/
-    const [content, setContent] = useState("");
-    /** 수정 할 세부계획 id **/
-    const [modifyTargetId, setModifyTargetId] = useState(-1);
+    /**
+     * custom hook
+     * 나의 계획인지 확인
+     * 계획, 세부계획 정보 불러오기
+    **/
+    const isMyPlan = usePlanner(planner);
+    const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, pressedWeek);
 
 
     useEffect(() => {
@@ -114,10 +142,68 @@ function PlanScreen({}) {
             dispatch(modifyDetailPlan({plan_id, detail_plan_id: modifyTargetId, content}));
             setModifyPressed(false);
             setModifyTargetId(-1);
+        } else if (checkBoxPressed) {
+            dispatch(completeDetailPlan({plan_id, detail_plan_id: completeTargetId, approveComment}))
+            setShowInputModal(false);
+            setCheckBoxPressed(false);
+            setApproveComment("");
         }
         setContent("");
         setShowInputModal(false);
     };
+    /** 계획 평가 **/
+    const onPressPlanDislike = () => {
+
+        if (isMyPlan) {
+            return null;
+        }
+
+        if (plan.three_days_passed) {
+            return null;
+        }
+
+        if (planDislikeInfo.checked) {
+            dispatch(cancelPlanDislike(plan.plan_id));
+        } else {
+            dispatch(doPlanDislike(plan.plan_id));
+        }
+    };
+    /** 세부 계획 평가 **/
+    const onPressDetailPlanDislike = (detail_plan_id, checked) => {
+
+        if (checked) {
+            dispatch(cancelDislikeDetailPlan(detail_plan_id));
+        } else {
+            dispatch(doDetailPlanDislike(detail_plan_id));
+        }
+    };
+    /** 세부 계획 체크 박스 **/
+    const onPressDetailPlanCheckBox = (detail_plan_id, comment, checked) => {
+        const {plan_id} = plan;
+
+        if (checked) {
+            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id}));
+        } else {
+            setShowInputModal(true);
+            setApproveComment(comment);
+            setCompleteTargetId(detail_plan_id);
+            setCheckBoxPressed(true);
+        }
+        console.log(approveComment);
+    };
+    const onCancelInputModal = () => {
+        if (addPressed) {
+            setAddPressed(false);
+        }
+        if (modifyPressed) {
+            setModifyPressed(false);
+        }
+        if (checkBoxPressed) {
+            setCheckBoxPressed(false);
+        }
+
+        setShowInputModal(false);
+    }
 
     return (
         <View style={styles.container}>
@@ -131,28 +217,41 @@ function PlanScreen({}) {
                 <ScrollView contentContainerStyle={styles.scroll_wrapper}>
                     <Text style={styles.planner_text}>{planner.username}</Text>
                     {
-                        detailPlans && participants &&
-                        <DetailPlanList detailPlans={detailPlans}
+                        detailPlans && participants && plan &&
+                        <DetailPlanList isMyPlan={isMyPlan}
+                                        onPressDetailPlanCheckBox={onPressDetailPlanCheckBox}
+                                        onPressDetailPlanDislike={onPressDetailPlanDislike}
+                                        threeDaysPassed={plan.three_days_passed}
+                                        detailPlans={detailPlans}
                                         participantsCount={participants.length - 1}
                                         onPressModify={onPressModify}
                         />
                     }
-                    <DetailPlanInput onPress={onPressAdd}/>
+                    {
+                        plan && plan.three_days_passed === false && isMyPlan === true ?
+                            <DetailPlanInputButton onPress={onPressAdd}/> : null
+                    }
+
                 </ScrollView>
             </View>
             <View style={styles.plan_dislike_container}>
-                <Text>계획 평가</Text>
-                <DislikeEvaluation/>
+                {planDislikeInfo && <DislikeEvaluation onPress={onPressPlanDislike}
+                                                       isMyPlan={isMyPlan}
+                                                       checked={planDislikeInfo.checked}
+                                                       size={hp(6)}/>
+                }
                 {
-                    planDislikeInfo && <Text>{planDislikeInfo.dislike_count}/{participants.length - 1}</Text>
+                    planDislikeInfo && <DislikeCount dislikeCount={planDislikeInfo.dislike_count}
+                                                     participantsCount={participants.length - 1}/>
                 }
             </View>
+
             <InputModal show={showInputModal}
-                        content={content}
-                        title={addPressed ? "세부계획 추가하기" : modifyPressed ? "세부계획 수정하기" : ""}
-                        onCancel={() => setShowInputModal(false)}
+                        content={(addPressed || modifyPressed) ? content : approveComment}
+                        title={addPressed ? "세부계획 추가하기" : modifyPressed ? "세부계획 수정하기" : checkBoxPressed ? "세부계획 완료 메세지" : ""}
+                        onCancel={onCancelInputModal}
                         onConfirm={onConfirm}
-                        onChangeText={(text) => setContent(text)}
+                        onChangeText={(text) => (addPressed || modifyPressed) ? setContent(text) : setApproveComment(text)}
             />
         </View>
     );
