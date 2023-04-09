@@ -96,8 +96,9 @@ function RoomMainScreen() {
                         }
                         {
                             participants && myParticipantId && <ParticipantsGroup
-                                onPress={(participant_id, username) => navigation.navigate('my-plan', {
+                                onPress={(user_id, participant_id, username) => navigation.navigate('my-plan', {
                                     planner: {
+                                        user_id,
                                         participant_id,
                                         username
                                     }, roomInfo

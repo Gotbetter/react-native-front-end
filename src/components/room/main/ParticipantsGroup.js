@@ -2,8 +2,6 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {MIDDLE_BACKGROUND} from "../../../const/color";
 import UserIcon from "../../common/UserIcon";
-import {heightPercentageToDP} from "react-native-responsive-screen";
-import {useNavigation} from "@react-navigation/native";
 
 function ParticipantsGroup({participants, myParticipantId,onPress}) {
 
@@ -16,7 +14,7 @@ function ParticipantsGroup({participants, myParticipantId,onPress}) {
                 {
                     participants.map(participant => (
                         <TouchableOpacity key={participant.participant_id}
-                                          onPress={() => onPress(participant.participant_id, participant.username)}>
+                                          onPress={() => onPress(participant.user_id, participant.participant_id, participant.username)}>
                             <View style={{marginBottom: "10%"}}>
                                 <UserIcon name={participant.username} img={null} color={participant.participant_id === myParticipantId ? "#ffffff" : "#262A2D"}/>
                             </View>
