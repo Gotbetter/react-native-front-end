@@ -8,6 +8,7 @@ import DetailPlanCheckBox from "./DetailPlanCheckBox";
 
 function DetailPlanList({
                             isMyPlan,
+                            isWeekPassed,
                             threeDaysPassed,
                             detailPlans,
                             onPressModify,
@@ -28,11 +29,12 @@ function DetailPlanList({
                         <View style={[styles.detail_plan_container, styles.shadow]}>
                             <View style={styles.detail_plan_group}>
                                 {
-                                    isMyPlan === true ?
-                                        <DetailPlanCheckBox onPress={onPressDetailPlanCheckBox}
-                                                            comment={detailPlan.approve_comment}
-                                                            checked={detailPlan.complete}
-                                                            detailPlanId={detailPlan.detail_plan_id}/> :
+                                    (isWeekPassed === false) && isMyPlan === true ?
+                                        <DetailPlanCheckBox
+                                            onPress={onPressDetailPlanCheckBox}
+                                            comment={detailPlan.approve_comment}
+                                            checked={detailPlan.complete}
+                                            detailPlanId={detailPlan.detail_plan_id}/> :
                                         <View style={{width: "10%"}}/>
 
                                 }
@@ -51,7 +53,7 @@ function DetailPlanList({
                                     threeDaysPassed === true ?
                                         <DislikeEvaluationCount dislikeCount={detailPlan.detail_plan_dislike_count}
                                                                 participantCount={participantsCount}/> :
-                                        <View style={{width: "10%"}}/>
+                                        <View style={{width: "10%", marginLeft: "2%"}}/>
 
                                 }
                             </View>
