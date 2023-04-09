@@ -3,7 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
-function RoomItem({room_id, title}) {
+function RoomItem({room_id, title, totalWeek, currentWeek, entryFee}) {
 
     const navigation = useNavigation();
 
@@ -18,9 +18,9 @@ function RoomItem({room_id, title}) {
                 <Text>5/6</Text>
             </View>
             <View style={styles.subInfo}>
-                <Text>#{6}주짜리방</Text>
-                <Text>#{4}주차</Text>
-                <Text>#입장료 {10000}원</Text>
+                <Text>#{totalWeek}주짜리방</Text>
+                <Text>#{currentWeek}주차</Text>
+                <Text>#입장료 {entryFee}원</Text>
             </View>
         </TouchableOpacity>
     );
@@ -43,12 +43,12 @@ const styles = StyleSheet.create(
         title: {
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "flex-start",
+            justifyContent: "space-between",
             width: "100%",
         },
         title_text: {
+            width: "80%",
             fontSize: 18,
-            marginRight: "2%",
             fontWeight: "bold",
         },
         subInfo: {
