@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {ScrollView, StyleSheet, Text, View} from "react-native";
 import {BASE_BACKGROUND} from "../../const/color";
 import Header from "../../components/common/Header";
@@ -16,7 +16,7 @@ import {
     cancelPlanDislike, completeDetailPlan,
     createDetailPlan, doDetailPlanDislike,
     doPlanDislike,
-    modifyDetailPlan, undoCompleteDetailPlan
+    modifyDetailPlan, resetPlanAndDetailPlan, undoCompleteDetailPlan
 } from "../../module/plan";
 import DislikeCount from "../../components/plans/common/DislikeCount";
 import {heightPercentageToDP as hp} from "react-native-responsive-screen";
@@ -100,6 +100,7 @@ function PlanScreen({}) {
     const onPressWeek = (week) => {
         if (week <= roomInfo.current_week) {
             setPressedWeek(week);
+            dispatch(resetPlanAndDetailPlan());
         }
     }
     /** 다음 주차 선택 **/
@@ -189,7 +190,6 @@ function PlanScreen({}) {
             setCompleteTargetId(detail_plan_id);
             setCheckBoxPressed(true);
         }
-        console.log(approveComment);
     };
     const onCancelInputModal = () => {
         if (addPressed) {
@@ -203,7 +203,17 @@ function PlanScreen({}) {
         }
 
         setShowInputModal(false);
-    }
+    };
+
+    /** 이미 끝난 계획인지 **/
+    const isWeekPassed = useCallback(() => {
+
+        const targetDate = new Date(plan.target_date);
+
+        const curDate = new Date();
+        return curDate.getTime() - targetDate.getTime() > 0;
+
+    }, [plan]);
 
     return (
         <View style={styles.container}>
@@ -219,6 +229,7 @@ function PlanScreen({}) {
                     {
                         detailPlans && participants && plan &&
                         <DetailPlanList isMyPlan={isMyPlan}
+                                        isWeekPassed={isWeekPassed()}
                                         onPressDetailPlanCheckBox={onPressDetailPlanCheckBox}
                                         onPressDetailPlanDislike={onPressDetailPlanDislike}
                                         threeDaysPassed={plan.three_days_passed}
