@@ -7,7 +7,6 @@ export function DislikeEvaluationCount({dislikeCount, participantCount}) {
     return (
 
         <View style={styles.dislike_container}>
-            <Icon name="thumbs-down" style={styles.thumb} size={hp(4)}/>
             <Text style={styles.dislike_text}>{dislikeCount} / {participantCount}</Text>
         </View>
 
@@ -17,12 +16,11 @@ export function DislikeEvaluationCount({dislikeCount, participantCount}) {
 const styles = StyleSheet.create(
     {
         dislike_container: {
+            borderWidth: 1,
+            width: "10%",
             justifyContent: 'space-between',
             alignItems: 'center',
             flexDirection: "row",
-        },
-        thumb: {
-            marginRight: "4%",
         },
         dislike_text: {
             color: '#000000',
