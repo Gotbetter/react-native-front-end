@@ -10,6 +10,8 @@ import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
 import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 import Calendar from "../../../components/room/form/Calendar";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import LogoTemplate from "../../../components/common/LogoTemplate";
 
 function RoomScheduleFormScreen({navigation}) {
     const SCREEN_TITLE = "스터디방 일정을 설정하세요";
@@ -78,7 +80,9 @@ function RoomScheduleFormScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Logo/>
+            <LogoTemplate>
+                <Logo size={wp(70)}/>
+            </LogoTemplate>
             <View style={styles.content_container}>
                 <Text style={styles.screen_title}>{SCREEN_TITLE}</Text>
                 <View style={styles.calendar_group_container}>

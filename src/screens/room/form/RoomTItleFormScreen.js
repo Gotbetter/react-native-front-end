@@ -8,11 +8,14 @@ import InputGroup from "../../../components/room/form/InputGroup";
 import SelectGroup from "../../../components/room/form/SelectGroup";
 import NextOrCloseButton from "../../../components/room/form/NextOrCloseButton";
 import PreventRollUpView from "../../../components/common/PreventRollUpView";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import LogoTemplate from "../../../components/common/LogoTemplate";
 
 function RoomTitleFormScreen({navigation}) {
     const SCREEN_TITLE = "새로운 스터디방 만들기";
     const INPUT_TITLE = "스터디방 이름";
-    const SELECT_TITLE = "스터디방 인원";
+    const SELECT_TITLE = "스터디방 인원"
+    ;
 
     const dispatch = useDispatch();
     const {request} = useSelector(({room}) => ({
@@ -51,7 +54,9 @@ function RoomTitleFormScreen({navigation}) {
     return (
         <PreventRollUpView>
             <View style={styles.container}>
-                <Logo/>
+                <LogoTemplate>
+                    <Logo size={wp(70)}/>
+                </LogoTemplate>
                 <View style={styles.content_container}>
                     <Text style={styles.screen_title}>{SCREEN_TITLE}</Text>
                     <InputGroup title={INPUT_TITLE} targetName={"title"} onChange={onChange}/>
@@ -77,7 +82,11 @@ const styles = StyleSheet.create(
             width: "100%",
             backgroundColor: 'white',
         },
-
+        logo_container: {
+            borderWidth: 1,
+            alignItems: "center",
+            marginTop: "6%",
+        },
         content_container: {
             flex: 2,
             alignItems: "center",

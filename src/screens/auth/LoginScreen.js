@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {login, resetLoginStatus} from "../../module/auth";
 import Logo from "../../components/common/Logo";
 import PreventRollUpView from "../../components/common/PreventRollUpView";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 
 function LoginScreen({navigation}) {
@@ -74,8 +75,8 @@ function LoginScreen({navigation}) {
 
                 <View style={{flex: 3}}>
                     <View style={{flex: 1}}/>
-                    <View style={{flex: 2}}>
-                        <Logo/>
+                    <View style={styles.logo_container}>
+                        <Logo size={wp(70)}/>
                     </View>
                 </View>
                 <View style={styles.login_container}>
@@ -117,10 +118,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
-    logo_image: {
-        flex: 1,
-        alignSelf: 'center',
-        width: '80%',
+    logo_container: {
+        justifyContent: "center",
+        alignItems: "center",
     },
     login_container: {
         flex: 5,

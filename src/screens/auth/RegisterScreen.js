@@ -14,6 +14,8 @@ import {checkDuplicate, register, resetDuplicate, resetRegister} from "../../mod
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";
 import PreventRollUpView from "../../components/common/PreventRollUpView";
+import Logo from "../../components/common/Logo";
+import {widthPercentageToDP} from "react-native-responsive-screen";
 
 
 function RegisterScreen({navigation}) {
@@ -130,9 +132,8 @@ function RegisterScreen({navigation}) {
 
                     <View style={{flex: 3}}>
                         <View style={{flex: 1}}/>
-                        <View style={{flex: 1}}>
-                            <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
-                                   style={styles.logo_image}/>
+                        <View style={styles.logo_container}>
+                            <Logo size={widthPercentageToDP(70)}/>
                         </View>
                         <View style={{flex: 1, justifyContent: 'center'}}>
                             <Text style={{fontSize: 30, textAlign: 'center'}}>회원가입</Text>
@@ -188,6 +189,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
+    },
+    logo_container: {
+        alignItems: "center",
     },
     logo_image: {
         flex: 1,
