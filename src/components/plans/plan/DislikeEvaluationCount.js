@@ -16,9 +16,9 @@ export function DislikeEvaluationCount({dislikeCount, participantCount}) {
 const styles = StyleSheet.create(
     {
         dislike_container: {
-            borderWidth: 1,
             width: "10%",
-            justifyContent: 'space-between',
+            marginLeft: "2%",
+            justifyContent: 'center',
             alignItems: 'center',
             flexDirection: "row",
         },
