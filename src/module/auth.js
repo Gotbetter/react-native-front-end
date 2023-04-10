@@ -12,7 +12,11 @@ const initialState = {
         LOGIN: null,
         DUPLICATE_CHECKED: null,
     },
-    error: null,
+    error: {
+        message: null,
+        LOGIN: false,
+        REGISTER: false,
+    },
 };
 
 
@@ -41,7 +45,18 @@ const auth = createSlice(
             },
             resetLoginStatus: (state) => {
                 state.status.LOGIN = null;
-            }
+            },
+            setLoginError: (state) => {
+                state.error.LOGIN = true;
+            },
+            resetError: (state) => {
+                state.error = {
+                    message: null,
+                    LOGIN: false,
+                    REGISTER: false,
+                };
+            },
+
         },
         /**
          * 400 error는 클라이언트에서 block
@@ -51,10 +66,13 @@ const auth = createSlice(
             builder
                 .addCase(register.fulfilled, (state, {payload: {status}}) => {
                     state.status.REGISTER = status;
+                    state.error.message = null;
+                    state.error.REGISTER = false;
                 })
                 .addCase(register.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.status.REGISTER = status;
-                    state.error = message;
+                    state.error.message = message;
+                    state.error.REGISTER = true;
                 })
                 .addCase(checkDuplicate.fulfilled, (state, {payload: {status}}) => {
                     state.status.DUPLICATE_CHECKED = status;
@@ -73,11 +91,14 @@ const auth = createSlice(
                     }
                     storeToken();
                     state.status.LOGIN = status;
+                    state.error.LOGIN = false;
+                    state.error.message = null;
 
                 })
                 .addCase(login.rejected, (state, {payload: {message, response: {status}}}) => {
-                    state.error = message;
+                    state.error.message = message;
                     state.status.LOGIN = status;
+                    state.error.LOGIN = true;
                 })
                 .addCase(fetchUser.pending, (state) => {
 
@@ -85,7 +106,7 @@ const auth = createSlice(
                 .addCase(fetchUser.fulfilled, (state, {payload: {data}}) => {
                     state.user = data;
                 })
-                .addCase(fetchUser.rejected, (state, {payload: {message, response:{status}}}) => {
+                .addCase(fetchUser.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.status.LOGIN = status;
                 })
 
@@ -93,6 +114,6 @@ const auth = createSlice(
     }
 );
 
-export const {resetDuplicate, resetRegister, logout, setLogin,resetLoginStatus} = auth.actions;
+export const {resetDuplicate, resetRegister, logout, setLogin, resetLoginStatus, resetError, setLoginError} = auth.actions;
 
 export default auth.reducer;
