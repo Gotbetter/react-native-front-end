@@ -3,7 +3,7 @@ import {useEffect, useState,} from "react";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login, resetError, resetLoginStatus, setLoginError} from "../../module/auth";
+import {login, resetAllError, resetError, resetLoginStatus, setLoginError} from "../../module/auth";
 import Logo from "../../components/common/Logo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import LoginTemplate from "../../components/main/LoginTemplate";
@@ -25,7 +25,7 @@ function LoginScreen({navigation}) {
     useEffect(()=>{
         if (isFocused) {
             setErrorMessage("");
-            dispatch(resetError());
+            dispatch(resetAllError());
         }
     }, [isFocused])
 
