@@ -32,7 +32,7 @@ function CurrentWeekDetailPlan({roomInfo, detailPlans}) {
             {
                 id: "plan_fix",
                 title: "계획 고정까지",
-                data: dateToFix <= 0 ? "마감됨" : `D-${dateToFix}`,
+                data: dateToFix < 0 ? "마감됨" : dateToFix === 0 ? "D-Day" : `D-${dateToFix}`,
             },
             {
                 id: "plan_end",

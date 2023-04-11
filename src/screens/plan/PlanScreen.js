@@ -12,7 +12,7 @@ import {useRoute} from "@react-navigation/native";
 import {useFetchPlanAndDetailPlans, usePlanner} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    cancelDislikeDetailPlan,
+    cancelDetailPlanDislike,
     cancelPlanDislike, completeDetailPlan,
     createDetailPlan, doDetailPlanDislike,
     doPlanDislike,
@@ -173,7 +173,7 @@ function PlanScreen({}) {
     const onPressDetailPlanDislike = (detail_plan_id, checked) => {
 
         if (checked) {
-            dispatch(cancelDislikeDetailPlan(detail_plan_id));
+            dispatch(cancelDetailPlanDislike(detail_plan_id));
         } else {
             dispatch(doDetailPlanDislike(detail_plan_id));
         }

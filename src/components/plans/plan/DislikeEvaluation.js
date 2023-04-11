@@ -1,6 +1,5 @@
 import {StyleSheet, TouchableOpacity, View} from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
-import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 
 function DislikeEvaluation({isMyPlan, onPress, checked, size, style}) {
