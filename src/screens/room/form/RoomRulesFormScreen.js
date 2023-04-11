@@ -30,7 +30,7 @@ function RoomRulesFormScreen({navigation}) {
 
     useEffect(() => {
         if (status === 201) {
-            navigation.navigate('room-create-result-screen',{selectedRuleContents});
+            navigation.navigate('main');
             setShow(false);
             dispatch(resetStatus('ROOM_CREATE'));
         } else if (status === 403) {

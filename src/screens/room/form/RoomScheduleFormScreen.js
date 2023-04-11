@@ -46,9 +46,10 @@ function RoomScheduleFormScreen({navigation}) {
     };
 
     const onConfirm = (date) => {
+        const target = new Date(date);
         const next = {
             ...request,
-            "start_date": date,
+            "start_date": `${target.getFullYear()}-${("00" + (target.getMonth() + 1)).slice(-2)}-${target.getDate()}`,
         };
         dispatch(onChangeRoomRequest(next));
         setShow(false);
@@ -65,8 +66,8 @@ function RoomScheduleFormScreen({navigation}) {
             Toast.show('모든 정보를 입력하세요', {duration: Toast.durations.LONG});
         } else {
 
-            const cmpStartDate = start_date.toLocaleDateString();
-            const cmpTODAY = TODAY.toLocaleDateString();
+            const cmpStartDate = start_date.split('-')[2];
+            const cmpTODAY = TODAY.getDate();
 
             if (cmpStartDate < cmpTODAY) {
                 Toast.show('올바른 날짜를 선택하세요', {duration: Toast.durations.LONG});
