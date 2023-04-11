@@ -7,9 +7,6 @@ import {login, resetAllError, resetError, resetLoginStatus, setLoginError} from 
 import Logo from "../../components/common/Logo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import LoginTemplate from "../../components/main/LoginTemplate";
-import ErrorMessage from "../../components/common/ErrorMessage";
-import {useIsFocused} from "@react-navigation/native";
-
 
 function LoginScreen({navigation}) {
 
@@ -22,7 +19,7 @@ function LoginScreen({navigation}) {
     const isFocused = useIsFocused();
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(()=>{
+    useEffect(() => {
         if (isFocused) {
             setErrorMessage("");
             dispatch(resetAllError());
@@ -84,38 +81,47 @@ function LoginScreen({navigation}) {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.logo_container}>
-                <Logo size={hp(30)}/>
-            </View>
-            <LoginTemplate>
-                <View style={styles.input_container}>
-                    <TextInput style={styles.input}
-                               value={auth_id}
-                               placeholder="아이디 입력"
-                               onChange={(e) => onChange("auth_id", e)}/>
-                    <TextInput style={styles.input}
-                               value={password}
-                               placeholder="비밀번호 입력"
-                               onChange={(e) => onChange("password", e)}/>
+        <PreventRollUpView>
+            <View style={styles.container}>
+                <View style={styles.logo_container}>
+                    <Logo size={hp(30)}/>
                 </View>
-                {
-                    error && <ErrorMessage message={errorMessage}/>
-                }
-                <View style={styles.button_group_container}>
-                    <TouchableOpacity style={styles.button} onPress={onPressLogin}>
-                        <Text style={styles.login_text}>로그인</Text>
-                    </TouchableOpacity>
-                    <View style={styles.sub_function_container}>
-                        <Text onPress={() => navigation.navigate('register')}>회원가입</Text>
-                        <Text>아이디 찾기</Text>
-                        <Text>비밀번호 찾기</Text>
+                <LoginTemplate>
+                    <View style={styles.input_container}>
+                        <TextInput style={styles.input}
+                                   value={auth_id}
+                                   placeholder="아이디 입력"
+                                   onChange={(e) => onChange("auth_id", e)}/>
+                        <TextInput style={styles.input}
+                                   value={password}
+                                   placeholder="비밀번호 입력"
+                                   onChange={(e) => onChange("password", e)}/>
                     </View>
-                </View>
-            </LoginTemplate>
-        </View>
+                    {
+                        error && <ErrorMessage message={errorMessage}/>
+                    }
+                    <View style={styles.button_group_container}>
+                        <TouchableOpacity style={styles.button} onPress={onPressLogin}>
+                            <Text style={styles.login_text}>로그인</Text>
+                        </TouchableOpacity>
+                        <View style={styles.sub_function_container}>
+                            <Text onPress={() => navigation.navigate('register')}>회원가입</Text>
+                            <Text>아이디 찾기</Text>
+                            <Text>비밀번호 찾기</Text>
+                        </View>
+                    </View>
+                </LoginTemplate>
+            </View>
+        </PreventRollUpView>
+
     );
 }
+
+import ErrorMessage from "../../components/common/ErrorMessage";
+import {useIsFocused} from "@react-navigation/native";
+
+
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 const styles = StyleSheet.create({
     container: {
