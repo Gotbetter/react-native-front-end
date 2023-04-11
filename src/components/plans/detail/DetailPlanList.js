@@ -46,6 +46,7 @@ function DetailPlanList({
                                     threeDaysPassed === true ?
                                         <DislikeEvaluation
                                             onPress={() => onPressDetailPlanDislike(detailPlan.detail_plan_id, detailPlan.detail_plan_dislike_checked)}
+                                            checked={detailPlan.detail_plan_dislike_checked}
                                             isMyPlan={isMyPlan}
                                             size={hp(5)}/> : <View style={{width: "10%", marginRight: "5%"}}/>
                                 }
