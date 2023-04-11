@@ -5,17 +5,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const initialState = {
-    tokens: null,
     user: null,
     status: {
         REGISTER: null,
         LOGIN: null,
         DUPLICATE_CHECKED: null,
+        PASSWORD_CONFIRMED: false
     },
     error: {
         message: null,
         LOGIN: false,
-        REGISTER: false,
+        DUPLICATE_CHECK: false,
+        PASSWORD_CONFIRM: false,
+        EMAIL_CHECK: false,
+        REGISTER_REQUIRED: false,
     },
 };
 
@@ -30,30 +33,45 @@ const auth = createSlice(
         name: 'auth',
         initialState,
         reducers: {
-            resetDuplicate: (state) => {
-                state.status.DUPLICATE_CHECKED = null;
+            resetStatus: (state, {payload: key}) => {
+                const before = state.status;
+                const next = {
+                    ...before,
+                    [key]: key === "PASSWORD_CONFIRMED" ? false : null,
+                };
+                state.status = next;
             },
-            resetRegister: (state) => {
-                state.status.REGISTER = null;
+            passwordConfirmed: (state) => {
+                state.status.PASSWORD_CONFIRMED = true;
             },
             logout: (state) => {
                 state.status.LOGIN = null;
                 state.user = null;
             },
-            setLogin: (state) => {
-                state.status.LOGIN = 200;
+            setError: (state, {payload: key}) => {
+                const before = state.error;
+                const next = {
+                    ...before,
+                    [key]: true,
+                };
+                state.error = next;
             },
-            resetLoginStatus: (state) => {
-                state.status.LOGIN = null;
+            resetError: (state, {payload: key}) => {
+                const before = state.error;
+                const next = {
+                    ...before,
+                    [key]: false,
+                };
+                state.error = next;
             },
-            setLoginError: (state) => {
-                state.error.LOGIN = true;
-            },
-            resetError: (state) => {
+            resetAllError: (state) => {
                 state.error = {
                     message: null,
                     LOGIN: false,
-                    REGISTER: false,
+                    DUPLICATE_CHECK: false,
+                    PASSWORD_CONFIRM: false,
+                    EMAIL_CHECK: false,
+                    REGISTER_REQUIRED: false,
                 };
             },
 
@@ -73,13 +91,15 @@ const auth = createSlice(
                     state.status.REGISTER = status;
                     state.error.message = message;
                     state.error.REGISTER = true;
+                    state.error.EMAIL_CHECK = true;
                 })
                 .addCase(checkDuplicate.fulfilled, (state, {payload: {status}}) => {
                     state.status.DUPLICATE_CHECKED = status;
+                    state.error.DUPLICATE_CHECK = false;
                 })
                 .addCase(checkDuplicate.rejected, (state, {payload: {message, response: {status}}}) => {
                     state.status.DUPLICATE_CHECKED = status;
-                    state.error = message;
+                    state.error.message = message;
                 })
                 .addCase(login.fulfilled, (state, {payload: {data, status}}) => {
 
@@ -114,6 +134,14 @@ const auth = createSlice(
     }
 );
 
-export const {resetDuplicate, resetRegister, logout, setLogin, resetLoginStatus, resetError, setLoginError} = auth.actions;
+export const {
+    logout,
+    resetError,
+    resetAllError,
+    resetStatus,
+    setError,
+    passwordConfirmed
+
+} = auth.actions;
 
 export default auth.reducer;
