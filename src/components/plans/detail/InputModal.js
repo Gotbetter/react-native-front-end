@@ -3,7 +3,7 @@ import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-
 import {heightPercentageToDP, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import PreventRollUpView from "../../common/PreventRollUpView";
 
-function InputModal({title, show, onCancel, onChangeText, onConfirm, content}) {
+function InputModal({week, title, show, onCancel, onChangeText, onConfirm, content}) {
     return (
 
         <Modal visible={show}
@@ -15,7 +15,7 @@ function InputModal({title, show, onCancel, onChangeText, onConfirm, content}) {
                     <View style={styles.input_container}>
                         <Text style={styles.text}>{title}</Text>
                         <View style={[styles.week, styles.shadow]}>
-                            <Text>1주차</Text>
+                            <Text>{week}주차</Text>
                         </View>
                         <TextInput style={[styles.input, styles.shadow]}
                                    value={content}
