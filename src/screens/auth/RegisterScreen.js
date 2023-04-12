@@ -1,15 +1,7 @@
 import {StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
 
 import {useEffect, useState,} from "react";
-import {
-    checkDuplicate,
-    passwordConfirmed,
-    register,
-    resetError,
-    resetRegister,
-    resetStatus,
-    setError
-} from "../../module/auth";
+import {checkDuplicate, passwordConfirmed, register, resetError, resetStatus, setError} from "../../module/auth";
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";
 import Logo from "../../components/common/Logo";
