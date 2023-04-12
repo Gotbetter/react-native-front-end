@@ -3,10 +3,15 @@ import {useEffect, useState,} from "react";
 
 
 import {useDispatch, useSelector} from "react-redux";
-import {login, resetAllError, resetError, resetLoginStatus, setLoginError} from "../../module/auth";
+import {login, resetAllError, resetLoginStatus, setError} from "../../module/auth";
 import Logo from "../../components/common/Logo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import LoginTemplate from "../../components/main/LoginTemplate";
+import ErrorMessage from "../../components/common/ErrorMessage";
+import {useIsFocused} from "@react-navigation/native";
+
+
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 function LoginScreen({navigation}) {
 
@@ -68,7 +73,7 @@ function LoginScreen({navigation}) {
 
         if (flag === false) {
             setErrorMessage("모든 정보를 입력하세요");
-            dispatch(setLoginError());
+            dispatch(setError("LOGIN"));
         } else {
             dispatch(login(request));
             const resetRequest = {
@@ -116,12 +121,6 @@ function LoginScreen({navigation}) {
 
     );
 }
-
-import ErrorMessage from "../../components/common/ErrorMessage";
-import {useIsFocused} from "@react-navigation/native";
-
-
-import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 const styles = StyleSheet.create({
     container: {
