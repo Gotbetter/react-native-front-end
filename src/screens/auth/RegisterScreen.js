@@ -156,7 +156,8 @@ function RegisterScreen({navigation}) {
         <KeyboardAwareScrollView
             enableOnAndroid={true}
             enableAutomaticScroll={(Platform.OS === 'ios')}
-            style={styles.container}
+            style={styles.screen}
+            contentContainerStyle={styles.container}
         >
             <View style={styles.logo_container}>
                 <Logo size={hp(30)}/>
@@ -226,9 +227,11 @@ function RegisterScreen({navigation}) {
 
 
 const styles = StyleSheet.create({
-    container: {
+    screen: {
         backgroundColor: 'white',
-        height: "100%",
+    },
+    container: {
+        height: hp(100),
     },
     logo_container: {
         height: "25%",
@@ -236,6 +239,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     input_container: {
+        height: "75%",
         padding: wp(3),
     },
     input_group: {
