@@ -2,7 +2,7 @@
   "expo": {
     "name": "gotbetter",
     "slug": "gotbetter",
-    "version": "0.1.2",
+    "version": "0.1.5",
     "orientation": "portrait",
     "icon": "./assets/images/main_app_logo.png",
     "userInterfaceStyle": "light",
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/images/main_app_logo.png",
         "backgroundColor": "#FFFFFF"
       },
-      "versionCode": 3,
+      "versionCode": 6,
       "package": "com.jjinyeok.gotbetter"
     },
     "web": {
