@@ -1,4 +1,4 @@
-import {NavigationContainer, useIsFocused} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from "./src/screens/auth/LoginScreen";
 import RegisterScreen from "./src/screens/auth/RegisterScreen";
@@ -7,16 +7,13 @@ import {RootSiblingParent} from 'react-native-root-siblings';
 
 import {store} from "./src/module/store";
 import MainScreen from "./src/screens/MainScreen";
-import RoomTitleFormScreen from "./src/screens/room/form/RoomTItleFormScreen";
-import RoomScheduleFormScreen from "./src/screens/room/form/RoomScheduleFormScreen";
-import RoomEntryFeeFormScreen from "./src/screens/room/form/RoomEntryFeeFormScreen";
-import RoomRulesFormScreen from "./src/screens/room/form/RoomRulesFormScreen";
 import JoinRoomScreen from './src/screens/room/join/JoinRoomScreen';
 import RoomMainScreen from './src/screens/room/RoomMainScreen';
 import MyPlanScreen from './src/screens/plan/PlanScreen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useEffect, useState} from "react";
-import RoomCreateResultScreen from "./src/screens/room/form/RoomCreateResultScreen";
+import BaseInfoFormScreen from "./src/screens/room/form/BaseInfoFormScreen";
+import RulesAndAccountFormScreen from "./src/screens/room/form/RulesAndAccountFormScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -54,11 +51,8 @@ export default function App() {
                                       component={MainScreen}
                                       options={{gestureEnabled: false}
                                       }/>
-                        <Stack.Screen name='room-create-title-form' component={RoomTitleFormScreen}/>
-                        <Stack.Screen name='room-create-schedule-form' component={RoomScheduleFormScreen}/>
-                        <Stack.Screen name='room-create-entry-fee-form' component={RoomEntryFeeFormScreen}/>
-                        <Stack.Screen name='room-create-rules-form' component={RoomRulesFormScreen}/>
-                        <Stack.Screen name='room-create-result-screen' component={RoomCreateResultScreen}/>
+                        <Stack.Screen name='create-room-base-info' component={BaseInfoFormScreen}/>
+                        <Stack.Screen name='create-room-rules-and-account' component={RulesAndAccountFormScreen}/>
                         <Stack.Screen name='join' component={JoinRoomScreen}/>
                         <Stack.Screen name='home' component={RoomMainScreen}/>
                         <Stack.Screen name='my-plan' component={MyPlanScreen}/>
