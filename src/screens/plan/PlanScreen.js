@@ -1,260 +1,311 @@
-import {ScrollView, StyleSheet, View,} from "react-native";
-
-import React, {useEffect, useState,} from "react";
-
-// 화면 비율 맞추기 위한 lib
-import {widthPercentageToDP as wp,} from 'react-native-responsive-screen';
-
-import Logo from "../../components/common/Logo";
-import {useRoute} from "@react-navigation/native";
-import {DislikeEvaluationCount} from "../../components/plans/plan/DislikeEvaluationCount";
-import DislikeEvaluation from "../../components/plans/plan/DislikeEvaluation";
+import React, {useCallback, useEffect, useState} from "react";
+import {ScrollView, StyleSheet, Text, View} from "react-native";
+import {BASE_BACKGROUND} from "../../const/color";
+import Header from "../../components/common/Header";
 import WeekList from "../../components/plans/plan/WeekList";
-import DetailPlanInput from "../../components/plans/detail/DetailPlanInput";
+import DislikeEvaluation from "../../components/plans/plan/DislikeEvaluation";
 import DetailPlanList from "../../components/plans/detail/DetailPlanList";
-import {useFetchPlanAndDetailPlans, usePlanner, useWeekSelector} from "../../hooks/plan";
+import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import DetailPlanInputButton from "../../components/plans/detail/DetailPlanInput";
+import InputModal from "../../components/plans/detail/InputModal";
+import {useRoute} from "@react-navigation/native";
+import {useFetchPlanAndDetailPlans, usePlanner} from "../../hooks/plan";
 import {useDispatch, useSelector} from "react-redux";
-
-import InputModal from "../../components/common/InputModal";
-import {useFetchRoomInfo} from "../../hooks/room";
 import {
-    cancelDetailPlanDislike, cancelDislikeDetailPlan,
-    cancelPlanDislike,
-    completeDetailPlan,
-    createDetailPlan, dislikeDetailPlan,
-    doDetailPlanDislike,
+    cancelDetailPlanDislike,
+    cancelPlanDislike, completeDetailPlan,
+    createDetailPlan, doDetailPlanDislike,
     doPlanDislike,
-    modifyDetailPlan,
-    onChangeDetailPlanRequest,
-    resetDetailPlanRequest,
-    undoCompleteDetailPlan
+    modifyDetailPlan, resetPlanAndDetailPlan, undoCompleteDetailPlan
 } from "../../module/plan";
-import PreventRollUpView from "../../components/common/PreventRollUpView";
+import DislikeCount from "../../components/plans/common/DislikeCount";
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
 
-export default function PlanScreen() {
+function PlanScreen({}) {
+
+    const {params: {planner, roomInfo}} = useRoute();
     const dispatch = useDispatch();
-    const {params: {planner}} = useRoute();
+    const {participants} = useSelector(({room}) => room);
 
-    const [isAddButtonPressed, setIsAddButtonPressed] = useState(false);
-    const [isModifyButtonPressed, setIsModifyButtonPressed] = useState(false);
-    const [modifyDetailPlanId, setModifyDetailPlanId] = useState(null);
+    /**
+     * 버튼 클릭 관련 state
+     * 세부 계획 추가 버튼
+     * 수정 버튼
+     * 세부 게획 체크 박스
+     */
+    const [addPressed, setAddPressed] = useState(false);
+    const [modifyPressed, setModifyPressed] = useState(false);
+    const [checkBoxPressed, setCheckBoxPressed] = useState(false);
 
-    const {request, participants} = useSelector(({room, plan}) => ({
-        request: plan.detailPlanRequest,
-        participants: room.participants
-    }));
+    /**
+     * weekList 관련 state
+     * 출력될 주차를 담을 배열
+     * 누른 주차 정보
+     * 다음 주차 버튼을 누른 횟수
+     */
+    const [weekList, setWeekList] = useState(null);
+    const [pressedWeek, setPressedWeek] = useState(roomInfo.current_week < roomInfo.week ? roomInfo.current_week : roomInfo.week);
+    const [weekOffset, setWeekOffset] = useState(roomInfo.current_week < roomInfo.week ? Math.floor((roomInfo.current_week) / 5) : Math.floor((roomInfo.week) / 5));
 
-    const {current_week} = useFetchRoomInfo();
-    const [weekList, clickedWeek, setClickedWeek] = useWeekSelector()
-    const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, clickedWeek);
+    /**
+     * 세부 계획 관련 state
+     * 세부 계획 생성/삭제 request
+     * 세부 계획 완료 메세지
+     * 수정할 세부계획 id
+     */
+    const [content, setContent] = useState("");
+    const [approveComment, setApproveComment] = useState("");
+    const [modifyTargetId, setModifyTargetId] = useState(-1);
+    const [completeTargetId, setCompleteTargetId] = useState(-1);
+
+    /** 세부 계획 입력 모달 **/
+    const [showInputModal, setShowInputModal] = useState(false);
+
+    /**
+     * custom hook
+     * 나의 계획인지 확인
+     * 계획, 세부계획 정보 불러오기
+    **/
     const isMyPlan = usePlanner(planner);
+    const [plan, planDislikeInfo, detailPlans] = useFetchPlanAndDetailPlans(planner.participant_id, pressedWeek);
 
-    const [isCompleted, setIsCompleted] = useState(null);
-    const [completedDetailPlanId, setCompletedDetailPlanId] = useState(null);
-    const [approveComment, setApproveComment] = useState('');
-    const [openApproveCommentModal, setOpenApproveCommentModal] = useState(false);
 
     useEffect(() => {
-        /** 추가하기 버튼 상태 초기화 **/
-        setIsAddButtonPressed(false);
-        /** 수정 버튼 상태 초기화 **/
-        setIsModifyButtonPressed(false);
 
-    }, [clickedWeek]);
-
-    /** 세부계획 완료 체크 박스 **/
-    const onPressCheckBox = (complete, detailPlanId) => {
-        const {plan_id} = plan;
-        if (doUnCheck(complete)) {
-            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id: detailPlanId}));
-        } else {
-            setOpenApproveCommentModal(true);
+        let week = [];
+        for (let i = 1; i <= roomInfo.week; i++) {
+            week.push(i);
         }
-        setIsCompleted(complete);
-        setCompletedDetailPlanId(detailPlanId);
+
+        function splitIntoChunk(arr, chunk) {
+            // 빈 배열 생성
+            const result = [];
+
+            for (let index = 0; index < arr.length; index += chunk) {
+                let tempArray;
+                // slice() 메서드를 사용하여 특정 길이만큼 배열을 분리함
+                tempArray = arr.slice(index, index + chunk);
+                // 빈 배열에 특정 길이만큼 분리된 배열을 추가
+                result.push(tempArray);
+            }
+            return result;
+        }
+
+        setWeekList(splitIntoChunk(week, 4));
+
+    }, [planner, roomInfo]);
+
+    /** 주차 선택 **/
+    const onPressWeek = (week) => {
+        if (week <= roomInfo.current_week) {
+            setPressedWeek(week);
+            dispatch(resetPlanAndDetailPlan());
+        }
+    }
+    /** 다음 주차 선택 **/
+    const onPressNext = () => {
+
+        if (weekOffset < weekList.length - 1) {
+            setWeekOffset(weekOffset + 1);
+        }
     };
+    /** 이전 주차 선택 **/
+    const onPressBefore = () => {
+        if (weekOffset > 0) {
+            setWeekOffset(weekOffset - 1);
+        }
+    };
+    /** 세부 계획 수정 버튼 선택 **/
+    const onPressModify = (detail_plan_id) => {
 
-    const onPressEnter = () => {
+        setModifyTargetId(detail_plan_id);
+        let targetIndex = detailPlans.findIndex(detailPlan => detailPlan.detail_plan_id === detail_plan_id);
+        setContent(detailPlans[targetIndex].content);
+
+        setShowInputModal(true);
+        setAddPressed(false);
+        setModifyPressed(true);
+    };
+    /** 세부 계획 추가 버튼 선택 **/
+    const onPressAdd = () => {
+        setContent("");
+        setShowInputModal(true);
+        setAddPressed(true);
+        setModifyPressed(false);
+    };
+    /** 입력 수정 모달 확인 **/
+    const onConfirm = () => {
         const {plan_id} = plan;
-        if (doUnCheck(isCompleted)) {
-            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id: completedDetailPlanId}));
-        } else {
-            dispatch(completeDetailPlan({plan_id, detail_plan_id: completedDetailPlanId, approveComment}));
+        if (addPressed) {
+            dispatch(createDetailPlan({plan_id, content}));
+            setAddPressed(false);
+        } else if (modifyPressed && modifyTargetId !== -1) {
+            dispatch(modifyDetailPlan({plan_id, detail_plan_id: modifyTargetId, content}));
+            setModifyPressed(false);
+            setModifyTargetId(-1);
+        } else if (checkBoxPressed) {
+            dispatch(completeDetailPlan({plan_id, detail_plan_id: completeTargetId, approveComment}))
+            setShowInputModal(false);
+            setCheckBoxPressed(false);
+            setApproveComment("");
         }
-        setOpenApproveCommentModal(false);
-        setApproveComment('');
-    }
-
-    const doUnCheck = (complete) => {
-        return complete === true;
-    }
-
-    const onPressWeekList = (week) => {
-
-        if (current_week >= week) {
-            setClickedWeek(week);
-        }
-    }
-
-    /** 세부계획 추가하기 버튼 **/
-    const onPressAddDetailPlan = () => {
-        if ('' != request) {
-            dispatch(createDetailPlan({
-                plan_id: plan.plan_id,
-                content: request
-            }));
-            dispatch(resetDetailPlanRequest());
-            setIsAddButtonPressed(false);
-        }
-    }
-
-    /** 세부계획 수정하기 버튼 **/
-    const onPressModifyDetailPlan = () => {
-        if ('' != request) {
-            dispatch(modifyDetailPlan({
-                plan_id: plan.plan_id,
-                detail_plan_id: modifyDetailPlanId,
-                content: request
-            }));
-            dispatch(resetDetailPlanRequest());
-            setIsModifyButtonPressed(false);
-        }
-    }
-
-    const onChangeText = (text) => {
-        dispatch(onChangeDetailPlanRequest(text));
-    }
-
-    /** 계획 싫어요 버튼 **/
+        setContent("");
+        setShowInputModal(false);
+    };
+    /** 계획 평가 **/
     const onPressPlanDislike = () => {
-        const {checked} = planDislikeInfo;
-        if (checked) {
+
+        if (isMyPlan) {
+            return null;
+        }
+
+        if (plan.three_days_passed) {
+            return null;
+        }
+
+        if (planDislikeInfo.checked) {
             dispatch(cancelPlanDislike(plan.plan_id));
         } else {
             dispatch(doPlanDislike(plan.plan_id));
         }
-
     };
+    /** 세부 계획 평가 **/
+    const onPressDetailPlanDislike = (detail_plan_id, checked) => {
 
-    /** 세부계획 싫어요 버튼 **/
-    const onPressDetailPlanDislike = (detail_plan_id, isChecked) => {
-
-        if (cancelDislike(isChecked)) {
+        if (checked) {
             dispatch(cancelDetailPlanDislike(detail_plan_id));
-            dispatch(cancelDislikeDetailPlan(detail_plan_id));
         } else {
             dispatch(doDetailPlanDislike(detail_plan_id));
-            dispatch(dislikeDetailPlan(detail_plan_id));
         }
-    }
+    };
+    /** 세부 계획 체크 박스 **/
+    const onPressDetailPlanCheckBox = (detail_plan_id, comment, checked) => {
+        const {plan_id} = plan;
 
-    /** 수정 버튼 관련 상태 변수 설정**/
-    const onPressModifyButton = (detailPlanId) => {
-        setModifyDetailPlanId(detailPlanId);
-        setIsAddButtonPressed(false);
-        setIsModifyButtonPressed(true);
-    }
+        if (checked) {
+            dispatch(undoCompleteDetailPlan({plan_id, detail_plan_id}));
+        } else {
+            setShowInputModal(true);
+            setApproveComment(comment);
+            setCompleteTargetId(detail_plan_id);
+            setCheckBoxPressed(true);
+        }
+    };
+    const onCancelInputModal = () => {
+        if (addPressed) {
+            setAddPressed(false);
+        }
+        if (modifyPressed) {
+            setModifyPressed(false);
+        }
+        if (checkBoxPressed) {
+            setCheckBoxPressed(false);
+        }
 
-    /** 추가하기 버튼 관련 상태 변수 설정 **/
-    const onPressAddButton = () => {
-        setIsAddButtonPressed(true);
-        setIsModifyButtonPressed(false);
-    }
+        setShowInputModal(false);
+    };
 
+    /** 이미 끝난 계획인지 **/
+    const isWeekPassed = useCallback(() => {
 
-    const cancelDislike = (isChecked) => {
-        return isChecked === true;
-    }
+        const targetDate = new Date(plan.target_date);
+
+        const curDate = new Date();
+        return curDate.getTime() - targetDate.getTime() > 0;
+
+    }, [plan]);
 
     return (
-        <PreventRollUpView>
-            <View style={styles.container}>
-
-                <View style={{flex: 0.5}}/>
-                <Logo/>
-                <View style={{flex: 0.1}}/>
-
-                <WeekList
-                    plannerName={planner.username}
-                    weekList={weekList}
-                    clickedWeek={clickedWeek}
-                    onPress={onPressWeekList}
-                />
-
-                <View style={{flex: 0.1}}/>
-
-                <View style={styles.detail_plans_container}>
-                    <ScrollView style={{flex: 1,}}>
-                        {
-                            detailPlans && planDislikeInfo && plan &&
-                            <DetailPlanList
-                                plan={plan}
-                                participantsCount={participants.length - 1}
-                                planDislikeInfo={planDislikeInfo}
-                                isMyPlan={isMyPlan}
-                                detailPlans={detailPlans}
-                                onPressModifyButton={onPressModifyButton}
-                                onPressCheckBox={onPressCheckBox}
-                                onPressDetailPlanDislike={onPressDetailPlanDislike}
-                            />
-                        }
-                        {
-                            isMyPlan && isMyPlan === true ?
-                                (
-                                    plan && plan.three_days_passed === false ?
-                                        (
-                                            <DetailPlanInput
-                                                addButtonPressed={isAddButtonPressed}
-                                                modifyButtonPressed={isModifyButtonPressed}
-                                                onPressAddButton={onPressAddButton}
-                                                onPressModifyDetailPlan={onPressModifyDetailPlan}
-                                                onPressAddDetailPlan={onPressAddDetailPlan}
-                                                onChangeRequest={onChangeText}
-                                            />
-                                        ) : null
-                                )
-                                : null
-                        }
-                    </ScrollView>
-                </View>
-                <View style={{flex: 0.1}}/>
-                <View style={{flex: 1, flexDirection: 'row',}}>
+        <View style={styles.container}>
+            <Header onPress={null}/>
+            {
+                weekList && <WeekList onPress={onPressWeek} pressedWeek={pressedWeek}
+                                      currentWeek={roomInfo.current_week} weekList={weekList[weekOffset]}
+                                      onPressNext={onPressNext} onPressBefore={onPressBefore}/>
+            }
+            <View style={styles.content_container}>
+                <ScrollView contentContainerStyle={styles.scroll_wrapper}>
+                    <Text style={styles.planner_text}>{planner.username}</Text>
                     {
-                        isMyPlan && isMyPlan === true ?
-                            planDislikeInfo && participants &&
-                            <DislikeEvaluationCount participantsCount={participants.length - 1} planDislikeInfo={planDislikeInfo}/>
-                            :
-                            planDislikeInfo &&
-                            <DislikeEvaluation onPress={onPressPlanDislike} planDislikeInfo={planDislikeInfo}/>
+                        detailPlans && participants && plan &&
+                        <DetailPlanList isMyPlan={isMyPlan}
+                                        isWeekPassed={isWeekPassed()}
+                                        onPressDetailPlanCheckBox={onPressDetailPlanCheckBox}
+                                        onPressDetailPlanDislike={onPressDetailPlanDislike}
+                                        threeDaysPassed={plan.three_days_passed}
+                                        detailPlans={detailPlans}
+                                        participantsCount={participants.length - 1}
+                                        onPressModify={onPressModify}
+                        />
                     }
-                </View>
-                <View style={{flex: 0.5}}/>
+                    {
+                        plan && plan.three_days_passed === false && isMyPlan === true ?
+                            <DetailPlanInputButton onPress={onPressAdd}/> : null
+                    }
 
-                <InputModal modalTitle={'Memo'} inputTitle={'메모 입력'} target={approveComment}
-                            onChangeTarget={setApproveComment} show={openApproveCommentModal}
-                            setShow={setOpenApproveCommentModal}
-                            onPress={onPressEnter}/>
+                </ScrollView>
             </View>
-        </PreventRollUpView>
+            <View style={styles.plan_dislike_container}>
+                {planDislikeInfo && <DislikeEvaluation onPress={onPressPlanDislike}
+                                                       isMyPlan={isMyPlan}
+                                                       checked={planDislikeInfo.checked}
+                                                       size={hp(6)}/>
+                }
+                {
+                    planDislikeInfo && <DislikeCount dislikeCount={planDislikeInfo.dislike_count}
+                                                     participantsCount={participants.length - 1}/>
+                }
+            </View>
 
+            {
+                plan && <InputModal show={showInputModal}
+                                    week={plan.week}
+                                    content={(addPressed || modifyPressed) ? content : approveComment}
+                                    title={addPressed ? "세부계획 추가하기" : modifyPressed ? "세부계획 수정하기" : checkBoxPressed ? "세부계획 완료 메세지" : ""}
+                                    onCancel={onCancelInputModal}
+                                    onConfirm={onConfirm}
+                                    onChangeText={(text) => (addPressed || modifyPressed) ? setContent(text) : setApproveComment(text)}
+                />
+            }
+
+        </View>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        height: "100%",
-        width: "100%",
-        backgroundColor: 'white',
-    },
-    detail_plans_container: {
-        flex: 5.7,
-        backgroundColor: '#FFFFFF',
-        marginLeft: wp(5),
-        marginRight: wp(5),
-        borderRadius: 20,
-        borderWidth: 5,
-        borderColor: '#DFDFDF',
-    },
+const styles = StyleSheet.create(
+    {
+        container: {
+            width: "100%",
+            height: "100%",
+            backgroundColor: BASE_BACKGROUND
+        },
+        content_container: {
+            height: "70%",
+            width: "100%",
 
-});
+        },
+        scroll_wrapper: {
+            width: "100%",
+            padding: wp(5),
+
+
+        },
+
+        plan_dislike_container: {
+            width: "100%",
+            height: "12%",
+            alignItems: "center",
+            justifyContent: "center",
+            borderWidth: 1,
+        },
+
+        planner_text: {
+            fontSize: 24,
+            fontWeight: "bold"
+        }
+
+    }
+)
+
+export default PlanScreen;

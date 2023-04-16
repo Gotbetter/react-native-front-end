@@ -1,44 +1,30 @@
 import React from 'react';
-import {Button, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import RoomSubInfo from "./RoomSubInfo";
-import NextOrCloseButton from "../form/NextOrCloseButton";
+import {Modal, ScrollView, StyleSheet, Text, View} from "react-native";
+import ModalHeader from "./ModalHeader";
+import UserIcon from "../../common/UserIcon";
+import {heightPercentageToDP as hp} from "react-native-responsive-screen";
 
-function ParticipationApproveModal({roomInfo, approvalModal, setApprovalModal, waitingParticipants, onPressApproval}) {
+
+function ParticipationApproveModal({waitingParticipants, show, onPressClose, onConfirm}) {
+
     return (
         <Modal
             animationType="slide"
-            transparent={true}
-            visible={approvalModal}
-            onRequestClose={() => {
-                setApprovalModal(!approvalModal);
-            }}>
+            visible={show}
+            onRequestClose={onPressClose}>
             <View style={styles.modal_container}>
-                <View style={styles.modal_center_align}>
-                    <View style={styles.modal_subInfo_container}>
-                        <RoomSubInfo title={roomInfo.title} account={roomInfo.account} roomCode={roomInfo.room_code}
-                                     entryFee={roomInfo.entry_fee} totalEntryFee={roomInfo.total_entry_fee}/>
-                    </View>
-                    <View style={styles.modal_waiting_container}>
-                        <Text style={styles.title}>
-                            대기자
-                        </Text>
+                <ModalHeader title="초대하기" onPress={onPressClose}/>
+                <View style={styles.invite_container}>
+                    <ScrollView contentContainerStyle={styles.scroll_wrapper}>
                         {
-                            waitingParticipants.map((participants) => (
-                                <View style={styles.modal_waiting_list} key={participants.user_id}>
-                                    <Text style={styles.modal_text}>
-                                        {participants.username}
-                                    </Text>
-                                    <TouchableOpacity style={styles.approval_button}
-                                                      onPress={() => onPressApproval(participants.user_id, participants.participant_id)}>
-                                        <Text style={styles.approval_button_text}>승인</Text>
-                                    </TouchableOpacity>
+                            waitingParticipants.map((participant) => (
+                                <View key={participant.user_id} style={[styles.participant_container, styles.shadow]}>
+                                    <UserIcon name={participant.username}/>
+                                    <Text style={styles.invite_text} onPress={() => onConfirm(participant.user_id)}>초대</Text>
                                 </View>
                             ))
                         }
-                    </View>
-                    <View style={styles.button_container}>
-                        <NextOrCloseButton onPress={() => setApprovalModal(false)} name={'닫기'}/>
-                    </View>
+                    </ScrollView>
                 </View>
             </View>
         </Modal>
@@ -47,69 +33,50 @@ function ParticipationApproveModal({roomInfo, approvalModal, setApprovalModal, w
 
 const styles = StyleSheet.create(
     {
+        shadow: {
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+        },
         modal_container: {
-            justifyContent: "center",
-            alignItems: "center",
             width: '100%',
             height: '100%',
             backgroundColor: '#EDEDED',
         },
-        modal_center_align: {
+        invite_container: {
+            height: "90%",
             width: "100%",
-            height: "80%",
-            justifyContent: "center",
-            alignItems: "center",
         },
-        modal_subInfo_container: {
-            width: "80%",
-            height: "30%",
-            backgroundColor: "white",
-            borderRadius: 16,
-            marginBottom: "10%",
+        scroll_wrapper: {
+            padding: 12,
+            justifyContent: "space-around"
         },
-        modal_waiting_container: {
-            width: "80%",
-            height: "30%",
-            borderWidth: 1,
-            borderRadius: 16,
-            padding: 16,
-            marginBottom: "10%",
-            backgroundColor: "white",
-        },
-        modal_waiting_list: {
-            width: "60%",
-            height: "20%",
+
+        participant_container: {
+
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "2%",
+
+            height: hp(15),
+            marginBottom: "10%",
+            backgroundColor: "#F3F3F3",
+            borderRadius: 12,
+            borderWidth: 1,
 
         },
-        button_container: {
-            width: "40%",
-            height: "8%",
-        },
-        approval_button: {
-            borderWidth: 1,
-            borderRadius: 16,
-            height: "100%",
-            width: "30%",
-            justifyContent: "center",
-            alignItems: "center",
-        },
-        approval_button_text: {
-            fontSize: 18,
+        invite_text: {
+            fontSize: 24,
             fontWeight: "bold",
-            color: "blue",
-        },
-        title: {
-            color: '#000000',
-            fontWeight: "bold",
-            fontSize: 18,
-        },
-        modal_text: {
-            fontSize: 18,
-        },
+            marginRight: "10%",
+
+        }
+
 
     }
 );

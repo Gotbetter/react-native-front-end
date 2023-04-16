@@ -3,13 +3,11 @@ import {Text} from "react-native";
 
 function FormattedDate({targetDate}) {
 
-    const year = targetDate.getFullYear();
-    const month = targetDate.getMonth() + 1;
-    const date = targetDate.getDate();
+    const target = targetDate.split('-');
 
 
     return (
-        <Text>{year}년 {month}월 {date}일</Text>
+        <Text>{target[0]}년 {target[1]}월 {target[2]}일</Text>
     );
 }
 

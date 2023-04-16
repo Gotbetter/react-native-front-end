@@ -71,25 +71,6 @@ const plan = createSlice(
                 state.plan = null;
                 state.detailPlans = [];
             },
-            /** api response 수정 전까지만 사용 **/
-            dislikeDetailPlan: (state, {payload: detail_plan_id}) => {
-                const prev = state.detailPlans;
-                const next = prev.map(detailPlan => detailPlan.detail_plan_id === detail_plan_id ? {
-                    ...detailPlan,
-                    detail_plan_dislike_count: detailPlan.detail_plan_dislike_count + 1,
-                    detail_plan_dislike_checked: !detailPlan.detail_plan_dislike_checked,
-                } : detailPlan);
-                state.detailPlans = next;
-            },
-            cancelDislikeDetailPlan: (state, {payload: detail_plan_id}) => {
-                const prev = state.detailPlans;
-                const next = prev.map(detailPlan => detailPlan.detail_plan_id === detail_plan_id ? {
-                    ...detailPlan,
-                    detail_plan_dislike_count: detailPlan.detail_plan_dislike_count - 1,
-                    detail_plan_dislike_checked: !detailPlan.detail_plan_dislike_checked,
-                } : detailPlan);
-                state.detailPlans = next;
-            }
         },
         extraReducers: (builder) => {
             builder
@@ -106,14 +87,16 @@ const plan = createSlice(
                     } : detailPlan);
                     state.detailPlans = next;
                 })
-                .addCase(doPlanDislike.fulfilled, (state) => {
-                    state.planDislikeInfo.checked = true;
+                .addCase(doPlanDislike.fulfilled, (state,{payload: {data}}) => {
+                    state.planDislikeInfo.checked = data.checked;
+                    state.planDislikeInfo.dislike_count = data.dislike_count;
                 })
                 .addCase(doPlanDislike.rejected, (state, {payload: {message}}) => {
                     state.error = message;
                 })
-                .addCase(cancelPlanDislike.fulfilled, (state) => {
-                    state.planDislikeInfo.checked = false;
+                .addCase(cancelPlanDislike.fulfilled, (state, {payload: {data}}) => {
+                    state.planDislikeInfo.checked = data.checked;
+                    state.planDislikeInfo.dislike_count = state.planDislikeInfo.dislike_count - 1;
                 })
                 .addCase(fetchDislikeInfo.fulfilled, (state, {payload: {data}}) => {
                     state.planDislikeInfo = data;
@@ -126,6 +109,8 @@ const plan = createSlice(
                 })
                 .addCase(fetchPlanAndDetailPlan.rejected, (state, {payload: {message}}) => {
                     state.error = message;
+                    state.plan = null;
+                    state.detailPlans = null;
                 })
                 .addCase(completeDetailPlan.fulfilled, (state, {payload: {data}}) => {
                     const prev = state.detailPlans;
@@ -157,6 +142,8 @@ const plan = createSlice(
                     const prev = state.detailPlans;
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
+                        detail_plan_dislike_count: data.detail_plan_dislike_count,
+                        detail_plan_dislike_checked: data.detail_plan_dislike_checked,
                     } : detailPlan);
                     state.detailPlans = next;
                 })
@@ -167,6 +154,8 @@ const plan = createSlice(
                     const prev = state.detailPlans;
                     const next = prev.map(detailPlan => detailPlan.detail_plan_id === data.detail_plan_id ? {
                         ...detailPlan,
+                        detail_plan_dislike_count: data.detail_plan_dislike_count,
+                        detail_plan_dislike_checked: data.detail_plan_dislike_checked,
                     } : detailPlan);
                     state.detailPlans = next;
                 })
@@ -182,11 +171,6 @@ export const {
     storePlanDislikeInfo,
     storeDetailPlans,
     resetPlanAndDetailPlan,
-    pressDislike,
-    onChangeDetailPlanRequest,
-    resetDetailPlanRequest,
-    dislikeDetailPlan,
-    cancelDislikeDetailPlan
 } = plan.actions;
 
 export default plan.reducer;

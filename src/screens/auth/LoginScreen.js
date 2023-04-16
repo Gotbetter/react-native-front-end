@@ -1,20 +1,35 @@
 import {StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
 import {useEffect, useState,} from "react";
-import Toast from "react-native-root-toast";
-
-
 import {useDispatch, useSelector} from "react-redux";
-import {login, resetLoginStatus} from "../../module/auth";
+import {login, resetAllError, resetStatus, setError} from "../../module/auth";
 import Logo from "../../components/common/Logo";
-import PreventRollUpView from "../../components/common/PreventRollUpView";
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
+import LoginTemplate from "../../components/main/LoginTemplate";
+import ErrorMessage from "../../components/common/ErrorMessage";
+import {useIsFocused} from "@react-navigation/native";
 
+
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 function LoginScreen({navigation}) {
 
     const dispatch = useDispatch();
-    const {status} = useSelector(({auth}) => ({
-        status: auth.status.LOGIN
+    const {status, error} = useSelector(({auth}) => ({
+        status: auth.status.LOGIN,
+        error: auth.error.LOGIN,
     }));
+
+    const isFocused = useIsFocused();
+    const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        if (isFocused) {
+            setErrorMessage("");
+            dispatch(resetAllError());
+            dispatch(resetStatus("DUPLICATE_CHECKED"));
+            dispatch(resetStatus("PASSWORD_CONFIRMED"));
+        }
+    }, [isFocused])
 
     useEffect(() => {
 
@@ -25,18 +40,18 @@ function LoginScreen({navigation}) {
 
         /** 아이디 또는 비밀번호 틀렸을시 오류 메세지 출력 */
         if (status === 404) {
-            Toast.show('아이디 비밀번호를 확인하세요', {duration: Toast.durations.LONG});
-            dispatch(resetLoginStatus());
+            setErrorMessage("아이디 비밀번호를 확인하세요");
+            dispatch(resetStatus("LOGIN"));
         }
 
     }, [dispatch, status]);
+
     const [request, setRequest] = useState({
         auth_id: '',
         password: '',
     });
 
     const {auth_id, password} = request;
-
 
     const onChange = (targetName, e) => {
         const {text} = e.nativeEvent;
@@ -47,6 +62,7 @@ function LoginScreen({navigation}) {
         setRequest(next);
     };
 
+    /** 로그인 버튼 눌렀을 때 **/
     const onPressLogin = () => {
         let flag = true;
         for (const requestKey in request) {
@@ -57,7 +73,8 @@ function LoginScreen({navigation}) {
         }
 
         if (flag === false) {
-            Toast.show('모든 정보를 입력하세요', {duration: Toast.durations.SHORT});
+            setErrorMessage("모든 정보를 입력하세요");
+            dispatch(setError("LOGIN"));
         } else {
             dispatch(login(request));
             const resetRequest = {
@@ -65,47 +82,42 @@ function LoginScreen({navigation}) {
                 password: '',
             };
             setRequest(resetRequest);
+            setErrorMessage("");
         }
-    }
+    };
 
     return (
         <PreventRollUpView>
             <View style={styles.container}>
-
-                <View style={{flex: 3}}>
-                    <View style={{flex: 1}}/>
-                    <View style={{flex: 2}}>
-                        <Logo/>
-                    </View>
+                <View style={styles.logo_container}>
+                    <Logo size={hp(30)}/>
                 </View>
-                <View style={styles.login_container}>
-                    <View style={{flex: 1}}/>
-                    <TextInput value={auth_id} style={styles.text_input} placeholder='아이디' placeholderTextColor='black'
-                               onChange={(e) => onChange("auth_id", e)}/>
-                    <View style={{flex: 1}}/>
-                    <TextInput value={password} style={styles.text_input} placeholder='비밀번호'
-                               placeholderTextColor='black'
-                               onChange={(e) => onChange("password", e)} secureTextEntry={true}/>
-                    <View style={{flex: 1}}/>
-                    <TouchableOpacity style={styles.login_button} onPress={onPressLogin}>
-                        <Text style={styles.login_button_text}>로그인</Text>
-                    </TouchableOpacity>
-
-                    <View style={{flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                        <TouchableOpacity onPress={() => navigation.navigate('register')} style={{flex: 1}}>
-                            <Text style={styles.add_on_text}>회원가입</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{flex: 1}}>
-                            <Text style={styles.add_on_text}>아이디 찾기</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{flex: 1}}>
-                            <Text style={styles.add_on_text}>비밀번호 찾기</Text>
-                        </TouchableOpacity>
+                <LoginTemplate>
+                    <View style={styles.input_container}>
+                        <TextInput style={styles.input}
+                                   value={auth_id}
+                                   placeholder="아이디 입력"
+                                   onChange={(e) => onChange("auth_id", e)}/>
+                        <TextInput style={styles.input}
+                                   value={password}
+                                   secureTextEntry={true}
+                                   placeholder="비밀번호 입력"
+                                   onChange={(e) => onChange("password", e)}/>
                     </View>
-                </View>
-
-                <View style={{flex: 2}}/>
-
+                    {
+                        error && <ErrorMessage message={errorMessage}/>
+                    }
+                    <View style={styles.button_group_container}>
+                        <TouchableOpacity style={styles.button} onPress={onPressLogin}>
+                            <Text style={styles.login_text}>로그인</Text>
+                        </TouchableOpacity>
+                        <View style={styles.sub_function_container}>
+                            <Text onPress={() => navigation.navigate('register')}>회원가입</Text>
+                            <Text>아이디 찾기</Text>
+                            <Text>비밀번호 찾기</Text>
+                        </View>
+                    </View>
+                </LoginTemplate>
             </View>
         </PreventRollUpView>
 
@@ -114,44 +126,49 @@ function LoginScreen({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        width: "100%",
+        height: "100%",
         backgroundColor: 'white',
     },
-    logo_image: {
-        flex: 1,
-        alignSelf: 'center',
-        width: '80%',
+    logo_container: {
+        height: "25%",
+        justifyContent: "flex-end",
+        alignItems: "center",
+
     },
-    login_container: {
-        flex: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
+    input_container: {
+        height: "25%",
+        justifyContent: "space-between",
     },
-    text_input: {
-        flex: 2,
-        width: '90%',
+    input: {
+        padding: wp(2),
+        height: "45%",
+        borderWidth: 1,
+        borderColor: "#000000",
         backgroundColor: '#EDEDED',
-        borderRadius: 20,
-        paddingLeft: 20,
-        fontSize: 15,
     },
-    login_button: {
-        flex: 2,
-        width: '90%',
-        backgroundColor: 'black',
-        borderRadius: 20,
-        justifyContent: 'center',
+    button_group_container: {
+        marginTop: wp(2),
+        height: "25%",
     },
-    login_button_text: {
-        color: '#FFFFFF',
-        textAlign: 'center',
-        fontSize: 30,
+    button: {
+        borderWidth: 1,
+        backgroundColor: "#000000",
+        justifyContent: "space-around",
+        alignItems: "center",
+        height: "45%",
+        padding: wp(2),
     },
-    add_on_text: {
-        color: '#000000',
-        textAlign: 'center',
-        fontSize: 15,
-    }
+    sub_function_container: {
+        height: "45%",
+        alignItems: "center",
+        justifyContent: "space-around",
+        flexDirection: "row",
+    },
+    login_text: {
+        color: "#ffffff",
+        fontSize: wp(5),
+    },
 });
 
 export default LoginScreen;

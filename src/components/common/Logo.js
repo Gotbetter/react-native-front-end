@@ -1,20 +1,12 @@
 import React from 'react';
 import {Image, StyleSheet} from "react-native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-function Logo(props) {
+function Logo({size}) {
     return (
         <Image source={require('../../../assets/images/logo.png')} resizeMode='contain'
-               style={styles.logo_image}/>
+               style={{width: size}}/>
     );
 }
 
-const styles = StyleSheet.create(
-    {
-        logo_image: {
-            flex: 1,
-            alignSelf: 'center',
-            width: '80%',
-        },
-    }
-);
 export default Logo;

@@ -1,27 +1,19 @@
-import {ScrollView, StyleSheet, View,} from "react-native";
+import {ScrollView, StyleSheet, Text, View,} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import Logo from "../../components/common/Logo";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {addParticipant, approvalCompleted, fetchParticipants, resetRoom} from "../../module/room";
-import client from "../../lib/client";
-import Toast from "react-native-root-toast";
-import RoomList from "../../components/room/main/RoomList";
-import DateInfo from "../../components/room/main/DateInfo";
+import {approveEntrance, fetchParticipants, fetchRank, fetchRoom} from "../../module/room";
+import {BASE_BACKGROUND} from "../../const/color";
+import Header from "../../components/common/Header";
+import RoomFooter from "../../components/room/main/RoomFooter";
+import WeekInfo from "../../components/room/main/WeekInfo";
+import ParticipantsGroup from "../../components/room/main/ParticipantsGroup";
 import CurrentWeekDetailPlan from "../../components/room/main/CurrentWeekDetailPlan";
-import ParticipantsPlan from "../../components/room/main/ParticipantsPlan";
-import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
-import {
-    useFetchMyCurrentWeekDetailPlan,
-    useFetchRoomInfo,
-    useFetchRoomList,
-    useGetDayInfo,
-    useRoomLeader
-} from "../../hooks/room";
-import MenuList from "../../components/room/main/MenuList";
-import RoomInfoModal from "../../components/room/main/RoomInfoModal";
 import RankModal from "../../components/room/main/RankModal";
-import RefundInfo from "../../components/room/main/RefundInfo";
+import RoomInfoModal from "../../components/room/main/RoomInfoModal";
+import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
+import HelpModal from "../../components/room/main/HelpModal";
+import {useFetchMyCurrentWeekDetailPlan} from "../../hooks/room";
 
 function RoomMainScreen() {
 
@@ -29,208 +21,157 @@ function RoomMainScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
-    const {participants, waitingParticipants} = useSelector(({room}) => room);
-    const {user} = useSelector(({auth}) => auth);
+    /** 이 방의 방장인지 확인 **/
+    const [isLeader, setIsLeader] = useState(null);
+    const [myParticipantId, setMyParticipantId] = useState(null);
 
-    const roomInfo = useFetchRoomInfo(room_id);
-    const roomList = useFetchRoomList();
-    const isRoomLeader = useRoomLeader();
+    /**
+     * Modal 관련 state
+     * 방 정보
+     * 랭킹
+     * 도움말
+     * 초대 (방장 한테 만 보임)
+     */
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const [showRankModal, setShowRankModal] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+
+    const {roomInfo, participants, waitingParticipants, rank} = useSelector(({room}) => room);
+    const {user: myUserInfo} = useSelector(({auth}) => (auth));
     const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
-    const [curWeekLeftDay, studyWeekLeft] = useGetDayInfo();
-
-    const [approvalModal, setApprovalModal] = useState(false);
-    const [roomInfoModal, setRoomInfoModal] = useState(false);
-    const [rankModal, setRankModal] = useState(false);
 
     useEffect(() => {
+        /** 방 점보 불러오기 **/
+        dispatch(fetchRoom({room_id}));
         /** 참가자 정보 불러오기 **/
         dispatch(fetchParticipants({room_id, accepted: true}));
-
+        /** 랭킹 불러오기 **/
+        dispatch(fetchRank(room_id));
     }, [room_id]);
 
-    const getMyParticipantId = () => {
-        const {user_id} = user;
-        let result;
-        participants.forEach((participant) => {
-            if (participant.user_id === user_id) {
-                result = participant.participant_id;
+    useEffect(() => {
+
+        /** 랭킹 불러오기 **/
+        if (showRankModal) {
+            dispatch(fetchRank(room_id));
+        }
+        /** 참가 요청 대기자 정보 불러오기 **/
+        if (showInviteModal) {
+            dispatch(fetchParticipants({room_id, accepted: false}));
+        }
+    }, [showRankModal, showInviteModal]);
+
+    useEffect(() => {
+        /** 내가 현재 입장한 방의 방장이라면 true 리턴, 아니라면 false 리턴 **/
+        participants.map((participant) => {
+            if (participant.user_id === myUserInfo.user_id) {
+                setIsLeader(participant.authority);
+                setMyParticipantId(participant.participant_id);
             }
         });
-        return result;
-    }
+    }, [dispatch, isLeader, myUserInfo, participants]);
 
-    const isRoomEnd = () => {
-        const {week: totalWeek, current_week} = roomInfo;
-
-        if (current_week >= totalWeek + 1) {
-            return true
-        }
-
-        return false;
-
+    /** 초대 버튼 눌렀을 때 **/
+    const onPressInvite = (user_id) => {
+        dispatch(approveEntrance({user_id, room_id}));
     };
-    const onPressApproveParticipate = () => {
-        setApprovalModal(true);
-        dispatch(fetchParticipants({room_id, accepted: false}))
-    };
-
-    const onPressRank = () => {
-        setRankModal(true);
-    }
-
-    const onPressRoomInfo = () => {
-        setRoomInfoModal(true);
-    }
-
-    const onPressApproval = (user_id) => {
-        // todo : Plan 생성 실패할 경우 참가승인도 취소해야함
-        /** 참가 승인 **/
-        client.patch(`/participants`,
-            {
-                user_id,
-                room_id,
-            })
-            .then(({data}) => {
-                /** 참가 승인이 성공했을 경우 해당 참가자의 주간 계획을 생성해주어야 한다. **/
-                console.log(data);
-                const {participant_id} = data;
-                dispatch(approvalCompleted(user_id));
-                dispatch(addParticipant(data));
-                client.post(`/plans`,
-                    {
-                        participant_id
-                    })
-                    .then(({data}) => {
-                        console.log('계획 생성 완료');
-                    })
-                    .catch(({message, config, response: {status}}) => {
-                        console.log('계획생성 실패');
-                        console.log(message, config);
-                        if (status === 403) {
-                            console.log('forbidden');
-                        } else if (status === 404) {
-                            console.log('존재하지 않는 사용자');
-                        } else if (status === 409) {
-                            console.log('이미 생성됨');
-                        }
-                    });
-            })
-            .catch(({message, config, response: {status}}) => {
-                console.log(config);
-                console.log(message, status)
-                if (status === 403) {
-                    Toast.show("forbidden", {duration: Toast.durations.SHORT})
-                } else if (status === 404) {
-                    Toast.show("해당 사용자 못찾음", {duration: Toast.durations.SHORT})
-                }
-            });
-    }
-
-    const onPressRoomList = (room_id) => {
-        if (roomInfo.room_id !== room_id) {
-            dispatch(resetRoom());
-            navigation.navigate('home', {room_id});
-        }
-    }
-    const onPressPlans = (participant) => {
-        navigation.navigate('my-plan', {planner: participant});
-    }
 
     return (
         <View style={styles.container}>
-            <View style={{flex: 1}}/>
+            <Header/>
 
-            <View style={{flex: 1}}>
-                <Logo/>
+            {/* main content */}
+            <View style={styles.scroll_wrapper}>
+                <ScrollView contentContainerStyle={styles.content_scroll_container}>
+                    <View style={styles.title_container}>
+                        {/*roomTitle*/}
+                        {
+                            roomInfo && <Text style={styles.title_text}>{roomInfo.title}</Text>
+                        }
+                    </View>
+                    <View style={styles.content_container}>
+                        {
+                            roomInfo && <WeekInfo totalWeek={roomInfo.week} currentWeek={roomInfo.current_week}/>
+                        }
+                        {
+                            participants && myParticipantId && <ParticipantsGroup
+                                onPress={(user_id, participant_id, username) => navigation.navigate('my-plan', {
+                                    planner: {
+                                        user_id,
+                                        participant_id,
+                                        username
+                                    }, roomInfo
+                                })}
+                                myParticipantId={myParticipantId}
+                                participants={participants}/>
+                        }
+                        {
+                            roomInfo && detailPlans &&
+                            <CurrentWeekDetailPlan roomInfo={roomInfo} detailPlans={detailPlans}/>
+                        }
+                    </View>
+                </ScrollView>
             </View>
-
-            <View style={{flex: 0.1}}/>
-            <View style={styles.myRoomContainer}>
-                {
-                    roomList &&
-                    <ScrollView contentContainerStyle={styles.scroll_container} horizontal={true}>
-                        <RoomList rooms={roomList} curRoomId={room_id} onPress={onPressRoomList}/>
-                    </ScrollView>
-                }
-            </View>
-            <View style={{flex: 0.1}}/>
-
-            <View style={{flex: 0.1}}/>
-            <View style={styles.topBar}>
-                {/* 메뉴 리스트 */}
-                <MenuList isRoomLeader={isRoomLeader} onPress={onPressApproveParticipate}
-                          onPressRank={onPressRank}
-                          onPressRoomInfo={onPressRoomInfo}/>
-                <View style={{flex: 1, flexDirection: 'row',}}>
-                    {
-                        roomInfo && participants && isRoomEnd() === false ?
-                            <DateInfo studyWeekLeft={studyWeekLeft} weekDayLeft={curWeekLeftDay}/>
-                            : <RefundInfo roomInfo={roomInfo} participantId={getMyParticipantId()}/>
-                    }
-                </View>
-
-            </View>
-            <View style={{flex: 0.1}}/>
-
-            <View style={{flex: 0.25}}/>
-            <View style={{flex: 4.75, width: '95%', alignSelf: 'center', flexDirection: 'row'}}>
-
-                <View style={{flex: 1, borderRadius: 20}}>
-                    {
-                        detailPlans && <CurrentWeekDetailPlan detailPlans={detailPlans}/>
-                    }
-                </View>
-
-                <View style={{flex: 0.05, backgroundColor: 'white'}}/>
-
-                <View style={{flex: 1, backgroundColor: 'tomato', borderRadius: 20}}>
-                    {
-                        participants && <ParticipantsPlan participants={participants} onPressPlans={onPressPlans}/>
-                    }
-                </View>
-            </View>
-            <View style={{flex: 0.5}}/>
             {
-                waitingParticipants && roomInfo &&
-                <ParticipationApproveModal roomInfo={roomInfo}
-                                           approvalModal={approvalModal}
-                                           setApprovalModal={setApprovalModal}
-                                           waitingParticipants={waitingParticipants}
-                                           onPressApproval={onPressApproval}/>
+                <RoomFooter isLeader={isLeader}
+                            showHelp={() => setShowHelpModal(true)}
+                            showInfo={() => setShowInfoModal(true)}
+                            showInvite={() => setShowInviteModal(true)}
+                            showRank={() => setShowRankModal(true)}
+                />
             }
-            <RoomInfoModal show={roomInfoModal} setShow={setRoomInfoModal}/>
+
+
+            {/* Footer Modal */}
+            <HelpModal show={showHelpModal} onPressClose={() => setShowHelpModal(false)}/>
             {
-                roomInfo && <RankModal room_id={roomInfo.room_id} show={rankModal} setShow={setRankModal}/>
+                roomInfo &&
+                <RoomInfoModal roomInfo={roomInfo} show={showInfoModal} onPressClose={() => setShowInfoModal(false)}/>
             }
+            {
+                rank && <RankModal rank={rank} show={showRankModal} onPressClose={() => setShowRankModal(false)}/>
+            }
+
+            {
+                waitingParticipants &&
+                <ParticipationApproveModal waitingParticipants={waitingParticipants} show={showInviteModal}
+                                           onPressClose={() => setShowInviteModal(false)}
+                                           onConfirm={onPressInvite}/>
+            }
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: 'white',
-    },
-    myRoomContainer: {
-        backgroundColor: '#D9D9D9',
-        borderRadius: 20,
-        height: "6%",
-        width: '95%',
-        justifyContent: "center",
-        alignSelf: 'center',
-    },
-    topBar: {
-        // flex: 1.5 - 0.1 - 0.1
-        flex: 1.3,
-        backgroundColor: '#000000',
-        borderRadius: 20,
-        width: '95%',
-        alignSelf: 'center',
-    },
-    scroll_container: {
+        width: "100%",
         height: "100%",
-        flexDirection: "row",
-    }
+        backgroundColor: BASE_BACKGROUND,
+    },
+    scroll_wrapper: {
+        width: "100%",
+        height: "80%",
+        borderColor: "black"
+    },
+    content_scroll_container: {
+        width: "100%",
+        alignSelf: "center",
+        padding: 12,
+    },
+    content_container: {
+        alignSelf: "center",
+        width: "90%",
+    },
+
+    title_container: {
+        width: "100%",
+    },
+    title_text: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
 
 });
 
