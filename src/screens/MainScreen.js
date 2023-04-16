@@ -58,7 +58,7 @@ function MainScreen() {
             .then(() => {
                 dispatch(logout());
                 setShowMenu(false);
-                navigation.navigate('login');
+                navigation.reset({routes: [{name: 'login'}]});
             })
             .catch(err => err);
     };
