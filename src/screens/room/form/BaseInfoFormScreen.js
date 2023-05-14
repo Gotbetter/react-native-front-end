@@ -55,6 +55,16 @@ function BaseInfoFormScreen() {
         }
         return items;
     }, []);
+    /** 주차 리스트 **/
+    const weekItems = useMemo(() => {
+
+        const MAX_WEEK_COUNT = 48;
+        let items = [];
+        for (let i = 1; i <= MAX_WEEK_COUNT; i++) {
+            items.push({label: i  + '주', value: i , key: i});
+        }
+        return items;
+    }, []);
     /** input, selector 입력 **/
     const onChange = (targetName, value) => {
         const next = {
@@ -132,6 +142,16 @@ function BaseInfoFormScreen() {
                         </Shadow>
                         <AntDesign name="calendar" size={36} color="black" onPress={() => setShow(true)}/>
                     </View>
+                </View>
+                <View style={styles.input_group}>
+                    <Text style={styles.input_title}>주차 선택</Text>
+                    <Shadow style={{width: "100%"}} {...styles.shadow}>
+                        <SelectGroup
+                            selected={request.week}
+                            targetName="week"
+                            items={weekItems}
+                            onChange={onChange}/>
+                    </Shadow>
                 </View>
                 {startDateError && <ErrorMessage message={errorMessage}/>}
                 <View style={styles.input_group}>
