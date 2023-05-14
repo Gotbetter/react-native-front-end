@@ -68,7 +68,7 @@ function BaseInfoFormScreen() {
         const target = new Date(date);
         const next = {
             ...request,
-            "start_date": `${target.getFullYear()}-${("00" + (target.getMonth() + 1)).slice(-2)}-${target.getDate()}`,
+            "start_date": `${target.getFullYear()}-${("00" + (target.getMonth() + 1)).slice(-2)}-${("00" + (target.getDate())).slice(-2)}`,
         };
         dispatch(onChangeRoomRequest(next));
         setShow(false);
@@ -112,7 +112,6 @@ function BaseInfoFormScreen() {
                     </Shadow>
                 </View>
                 {requiredError && <ErrorMessage message={errorMessage}/>}
-
                 <View style={styles.input_group}>
                     <Text style={styles.input_title}>인원</Text>
                     <Shadow style={{width: "100%"}} {...styles.shadow}>

@@ -1,7 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet} from "react-native";
 import {Picker} from "@react-native-picker/picker";
-import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
 function SelectGroup({selected, targetName, items, onChange}) {
 
