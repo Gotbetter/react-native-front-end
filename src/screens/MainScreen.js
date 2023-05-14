@@ -58,7 +58,7 @@ function MainScreen() {
             .then(() => {
                 dispatch(logout());
                 setShowMenu(false);
-                navigation.navigate('login');
+                navigation.reset({routes: [{name: 'login'}]});
             })
             .catch(err => err);
     };
@@ -80,11 +80,7 @@ function MainScreen() {
                     {
                         roomList && roomList.map((room) => (
                             <View key={room.room_id}>
-                                <RoomItem room_id={room.room_id}
-                                          title={room.title}
-                                          totalWeek={room.week}
-                                          currentWeek={room.current_week}
-                                          entryFee={room.entry_fee}/>
+                                <RoomItem roomInfo={room}/>
                             </View>
                         ))
                     }

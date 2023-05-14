@@ -8,9 +8,9 @@ function HomeFooter() {
     const navigation = useNavigation();
     return (
         <View style={styles.container}>
-            <Ionicons name="add-outline" size={40} onPress={() => navigation.navigate('room-create-title-form')}/>
+            <Ionicons name="add-outline" size={40} onPress={() => navigation.navigate('create-room-base-info')}/>
             <FontAwesome5 name="search-plus" size={35} onPress={() => navigation.navigate('join')}/>
-        </View> 
+        </View>
     );
 }
 

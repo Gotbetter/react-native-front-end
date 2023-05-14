@@ -105,7 +105,8 @@ function PlanScreen({}) {
     }
     /** 다음 주차 선택 **/
     const onPressNext = () => {
-        if (weekOffset < Math.floor((roomInfo.week + 1) / 5)) {
+
+        if (weekOffset < weekList.length - 1) {
             setWeekOffset(weekOffset + 1);
         }
     };
@@ -257,13 +258,17 @@ function PlanScreen({}) {
                 }
             </View>
 
-            <InputModal show={showInputModal}
-                        content={(addPressed || modifyPressed) ? content : approveComment}
-                        title={addPressed ? "세부계획 추가하기" : modifyPressed ? "세부계획 수정하기" : checkBoxPressed ? "세부계획 완료 메세지" : ""}
-                        onCancel={onCancelInputModal}
-                        onConfirm={onConfirm}
-                        onChangeText={(text) => (addPressed || modifyPressed) ? setContent(text) : setApproveComment(text)}
-            />
+            {
+                plan && <InputModal show={showInputModal}
+                                    week={plan.week}
+                                    content={(addPressed || modifyPressed) ? content : approveComment}
+                                    title={addPressed ? "세부계획 추가하기" : modifyPressed ? "세부계획 수정하기" : checkBoxPressed ? "세부계획 완료 메세지" : ""}
+                                    onCancel={onCancelInputModal}
+                                    onConfirm={onConfirm}
+                                    onChangeText={(text) => (addPressed || modifyPressed) ? setContent(text) : setApproveComment(text)}
+                />
+            }
+
         </View>
     );
 }

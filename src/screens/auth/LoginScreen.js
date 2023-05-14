@@ -1,12 +1,15 @@
 import {StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
 import {useEffect, useState,} from "react";
-
-
 import {useDispatch, useSelector} from "react-redux";
-import {login, resetAllError, resetError, resetLoginStatus, setLoginError} from "../../module/auth";
+import {login, resetAllError, resetStatus, setError} from "../../module/auth";
 import Logo from "../../components/common/Logo";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 import LoginTemplate from "../../components/main/LoginTemplate";
+import ErrorMessage from "../../components/common/ErrorMessage";
+import {useIsFocused} from "@react-navigation/native";
+
+
+import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 function LoginScreen({navigation}) {
 
@@ -23,6 +26,8 @@ function LoginScreen({navigation}) {
         if (isFocused) {
             setErrorMessage("");
             dispatch(resetAllError());
+            dispatch(resetStatus("DUPLICATE_CHECKED"));
+            dispatch(resetStatus("PASSWORD_CONFIRMED"));
         }
     }, [isFocused])
 
@@ -36,7 +41,7 @@ function LoginScreen({navigation}) {
         /** 아이디 또는 비밀번호 틀렸을시 오류 메세지 출력 */
         if (status === 404) {
             setErrorMessage("아이디 비밀번호를 확인하세요");
-            dispatch(resetLoginStatus());
+            dispatch(resetStatus("LOGIN"));
         }
 
     }, [dispatch, status]);
@@ -57,6 +62,7 @@ function LoginScreen({navigation}) {
         setRequest(next);
     };
 
+    /** 로그인 버튼 눌렀을 때 **/
     const onPressLogin = () => {
         let flag = true;
         for (const requestKey in request) {
@@ -68,7 +74,7 @@ function LoginScreen({navigation}) {
 
         if (flag === false) {
             setErrorMessage("모든 정보를 입력하세요");
-            dispatch(setLoginError());
+            dispatch(setError("LOGIN"));
         } else {
             dispatch(login(request));
             const resetRequest = {
@@ -94,6 +100,7 @@ function LoginScreen({navigation}) {
                                    onChange={(e) => onChange("auth_id", e)}/>
                         <TextInput style={styles.input}
                                    value={password}
+                                   secureTextEntry={true}
                                    placeholder="비밀번호 입력"
                                    onChange={(e) => onChange("password", e)}/>
                     </View>
@@ -116,12 +123,6 @@ function LoginScreen({navigation}) {
 
     );
 }
-
-import ErrorMessage from "../../components/common/ErrorMessage";
-import {useIsFocused} from "@react-navigation/native";
-
-
-import PreventRollUpView from "../../components/common/PreventRollUpView";
 
 const styles = StyleSheet.create({
     container: {

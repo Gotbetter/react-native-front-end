@@ -1,15 +1,7 @@
 import {StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
 
 import {useEffect, useState,} from "react";
-import {
-    checkDuplicate,
-    passwordConfirmed,
-    register,
-    resetError,
-    resetRegister,
-    resetStatus,
-    setError
-} from "../../module/auth";
+import {checkDuplicate, passwordConfirmed, register, resetError, resetStatus, setError} from "../../module/auth";
 import {useDispatch, useSelector} from "react-redux";
 import Toast from "react-native-root-toast";
 import Logo from "../../components/common/Logo";
@@ -79,7 +71,7 @@ function RegisterScreen({navigation}) {
                 {duration: Toast.durations.LONG});
             dispatch(resetStatus("REGISTER"));
             navigation.navigate('login');
-        } else if (status.REGISTER === 400) {
+        } else if (status.REGISTER === 409) {
             setEmailErrorMessage("중복된 이메일은 불가능합니다.");
             dispatch(setError("EMAIL_CHEKC"));
             dispatch(resetStatus("REGISTER"));
@@ -91,8 +83,14 @@ function RegisterScreen({navigation}) {
 
     const onChange = (targetName, e) => {
 
+        /** 아이디 중복 확인 이후 변경이 생길 경우 중복확인 reset **/
         if (targetName === "auth_id" && status.DUPLICATE_CHECKED) {
             dispatch(resetStatus("DUPLICATE_CHECKED"));
+        }
+
+        /** 패스워드 확인 이후 변경이 생긴다면 패스워드 확인 reset **/
+        if (targetName === "password" && status.PASSWORD_CONFIRMED) {
+            dispatch(resetStatus("PASSWORD_CONFIRMED"));
         }
 
         const {text} = e.nativeEvent;
@@ -103,6 +101,7 @@ function RegisterScreen({navigation}) {
         setRequest(next);
     };
 
+    /** 아이디 중복확인 **/
     const checkDuplicateId = () => {
         if (auth_id === "") {
             setDuplicateErrorMessage("아이디를 입력하세요")
@@ -111,6 +110,7 @@ function RegisterScreen({navigation}) {
         dispatch(checkDuplicate(auth_id));
     };
 
+    /** 패스워드 확인 **/
     const conFirmPassword = () => {
         if (password !== passwordConfirm) {
             dispatch(setError("PASSWORD_CONFIRM"));
@@ -126,8 +126,24 @@ function RegisterScreen({navigation}) {
         }
     };
 
+    /** 회원가입 버튼 눌렀을 때 **/
     const onPressRegister = () => {
-        // 모든 정보 입력했는지 체크
+
+        /** 아이디 중복확인 **/
+        if (status.DUPLICATE_CHECKED !== 200) {
+            dispatch(setError("DUPLICATE_CHECK"));
+            setDuplicateErrorMessage("아이디 중복확인을 하세요");
+            return;
+        }
+
+        /** 패스워드 재확인 **/
+        if (!status.PASSWORD_CONFIRMED) {
+            dispatch(setError("PASSWORD_CONFIRM"));
+            setPasswordConfirmErrorMessage("비밀번호 재확인을 하세요");
+            return;
+        }
+
+        /** 모든 정보 입력했는지 **/
         let flag = true;
         for (const requestKey in request) {
             if (request[requestKey] === '') {
@@ -142,21 +158,15 @@ function RegisterScreen({navigation}) {
             return;
         }
 
-        // 중복확인 체크
-        if (status.DUPLICATE_CHECKED === 200) {
-            dispatch(register(request));
-
-        } else {
-            dispatch(setError("DUPLICATE_CHECK"));
-            setDuplicateErrorMessage("아이디 중복확인을 하세요");
-        }
+        dispatch(register(request));
     }
 
     return (
         <KeyboardAwareScrollView
             enableOnAndroid={true}
             enableAutomaticScroll={(Platform.OS === 'ios')}
-            style={styles.container}
+            style={styles.screen}
+            contentContainerStyle={styles.container}
         >
             <View style={styles.logo_container}>
                 <Logo size={hp(30)}/>
@@ -181,6 +191,7 @@ function RegisterScreen({navigation}) {
                     <TextInput
                         style={styles.input}
                         value={password}
+                        secureTextEntry={true}
                         onChange={(e) => onChange("password", e)}
                         placeholder={"비밀번호"}
                         placeholderTextColor={"#000000"}
@@ -189,6 +200,7 @@ function RegisterScreen({navigation}) {
                 <View style={styles.input_group}>
                     <TextInput style={styles.input}
                                value={passwordConfirm}
+                               secureTextEntry={true}
                                onBlur={conFirmPassword}
                                onChangeText={setPasswordConfirm}
                                placeholder={"비밀번호 재확인"}
@@ -226,9 +238,11 @@ function RegisterScreen({navigation}) {
 
 
 const styles = StyleSheet.create({
-    container: {
+    screen: {
         backgroundColor: 'white',
-        height: "100%",
+    },
+    container: {
+        height: hp(100),
     },
     logo_container: {
         height: "25%",
@@ -236,6 +250,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     input_container: {
+        height: "75%",
         padding: wp(3),
     },
     input_group: {

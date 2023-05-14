@@ -3,7 +3,9 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
 
-function RoomItem({room_id, title, totalWeek, currentWeek, entryFee}) {
+function RoomItem({roomInfo}) {
+
+    const {room_id, title, week, current_week, entry_fee, max_user_num, current_user_num} = roomInfo;
 
     const navigation = useNavigation();
 
@@ -15,12 +17,12 @@ function RoomItem({room_id, title, totalWeek, currentWeek, entryFee}) {
         <TouchableOpacity style={styles.room} onPress={onPress}>
             <View style={styles.title}>
                 <Text style={styles.title_text} ellipsizeMode="tail" numberOfLines={1}>{title}</Text>
-                <Text>5/6</Text>
+                <Text>{current_user_num}/{max_user_num}</Text>
             </View>
             <View style={styles.subInfo}>
-                <Text>#{totalWeek}주짜리방</Text>
-                <Text>#{currentWeek}주차</Text>
-                <Text>#입장료 {entryFee}원</Text>
+                <Text>#{week}주짜리방</Text>
+                <Text>#{current_week}주차</Text>
+                <Text>#입장료 {entry_fee}원</Text>
             </View>
         </TouchableOpacity>
     );

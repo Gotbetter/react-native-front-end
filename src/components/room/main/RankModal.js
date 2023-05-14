@@ -34,7 +34,7 @@ function RankModal({show, rank, onPressClose}) {
                                 <View style={[styles.one_to_third_container, styles.shadow]}>
                                     {
                                         oneToThird.map((rank, index) => (
-                                            <View style={styles.rank_group}>
+                                            <View key={index} style={styles.rank_group}>
                                                 <Text style={{color: rankColor[index]}}>{rank.rank}등!</Text>
                                                 <UserIcon name={rank.username} color="#000000"/>
                                                 <Text style={{color: refundColor[index]}}>{rank.refund}원</Text>
