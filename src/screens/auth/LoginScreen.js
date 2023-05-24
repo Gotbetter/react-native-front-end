@@ -1,15 +1,15 @@
-import {StyleSheet, Text, TextInput, TouchableOpacity, View,} from "react-native";
+import {SafeAreaView, StyleSheet, View} from "react-native";
 import {useEffect, useState,} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {login, resetAllError, resetStatus, setError} from "../../module/auth";
 import Logo from "../../components/common/Logo";
-import {heightPercentageToDP as hp, widthPercentageToDP as wp} from "react-native-responsive-screen";
-import LoginTemplate from "../../components/main/LoginTemplate";
-import ErrorMessage from "../../components/common/ErrorMessage";
 import {useIsFocused} from "@react-navigation/native";
-
-
 import PreventRollUpView from "../../components/common/PreventRollUpView";
+import BasicTextInput from "../../components/common/BasicTextInput";
+import ActionButton from "../../components/common/ActionButton";
+import {RFValue} from "react-native-responsive-fontsize";
+import LoginSubOption from "../../components/auth/LoginSubOption";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function LoginScreen({navigation}) {
 
@@ -88,37 +88,20 @@ function LoginScreen({navigation}) {
 
     return (
         <PreventRollUpView>
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <View style={styles.logo_container}>
-                    <Logo size={hp(30)}/>
+                    <Logo size={RFValue(200)}/>
                 </View>
-                <LoginTemplate>
-                    <View style={styles.input_container}>
-                        <TextInput style={styles.input}
-                                   value={auth_id}
-                                   placeholder="아이디 입력"
-                                   onChange={(e) => onChange("auth_id", e)}/>
-                        <TextInput style={styles.input}
-                                   value={password}
-                                   secureTextEntry={true}
-                                   placeholder="비밀번호 입력"
-                                   onChange={(e) => onChange("password", e)}/>
+                <View style={styles.main_container}>
+                    <View style={styles.gap}>
+                        <BasicTextInput placeholder={"아이디"}/>
+                        <BasicTextInput placeholder={"비밀번호"} secure={true}/>
+                        <ErrorMessage message={"아이디와 비밀번호를 확인하세요"}/>
+                        <ActionButton name={"로그인"}/>
+                        <LoginSubOption navigation={navigation}/>
                     </View>
-                    {
-                        error && <ErrorMessage message={errorMessage}/>
-                    }
-                    <View style={styles.button_group_container}>
-                        <TouchableOpacity style={styles.button} onPress={onPressLogin}>
-                            <Text style={styles.login_text}>로그인</Text>
-                        </TouchableOpacity>
-                        <View style={styles.sub_function_container}>
-                            <Text onPress={() => navigation.navigate('register')}>회원가입</Text>
-                            <Text>아이디 찾기</Text>
-                            <Text>비밀번호 찾기</Text>
-                        </View>
-                    </View>
-                </LoginTemplate>
-            </View>
+                </View>
+            </SafeAreaView>
         </PreventRollUpView>
 
     );
@@ -126,48 +109,23 @@ function LoginScreen({navigation}) {
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
-        height: "100%",
-        backgroundColor: 'white',
+        flex: 1,
+        backgroundColor: "#F5F5F5",
     },
     logo_container: {
-        height: "25%",
+        flex: 1,
         justifyContent: "flex-end",
         alignItems: "center",
+    },
+    main_container: {
+        flex: 2,
+        alignItems: "center",
+    },
+    gap: {
+        flex: 0.5,
+        justifyContent: "space-around",
+        alignItems: "center",
 
-    },
-    input_container: {
-        height: "25%",
-        justifyContent: "space-between",
-    },
-    input: {
-        padding: wp(2),
-        height: "45%",
-        borderWidth: 1,
-        borderColor: "#000000",
-        backgroundColor: '#EDEDED',
-    },
-    button_group_container: {
-        marginTop: wp(2),
-        height: "25%",
-    },
-    button: {
-        borderWidth: 1,
-        backgroundColor: "#000000",
-        justifyContent: "space-around",
-        alignItems: "center",
-        height: "45%",
-        padding: wp(2),
-    },
-    sub_function_container: {
-        height: "45%",
-        alignItems: "center",
-        justifyContent: "space-around",
-        flexDirection: "row",
-    },
-    login_text: {
-        color: "#ffffff",
-        fontSize: wp(5),
     },
 });
 
