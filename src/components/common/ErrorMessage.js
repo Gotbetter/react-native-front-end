@@ -1,23 +1,26 @@
 import React from 'react';
 import {StyleSheet, Text, View} from "react-native";
-import {widthPercentageToDP as wp} from "react-native-responsive-screen";
+import {RFValue} from "react-native-responsive-fontsize";
 
-function ErrorMessage({message}) {
+function ErrorMessage({message, visible}) {
     return (
-        <View style={styles.container}>
-            <Text style={styles.error_text}>{message}</Text>
-        </View>
+        visible ?
+            <View style={styles.container}>
+                <Text style={styles.error_text}>{message}</Text>
+            </View>
+            : null
     );
 }
 
 const styles = StyleSheet.create(
     {
         container: {
-            padding: wp(2),
-
+            alignSelf: "flex-start",
+            paddingLeft: 5,
         },
         error_text: {
-            color: "#ff2e16",
+            fontSize: RFValue(10),
+            color: "#F44336",
         }
     }
 );
