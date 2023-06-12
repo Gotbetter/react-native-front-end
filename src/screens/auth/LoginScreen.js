@@ -14,37 +14,37 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 function LoginScreen({navigation}) {
 
     const dispatch = useDispatch();
-    const {status, error} = useSelector(({auth}) => ({
+    /*const {status, error} = useSelector(({auth}) => ({
         status: auth.status.LOGIN,
         error: auth.error.LOGIN,
-    }));
+    }));*/
 
     const isFocused = useIsFocused();
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (isFocused) {
             setErrorMessage("");
             dispatch(resetAllError());
             dispatch(resetStatus("DUPLICATE_CHECKED"));
             dispatch(resetStatus("PASSWORD_CONFIRMED"));
         }
-    }, [isFocused])
+    }, [isFocused])*/
 
-    useEffect(() => {
+    /*useEffect(() => {
 
-        /** status === 200일 경우 로그인 상태*/
+        /!** status === 200일 경우 로그인 상태*!/
         if (status === 200) {
             navigation.navigate('main');
         }
 
-        /** 아이디 또는 비밀번호 틀렸을시 오류 메세지 출력 */
+        /!** 아이디 또는 비밀번호 틀렸을시 오류 메세지 출력 *!/
         if (status === 404) {
             setErrorMessage("아이디 비밀번호를 확인하세요");
             dispatch(resetStatus("LOGIN"));
         }
 
-    }, [dispatch, status]);
+    }, [dispatch, status]);*/
 
     const [request, setRequest] = useState({
         auth_id: '',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     main_container: {
-        flex: 2,
+        flex: 1.5,
         alignItems: "center",
     },
     gap: {
