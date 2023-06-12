@@ -1,6 +1,5 @@
 import React from 'react';
 import {StyleSheet, Text, View} from "react-native";
-import {widthPercentageToDP as wp} from "react-native-responsive-screen";
 import {RFValue} from "react-native-responsive-fontsize";
 
 function ConfirmMessage({message, visible}) {
@@ -16,8 +15,7 @@ function ConfirmMessage({message, visible}) {
 const styles = StyleSheet.create(
     {
         container: {
-            padding: wp(2),
-
+            paddingLeft: 5,
         },
         error_text: {
             fontSize: RFValue(10),
