@@ -4,6 +4,7 @@ import {fetchRoom, fetchRooms} from "../module/room";
 import {useIsFocused} from "@react-navigation/native";
 import useUpdateEffect from "./common";
 import {fetchDetailPlan, fetchPlan} from "../lib/plans";
+import {fetchUser} from "../module/auth";
 
 
 export function useFetchRoomInfo(room_id) {
@@ -20,10 +21,15 @@ export function useFetchRoomInfo(room_id) {
 
 }
 
+/**
+ * 현재 참여하고 있는 스터디 룸의 리스트를 불러옵니다.
+ * @returns {[{room_id, title, max_user_num, current_user_num, start_date, week, current_week, entry_fee, room_code, account, total_entry_fee, rule_id}]} 방 리스트
+ */
 export function useFetchRoomList() {
     const dispatch = useDispatch();
-    const {roomList} = useSelector(({room}) => room);
     const isFocused = useIsFocused();
+
+    const {roomList} = useSelector(({room}) => room);
 
     useEffect(() => {
         /** 내가 생성한 방 리스트 불러오기 **/
@@ -33,6 +39,18 @@ export function useFetchRoomList() {
     }, [dispatch, isFocused]);
 
     return roomList;
+}
+
+export function useFetchUser() {
+
+    const dispatch = useDispatch();
+    const {user} = useSelector(({auth}) => auth);
+
+    useEffect(() => {
+        dispatch(fetchUser());
+    }, []);
+
+    return user;
 }
 
 export function useRoomLeader() {

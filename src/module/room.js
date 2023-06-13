@@ -2,13 +2,9 @@ import * as roomApi from "../lib/room";
 import * as planApi from "../lib/plans";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {createThunk} from "./utils";
-import thunk from "redux-thunk";
 
 
 const initialState = {
-    roomInfo: null,
-    roomRules: [],
-    roomList: [],
     /** 기본 값이 바뀔경우 수정 필요 **/
     roomRequest: {
         title: '',
@@ -20,6 +16,9 @@ const initialState = {
         rule_id: 1,
         account: '',
     },
+    roomList: [],
+    roomInfo: null,
+    roomRules: [],
     waitingParticipants: [],
     participants: [],
     rank: [],
@@ -27,12 +26,30 @@ const initialState = {
     status: {
         ROOM_CREATE: null,
     },
-    error: null,
+    loading: {
+        ROOM_REFRESHING: false,
+    },
+    error: {
+        ROOM_REFRESHING_FAILED: false,
+    },
+    message: {
+        ROOM_REFRESHING_FAILED_MESSAGE: null,
+    }
 };
 
 
 export const fetchRoom = createThunk("room/FETCH_ROOM", roomApi.fetchRoom);
 export const fetchRooms = createThunk("room/FETCH_ROOMS", roomApi.fetchRooms);
+export const refreshRooms = createAsyncThunk(
+    "room/REFRESH_ROOMS",
+    async (args, thunkApi) => {
+        try {
+            return await roomApi.fetchRooms();
+        } catch (err) {
+            return thunkApi.rejectWithValue(err);
+        }
+    }
+);
 export const fetchParticipants = createAsyncThunk("room/FETCH_PARTICIPANTS",
     async (args, thunkApi) => {
         const {accepted} = args;
@@ -81,7 +98,6 @@ export const approveEntrance = createAsyncThunk(
         } catch (e){
             console.log(e);
         }
-
     }
 );
 
@@ -141,6 +157,18 @@ const room = createSlice(
                 })
                 .addCase(fetchRooms.rejected, (state, {payload: {message}}) => {
                     state.error = message
+                })
+                .addCase(refreshRooms.pending, (state) => {
+                    state.loading.ROOM_REFRESHING = true;
+                })
+                .addCase(refreshRooms.fulfilled, (state, {payload: {data}}) => {
+                    state.loading.ROOM_REFRESHING = false;
+                    state.roomList = data;
+                })
+                .addCase(refreshRooms.rejected, (state, {payload: {message}}) => {
+                    state.loading.ROOM_REFRESHING = false;
+                    state.error.ROOM_REFRESHING_FAILED = true;
+                    state.message.ROOM_REFRESHING_FAILED_MESSAGE = message;
                 })
                 .addCase(fetchRules.fulfilled, (state, {payload: {data}}) => {
                     state.roomRules = data;
