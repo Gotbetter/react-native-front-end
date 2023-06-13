@@ -10,7 +10,6 @@ import {resetPlanAndDetailPlan} from "../module/plan";
 import Header from "../components/common/Header";
 import HomeFooter from "../components/common/HomeFooter";
 import MenuModal from "../components/main/MenuModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function MainScreen() {
 
@@ -49,18 +48,16 @@ function MainScreen() {
             dispatch(resetRoomCreateRequest());
             dispatch(resetRoom());
         }
+
     }, [isFocused]);
 
     const onPressLogout = () => {
-        AsyncStorage.getAllKeys()
-            .then(keys => AsyncStorage.multiRemove(keys))
-            .catch(err => err)
+        dispatch(logout())
+            .unwrap()
             .then(() => {
-                dispatch(logout());
                 setShowMenu(false);
                 navigation.reset({routes: [{name: 'login'}]});
-            })
-            .catch(err => err);
+            });
     };
     const onPressMenu = () => {
         setShowMenu(true);

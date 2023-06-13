@@ -14,9 +14,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useEffect, useState} from "react";
 import BaseInfoFormScreen from "./src/screens/room/form/BaseInfoFormScreen";
 import RulesAndAccountFormScreen from "./src/screens/room/form/RulesAndAccountFormScreen";
+import {injectStore} from "./src/lib/interceptors";
+
+
 
 
 const Stack = createNativeStackNavigator();
+injectStore(store);
 
 
 export default function App() {
@@ -25,7 +29,7 @@ export default function App() {
     const [isLoaded, setIsLoaded] = useState(null);
 
     async function checkLogin() {
-        const token = await AsyncStorage.getItem("access_token");
+        const token = await AsyncStorage.getItem("refresh_token");
         if (token == null) {
             setIsLogin(false);
 
