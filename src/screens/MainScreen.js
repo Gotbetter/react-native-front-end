@@ -10,7 +10,6 @@ import {resetPlanAndDetailPlan} from "../module/plan";
 import Header from "../components/common/Header";
 import HomeFooter from "../components/common/HomeFooter";
 import MenuModal from "../components/main/MenuModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function MainScreen() {
 
