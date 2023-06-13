@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const initialState = {
+    user: null,
     register: {
         request: {
             auth_id: "",
@@ -38,13 +39,11 @@ const initialState = {
         },
         status: {
             LOGIN_SUCCESS: false,
-            REQUIRED_FULFILLED: false,
         },
         error: {
-            REQUIRED_UNFULFILLED: false,
-            AUTH_ID_OR_PASSWORD_FAILED: false,
+            LOGIN_FAILED: false,
         },
-        message: null,
+        LOGIN_FAILED_MESSAGE: "",
     },
 };
 
@@ -94,7 +93,52 @@ export const checkDuplicate = createAsyncThunk(
     }
 );
 
-export const login = createThunk("auth/LOGIN", api.login);
+export const login = createAsyncThunk(
+    "auth/LOGIN",
+    async (args, thunkApi) => {
+        const {auth: {login: {request}}} = thunkApi.getState();
+
+        /** 400 Error check **/
+        let flag = true;
+        for (const requestKey in request) {
+            if (request[requestKey] === "") {
+                flag = false;
+            }
+        }
+
+        if (flag === false) {
+            return thunkApi.rejectWithValue({response: {status: 400}})
+        }
+
+        try {
+
+            const response = await api.login(request);
+            const {access_token, refresh_token} = response.data;
+
+            try {
+                await AsyncStorage.setItem("access_token", access_token);
+                await AsyncStorage.setItem("refresh_token", refresh_token);
+
+            } catch (error) {
+                return thunkApi.rejectWithValue({response: {status: null}});
+            }
+        } catch (error) {
+            return thunkApi.rejectWithValue(error);
+        }
+    }
+);
+export const logout = createAsyncThunk(
+    "auth/LOGOUT",
+    async (args, thunkApi) => {
+        try {
+            const localStorageKeys = await AsyncStorage.getAllKeys();
+            await AsyncStorage.multiRemove(localStorageKeys);
+
+        } catch (error) {
+            return thunkApi.rejectWithValue(error);
+        }
+    }
+);
 export const fetchUser = createThunk("auth/FETCH_USER", api.fetchUser);
 
 const auth = createSlice(
@@ -142,11 +186,16 @@ const auth = createSlice(
             /** 회원가입 모든 error 및 메세지 초기화 **/
             resetAllStatusAndError: (state) => {
                 state.register = initialState.register;
+                state.login = initialState.login;
             },
-            logout: (state) => {
-                state.status.LOGIN = null;
-                state.user = null;
+            /** 회원가입에 필요한 입력값 들어오면 request에 적용 **/
+            onChangeLoginRequest: (state, {payload: {targetName, value}}) => {
+                state.login.request = {
+                    ...state.login.request,
+                    [targetName]: value,
+                };
             },
+
         },
         extraReducers: (builder) => {
             builder
@@ -166,7 +215,6 @@ const auth = createSlice(
                     } else if (status === 400) {
                         state.register.message.REGISTER_FAILED_MESSAGE = message;
                     }
-
                 })
                 .addCase(checkDuplicate.fulfilled, (state) => {
                     state.register.status.AUTH_ID_DUPLICATE_CHECKED = true;
@@ -174,7 +222,6 @@ const auth = createSlice(
                     state.register.message.DUPLICATE_CHECK_MESSAGE = "사용 가능한 아이디입니다.";
                 })
                 .addCase(checkDuplicate.rejected, (state, {payload: {response: {status}}}) => {
-
                     state.register.status.AUTH_ID_DUPLICATE_CHECKED = false;
                     state.register.error.DUPLICATED_AUTH_ID = true;
 
@@ -183,35 +230,33 @@ const auth = createSlice(
                     } else if (status === 409) {
                         state.register.message.DUPLICATE_CHECK_MESSAGE = "중복된 아이디입니다.";
                     }
-
-
                 })
-                .addCase(login.fulfilled, (state, {payload: {data, status}}) => {
-
-                    const {access_token, refresh_token} = data;
-
-                    const storeToken = async () => {
-                        await AsyncStorage.setItem("access_token", access_token);
-                        await AsyncStorage.setItem("refresh_token", refresh_token);
+                .addCase(login.fulfilled, (state) => {
+                    state.login.status.LOGIN_SUCCESS = true;
+                })
+                .addCase(login.rejected, (state, {payload: {response: {status}}}) => {
+                    state.login.error.LOGIN_FAILED = true;
+                    if (status === 400) {
+                        state.login.LOGIN_FAILED_MESSAGE = "아이디 또는 비밀번호를 모두 입력해주세요";
+                    } else if (status === 404) {
+                        state.login.LOGIN_FAILED_MESSAGE = "아이디 또는 비밀번호를 확인해주세요.";
+                    } else {
+                        state.login.LOGIN_FAILED_MESSAGE = "알 수 없는 오류.";
                     }
-                    storeToken();
-                    state.status.LOGIN = status;
-                    state.error.LOGIN = false;
-                    state.error.message = null;
-
                 })
-                .addCase(login.rejected, (state, {payload: {message, response: {status}}}) => {
-                    state.error.message = message;
-                    state.status.LOGIN = status;
-                    state.error.LOGIN = true;
+                .addCase(logout.fulfilled, (state) => {
+                    state.login.status.LOGIN_SUCCESS = false;
                 })
+                .addCase(fetchUser.fulfilled, (state, {payload: {data}}) => {
+                    state.user = data;
+                });
         },
     }
 );
 
 export const {
-    logout,
     onChangeRegisterRequest,
+    onChangeLoginRequest,
     resetAllStatusAndError,
     checkPasswordConfirm
 } = auth.actions;
