@@ -213,7 +213,7 @@ const styles = StyleSheet.create(
         },
         duplicate_button_text: {
             color: "#9E9E9E",
-            fontWeight: "700",
+            fontWeight: "600",
         },
 
     }
