@@ -8,7 +8,7 @@ import {fetchRooms, refreshRooms, resetRoom, resetRoomCreateRequest} from "../mo
 import RoomItem from "../components/main/RoomItem";
 import {resetPlanAndDetailPlan} from "../module/plan";
 import Header from "../components/common/Header";
-import HomeFooter from "../components/common/HomeFooter";
+import Footer from "../components/common/home/Footer";
 import MenuModal from "../components/main/MenuModal";
 import {RFValue} from "react-native-responsive-fontsize";
 import ErrorMessage from "../components/common/ErrorMessage";
@@ -71,7 +71,7 @@ function MainScreen() {
                     </ScrollView>
                 </View>
             </View>
-            <HomeFooter/>
+            <Footer/>
             <MenuModal show={showMenu} onPressClose={() => setShowMenu(false)} onPressLogout={onPressLogout}/>
         </SafeAreaView>
     );
