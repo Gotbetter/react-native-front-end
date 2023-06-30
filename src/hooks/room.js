@@ -4,27 +4,55 @@ import {fetchRoom, fetchRooms} from "../module/room";
 import {useIsFocused} from "@react-navigation/native";
 import useUpdateEffect from "./common";
 import {fetchDetailPlan, fetchPlan} from "../lib/plans";
-import {fetchUser} from "../module/auth";
 
 
+/**
+ * 현재 들어온 방 정보를 불러옵니다.
+ * @param {number} room_id - 방 ID
+ * @returns {object} - 방 정보 객체
+ *     - room_id {number} - 방 ID
+ *     - title {string} - 방 제목
+ *     - max_user_num {number} - 최대 사용자 수
+ *     - current_user_num {number} - 현재 사용자 수
+ *     - start_date {string} - 시작 날짜
+ *     - week {number} - 총 주차 수
+ *     - current_week {number} - 현재 주차
+ *     - entry_fee {number} - 입장료
+ *     - room_code {string} - 방 코드
+ *     - account {string} - 계좌 정보
+ *     - total_entry_fee {number} - 총 입장료
+ *     - rule_id {number} - 규칙 ID
+ */
 export function useFetchRoomInfo(room_id) {
-
     const dispatch = useDispatch();
     const {roomInfo} = useSelector(({room}) => room);
 
     useEffect(() => {
         /** 현재 방 정보 불러오기 **/
-        dispatch(fetchRoom({room_id}));
+        if (roomInfo === null) {
+            dispatch(fetchRoom({room_id}));
+        }
     }, [dispatch, room_id]);
 
     return roomInfo;
-
 }
 
 /**
  * 현재 참여하고 있는 스터디 룸의 리스트를 불러옵니다.
- * @returns {[{room_id, title, max_user_num, current_user_num, start_date, week, current_week, entry_fee, room_code, account, total_entry_fee, rule_id}]} 방 리스트
- */
+ * * @returns {[object]} - 방 정보 객체 배열
+ *      - room_id {number} - 방 ID
+ *      - title {string} - 방 제목
+ *      - max_user_num {number} - 최대 사용자 수
+ *      - current_user_num {number} - 현재 사용자 수
+ *      - start_date {string} - 시작 날짜
+ *      - week {number} - 총 주차 수
+ *      - current_week {number} - 현재 주차
+ *      - entry_fee {number} - 입장료
+ *      - room_code {string} - 방 코드
+ *      - account {string} - 계좌 정보
+ *      - total_entry_fee {number} - 총 입장료
+ *      - rule_id {number} - 규칙 ID
+ *  */
 export function useFetchRoomList() {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
@@ -32,27 +60,13 @@ export function useFetchRoomList() {
     const {roomList} = useSelector(({room}) => room);
 
     useEffect(() => {
-        /** 내가 생성한 방 리스트 불러오기 **/
-        if(isFocused){
+        if (isFocused) {
             dispatch(fetchRooms());
         }
     }, [dispatch, isFocused]);
 
     return roomList;
 }
-
-export function useFetchUser() {
-
-    const dispatch = useDispatch();
-    const {user} = useSelector(({auth}) => auth);
-
-    useEffect(() => {
-        dispatch(fetchUser());
-    }, []);
-
-    return user;
-}
-
 export function useRoomLeader() {
     const {user, participants} = useSelector(({auth, room}) => ({user: auth.user, participants: room.participants}));
 
@@ -67,30 +81,6 @@ export function useRoomLeader() {
     }, [user, participants]);
 
     return isLeader;
-}
-
-export function useGetDayInfo() {
-
-    /**
-     *  curWeekLeftDay : 이번주 몇 일 남았는지
-     *  studyWeekLeft : 스터디 방 종료까지 몇 주 남았는지
-     */
-    const [curWeekLeftDay, setCurWeekLeftDay] = useState(0);
-    const [studyWeekLeft, setStudyWeekLeft] = useState(0)
-
-    const {roomInfo} = useSelector(({room}) => room);
-
-    useEffect(() => {
-        if (roomInfo != null) {
-            const {week, current_week} = roomInfo;
-            const thisDate = new Date();
-            setCurWeekLeftDay(7 - thisDate.getDay());
-            /** current_week default 값이 1이므로 week + 1 필요 **/
-            setStudyWeekLeft(week + 1 - current_week);
-        }
-    }, [roomInfo]);
-
-    return [curWeekLeftDay, studyWeekLeft];
 }
 
 export function useFetchMyCurrentWeekDetailPlan(room_id) {
@@ -134,7 +124,7 @@ export function useFetchMyCurrentWeekDetailPlan(room_id) {
             }
         }
 
-    }, [isFocused,roomInfo, participants]);
+    }, [isFocused, roomInfo, participants]);
 
     return detailPlans;
 }

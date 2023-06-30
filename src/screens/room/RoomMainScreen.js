@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, View,} from "react-native";
+import {SafeAreaView, ScrollView, StyleSheet, Text, View,} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigation, useRoute} from "@react-navigation/native";
@@ -13,7 +13,9 @@ import RankModal from "../../components/room/main/RankModal";
 import RoomInfoModal from "../../components/room/main/RoomInfoModal";
 import ParticipationApproveModal from "../../components/room/main/ParticipationApproveModal";
 import HelpModal from "../../components/room/main/HelpModal";
-import {useFetchMyCurrentWeekDetailPlan} from "../../hooks/room";
+import {useFetchMyCurrentWeekDetailPlan, useFetchParticipants, useFetchRoomInfo} from "../../hooks/room";
+import {useFetchUser} from "../../hooks/auth";
+import {RFValue} from "react-native-responsive-fontsize";
 
 function RoomMainScreen() {
 
@@ -37,30 +39,28 @@ function RoomMainScreen() {
     const [showHelpModal, setShowHelpModal] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
 
-    const {roomInfo, participants, waitingParticipants, rank} = useSelector(({room}) => room);
-    const {user: myUserInfo} = useSelector(({auth}) => (auth));
+    /**
+     * redux state width custom hooks
+     * 유저 정보
+     * 방 정보
+     * 세부 계획
+     */
+    const myUserInfo = useFetchUser();
+    const roomInfo = useFetchRoomInfo(room_id);
     const detailPlans = useFetchMyCurrentWeekDetailPlan(room_id);
 
+    /**
+     * redux state width useSelector
+     * 참가자들
+     * 참가 대기 유저들
+     * 랭킹
+     */
+    const {participants, waitingParticipants, rank} = useSelector(({room}) => room);
+
     useEffect(() => {
-        /** 방 점보 불러오기 **/
-        dispatch(fetchRoom({room_id}));
         /** 참가자 정보 불러오기 **/
         dispatch(fetchParticipants({room_id, accepted: true}));
-        /** 랭킹 불러오기 **/
-        dispatch(fetchRank(room_id));
     }, [room_id]);
-
-    useEffect(() => {
-
-        /** 랭킹 불러오기 **/
-        if (showRankModal) {
-            dispatch(fetchRank(room_id));
-        }
-        /** 참가 요청 대기자 정보 불러오기 **/
-        if (showInviteModal) {
-            dispatch(fetchParticipants({room_id, accepted: false}));
-        }
-    }, [showRankModal, showInviteModal]);
 
     useEffect(() => {
         /** 내가 현재 입장한 방의 방장이라면 true 리턴, 아니라면 false 리턴 **/
@@ -77,10 +77,21 @@ function RoomMainScreen() {
         dispatch(approveEntrance({user_id, room_id}));
     };
 
-    return (
-        <View style={styles.container}>
-            <Header/>
+    /** 랭킹 불러오기 **/
+    const onPressRankIcon = () => {
+        setShowRankModal(true);
+        dispatch(fetchRank(room_id));
+    }
 
+    /** 초대하기 아이콘 **/
+    const onPressInviteIcon = () => {
+        setShowInviteModal(true);
+        dispatch(fetchParticipants({room_id, accepted: false}));
+    }
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <Header/>
             {/* main content */}
             <View style={styles.scroll_wrapper}>
                 <ScrollView contentContainerStyle={styles.content_scroll_container}>
@@ -117,8 +128,8 @@ function RoomMainScreen() {
                 <RoomFooter isLeader={isLeader}
                             showHelp={() => setShowHelpModal(true)}
                             showInfo={() => setShowInfoModal(true)}
-                            showInvite={() => setShowInviteModal(true)}
-                            showRank={() => setShowRankModal(true)}
+                            showInvite={onPressInviteIcon}
+                            showRank={onPressRankIcon}
                 />
             }
 
@@ -140,31 +151,26 @@ function RoomMainScreen() {
                                            onConfirm={onPressInvite}/>
             }
 
-        </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
-        height: "100%",
+        flex: 1,
         backgroundColor: BASE_BACKGROUND,
     },
     scroll_wrapper: {
-        width: "100%",
-        height: "80%",
-        borderColor: "black"
+        flex: 3,
+        alignSelf: "center",
     },
     content_scroll_container: {
-        width: "100%",
-        alignSelf: "center",
-        padding: 12,
+        padding: RFValue(12),
     },
     content_container: {
         alignSelf: "center",
         width: "90%",
     },
-
     title_container: {
         width: "100%",
     },
