@@ -11,7 +11,7 @@ function Footer() {
                 <FooterItem.Main/>
                 <FooterItem.RoomCode/>
                 <FooterItem.CreateRoom/>
-                <FooterItem.MyPage/>
+                <FooterItem.MyPage />
             </FooterItem>
         </View>
     );

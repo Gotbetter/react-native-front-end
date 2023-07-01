@@ -1,11 +1,13 @@
-import React, {createContext, useContext, useState} from 'react';
-import PropTypes, {func} from 'prop-types';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, {createContext, useContext} from 'react';
+import PropTypes from 'prop-types';
+import {Image, StyleSheet, Text, TouchableOpacity} from "react-native";
 import {RFValue} from "react-native-responsive-fontsize";
 import {useNavigation} from "@react-navigation/native";
+import {useDispatch} from "react-redux";
+import {logout} from "../../../module/auth";
 
 FooterItem.propTypes = {
-    children: PropTypes.instanceOf(React.Component),
+    children: PropTypes.arrayOf(React.Component),
 };
 
 const FooterItemContext = createContext();
@@ -55,8 +57,20 @@ function CreateRoom() {
 
 function MyPage() {
 
+    const {navigation} = useContext(FooterItemContext);
+    const dispatch = useDispatch();
+
+    /** 로그아웃 눌렀을 경우 **/
+    const onPressLogout = () => {
+        dispatch(logout())
+            .unwrap()
+            .then(() => {
+                navigation.reset({routes: [{name: 'login'}]});
+            });
+    };
+
     return (
-        <TouchableOpacity style={styles.container} disabled={true}>
+        <TouchableOpacity style={styles.container} onPress={() => onPressLogout()}>
             <Image source={require("../../../../assets/images/my-page.png")}/>
             <Text style={styles.text}>마이 페이지</Text>
         </TouchableOpacity>
